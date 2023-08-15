@@ -1,0 +1,251 @@
+---
+import CommonImage from "../components/CommonImage.astro";
+import Layout from "../layouts/Layout.astro";
+import main from "../assets/main/main.png";
+import aboutMe from "../assets/main/aboutMe.png";
+import Slider from "../components/Slider.astro";
+---
+
+<Layout
+  title="Satofactoin.net | Fumihiko Sato Portfolio"
+  description="このサイトは、特にやりたいこともなく無気力に生きる汚い中年おじさんデザイナー佐藤文彦のポートフォリオサイトです。応援よろしくお願いします。"
+>
+  <article class="box-hero">
+    <div class="box-hero-title">
+      <h2 class="title-main">Hello, I’M<br />Fumihiko Sato</h2>
+      <div class="role">Designer / Front-End Developer</div>
+    </div>
+    <div class="box-hero-img">
+      <CommonImage src={main} alt="my image" width={800} format="webp" />
+    </div>
+  </article>
+  <article class="box-2col reverse">
+    <div>
+      <h2 class="title-main">About Me.</h2>
+      <p class="mb-M">
+        主にデザインとフロントエンド開発をやっています。<br />
+         どちらかと言えばデザイナーが、少しプログラムを書くような感じです。<br
+        />
+         ただし、デザインも独学なのでツールをなんとか使いこなすレベルなのでデザイナーでもないかもしれません。
+      </p>
+      <p>
+        田舎から「デザイナー」という言葉に憧れて東京に出てきましたが、そんな想いは簡単に打ち砕かれ、若者に
+        日々怒られながら過ごす中年の汚いおじさんです。
+      </p>
+    </div>
+    <div>
+      <CommonImage src={aboutMe} alt="my image" width={800} format="webp" />
+    </div>
+  </article>
+  <article>
+    <h2 class="title-main">My Skills.</h2>
+    <div class="skills">
+      <div class="slkill">
+        <h3 class="title-L">Design</h3>
+        <ul class="levels">
+          <li class="level6">
+            <img src="/images/skill-ai.svg" alt="Adobe Illustrator" />
+          </li>
+          <li class="level6">
+            <img src="/images/skill-ps.svg" alt="Adobe Photoshop" />
+          </li>
+          <li class="level6">
+            <img src="/images/skill-figma.svg" alt="Figma" />
+          </li>
+          <li class="level3">
+            <img src="/images/skill-blender.svg" alt="Blender" />
+          </li>
+        </ul>
+        <p>
+          Web、UIデザイン、グラフィックデザインの経験があります。<br
+          />ツールは、Figma、Sketch、XD、illustrator、Photoshop、UXリサーチの経験もありますが豊富ではありません。イラストも頼まれれば描きますがあまり得意ではありません。
+          好きなツールはFigmaです。
+        </p>
+      </div>
+      <div class="slkill">
+        <h3 class="title-L">Frontend</h3>
+        <ul class="levels">
+          <li class="level5">
+            <img src="/images/skill-ts.svg" alt="Typescript" />
+          </li>
+          <li class="level6">
+            <img src="/images/skill-vue.svg" alt="Vue" />
+          </li>
+          <li class="level4">
+            <img src="/images/skill-react.svg" alt="React" />
+          </li>
+          <li class="level2">
+            <img src="/images/skill-astro.svg" alt="Astro.js" />
+          </li>
+        </ul>
+        <p>
+          HTML、CSS、Javascriptの経験はそこそこあります。最近はVueやNuxtを利用することが多いのでjQueryとかは忘れかけています。wordpressはあまり好きではないです。<br
+          />
+           Jamstackに興味があります。
+        </p>
+      </div>
+      <div class="slkill">
+        <h3 class="title-L">Backend</h3>
+        <ul class="levels">
+          <li class="level3">
+            <img src="/images/skill-laravel.svg" alt="Laravel" />
+          </li>
+          <li class="level2">
+            <img src="/images/skill-nest.svg" alt="nest.js" />
+          </li>
+          <li class="level3">
+            <img src="/images/skill-docker.svg" alt="Docker" />
+          </li>
+        </ul>
+        <p>
+          実務での経験値はほとんどないです。
+          最近はNode.jsを勉強しています。Laravelも少し経験あります。
+          Nest.jsを勉強中です。
+        </p>
+      </div>
+      <div class="slkill">
+        <h3 class="title-L">Infrastructure</h3>
+        <ul class="levels">
+          <li class="level2">
+            <img src="/images/skill-aws.svg" alt="AWS" />
+          </li>
+          <li class="level2">
+            <img src="/images/skill-firebase.svg" alt="Firebase" />
+          </li>
+        </ul>
+        <p>
+          実務での経験値はほとんどないです。
+          AWSを勉強中です。S3とCloudFrontを利用したHTTPSでの静的サイトのホスティングくらいならなんとかできます。AWS
+          Certified Cloud Practitionerの資格は持っています。
+        </p>
+      </div>
+    </div>
+  </article>
+  <article>
+    <h2 class="title-main text-center">My Portfolio.</h2>
+    <p class="text-center mb-XL">
+      業務ではなく個人的な趣味で制作したものです。
+    </p>
+    <Slider />
+  </article>
+  <article>
+    <h2 class="title-main text-center">My Blog.</h2>
+    <p class="text-center mb-XL">
+      年齢のせいかすぐ忘れてしまうので、学んだことを備忘録的に書いてます。
+    </p>
+    <Slider />
+  </article>
+</Layout>
+
+<style lang="scss">
+  article {
+    margin-bottom: $spacing-XXL;
+  }
+  .box-hero {
+    position: relative;
+    display: flex;
+    .box-hero-title {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translate(0, -50%);
+
+      .title-main {
+        margin-bottom: $spacing-S;
+      }
+      .role {
+        color: $color-primary;
+        font-size: $font-size-XL;
+        font-weight: 400;
+      }
+    }
+
+    .box-hero-img {
+      margin-left: auto;
+      margin-right: $spacing-XL * -1;
+    }
+  }
+  .box-2col {
+    display: flex;
+    align-items: center;
+    &.reverse {
+      flex-direction: row-reverse;
+    }
+    h3 {
+      margin-bottom: $spacing-L;
+    }
+    p {
+      font-size: $font-size-M;
+      line-height: 2;
+    }
+    div {
+      flex: 1;
+    }
+  }
+  .skills {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: $spacing-XL;
+    row-gap: $spacing-XL;
+
+    .slkill {
+      background: rgba($color-background, 0.8);
+      border-radius: $radius-L;
+      padding: $spacing-XL;
+      box-shadow: $shadow-02;
+
+      h3 {
+        font-size: $font-size-XL;
+        margin-bottom: $spacing-L;
+        text-align: center;
+        color: $color-primary;
+      }
+      p {
+        font-size: $font-size-M;
+        line-height: 2;
+      }
+    }
+  }
+  .levels {
+    display: flex;
+    justify-content: center;
+    margin-bottom: $spacing-L;
+    li {
+      width: 80px;
+      height: 80px;
+      border-radius: 100%;
+      margin-right: $spacing-S;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &:last-child {
+        margin-right: 0;
+      }
+      &.level1 {
+        background-image: url("src/assets/main/level1.png");
+      }
+      &.level2 {
+        background-image: url("src/assets/main/level2.png");
+      }
+      &.level3 {
+        background-image: url("src/assets/main/level3.png");
+      }
+      &.level4 {
+        background-image: url("src/assets/main/level4.png");
+      }
+      &.level5 {
+        background-image: url("src/assets/main/level5.png");
+      }
+      &.level6 {
+        background-image: url("src/assets/main/level6.png");
+      }
+      &.level7 {
+        background-image: url("src/assets/main/level7.png");
+      }
+      &.level8 {
+        background-image: url("src/assets/main/level8.png");
+      }
+    }
+  }
+</style>

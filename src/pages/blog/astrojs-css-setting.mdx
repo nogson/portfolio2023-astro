@@ -1,0 +1,60 @@
+---
+layout: ../../layouts/BlogLayout.astro
+title: "Astro.jsのCSSの初期設定"
+pubDate: 2022-07-01
+description: "これは私の新しいAstroブログの最初の記事です。"
+author: "Astro学習者"
+image:
+  url: "https://docs.astro.build/assets/full-logo-light.png"
+  alt: "Astroのロゴ"
+tags: ["astro", "ブログ", "公開学習"]
+draft: false
+---
+
+# Sassを利用する
+
+sassをインストールする。
+
+```
+npm i sass
+```
+
+## 変数やmixinなど共通で利用するスタイルをグローバルに定義する
+
+例)src/styles/variables.scssを作成
+
+`astro.config.mjs`に設定を追加する。
+ちなみに、`as *`は名前空間の指定で、仮に`as var`とした場合は`var.$color-primary`といった指定になる。
+
+```
+export default defineConfig({
+  ---中略---
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `@use "src/styles/variables.scss" as *;`
+        }
+      }
+    }
+  }
+});
+
+```
+
+# リセットCSSを追加
+
+リセット用のCSSには[the-new-css-reset](https://elad2412.github.io/the-new-css-reset/)を利用します。
+
+```
+npm i the-new-css-reset
+```
+
+全てのファイルに利用する`src/Layout.astro`などで`the-new-css-reset`をimportします。
+
+```
+---
+import "the-new-css-reset";
+~~~中略~~~
+---
+```

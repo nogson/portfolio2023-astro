@@ -1,0 +1,32 @@
+---
+import Layout from "./Layout.astro";
+const { title, description } = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <section>
+    <div class="content-wrap">
+      <div class="main">
+        <slot name="content" />
+      </div>
+      <aside class="nav">
+        <slot name="nav" />
+      </aside>
+    </div>
+    <style lang="scss">
+      .content-wrap {
+        display: grid;
+        grid-template-columns: auto 300px;
+        column-gap: $spacing-XL;
+
+        .main {
+          flex: 1;
+        }
+        .nav {
+          width: 260px;
+          font-size: $font-size-S;
+        }
+      }
+    </style>
+  </section>
+</Layout>

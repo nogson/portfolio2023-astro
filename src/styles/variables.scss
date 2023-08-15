@@ -1,0 +1,55 @@
+
+// Spacing
+$spacing-XS: 4px;
+$spacing-S: 8px;
+$spacing-M: 16px;
+$spacing-L: 24px;
+$spacing-XL: 40px;
+$spacing-XXL: 80px;
+$spacing-XXXL: 120px;
+
+// font
+$font-family-noto: 'Noto Sans JP Variable', sans-serif;
+$font-family-oswald: "Oswald Variable", sans-serif;
+
+$font-size-S: 0.75rem; // 12px
+$font-size-M: 1rem; // 16px 
+$font-size-L: 1.25rem; // 20px
+$font-size-XL: 1.5rem; // 24px
+$font-size-XXL: 2rem; // 32px
+$font-size-XXXL: 3rem; //  48px
+$font-size-title: 4rem; // 64px
+
+
+// Radius
+$radius-M: 12px;
+$radius-L: 20px;
+
+// Colors
+$color-white: #ffffff;
+$color-background: #F3F3F3;
+$color-shadow: #c9c9c9;
+$color-black: #242424;
+$color-primary: #BB4DFF;
+$color-primary-light: lighten(#BB4DFF,20%);
+$color-gray-01: lighten($color-black, 70%);
+$color-gray-02: lighten($color-black, 60%);
+$color-gray-03: lighten($color-black, 50%);
+$color-gray-04: lighten($color-black, 40%);
+
+
+// Shadows
+$shadow-01:
+  5px 5px 10px $color-shadow,
+  -5px -5px 10px #ffffff;
+$shadow-02: 
+-28px -28px 50px 0px rgba(255, 255, 255, 0.5),
+28px 28px 30px 0px rgba(0, 0, 0, 0.05);
+
+$shadow-03: 
+-3px -3px 3px 0px inset rgba(255, 255, 255, 0.5),
+3px 3px 3px 0px inset rgba(0, 0, 0, 0.05);
+
+$ttl-shadow:
+  5px 5px 10px $color-shadow,
+  -5px -5px 10px #ffffff;

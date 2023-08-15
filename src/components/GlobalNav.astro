@@ -1,0 +1,52 @@
+---
+// interface Props {
+//   title: string;
+//   body: string;
+//   href: string;
+// }
+
+// const { href, title, body } = Astro.props;
+---
+
+<header class="global-nav">
+  <h1><a href="/">Satofactoin.net</a></h1>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="portfolio">Portfolio</a></li>
+      <li><a href="blog">Bolg</a></li>
+      <li>Contact</li>
+    </ul>
+  </nav>
+</header>
+
+<style lang="scss">
+  .global-nav {
+    width: 100%;
+    padding: $spacing-XL;
+    box-sizing: border-box;
+    position: fixed;
+    z-index: 100;
+    font-family: $font-family-oswald;
+    display: flex;
+    align-items: center;
+    padding-bottom: $spacing-XL;
+    h1 {
+      font-weight: 700;
+      font-size: $font-size-L;
+      letter-spacing: 0.03em;
+    }
+    nav {
+      margin-left: auto;
+      ul {
+        display: flex;
+        li {
+          margin-left: $spacing-XL;
+          letter-spacing: 0.05em;
+          font-weight: 400;
+          font-size: $font-size-M;
+        }
+      }
+    }
+  }
+</style>

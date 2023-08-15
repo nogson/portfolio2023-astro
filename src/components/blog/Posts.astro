@@ -1,0 +1,42 @@
+---
+const allPosts = await Astro.glob("../../pages/blog/**/*.mdx");
+const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+---
+
+<div class="posts">
+  <h2 class="title-L">関連記事</h2>
+  <nav>
+    <ul>
+      {
+        nonDraftPosts.map((post) => (
+          <li>
+            <a href={post.url}>
+              <div class="title-M">{post.frontmatter.title}</div>
+              <p>{post.frontmatter.description}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</div>
+
+<style lang="scss">
+  .posts {
+    margin-top: $spacing-XL;
+    ul {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: $spacing-XL;
+    }
+    li {
+      margin-bottom: $spacing-S;
+      box-shadow: $shadow-01;
+      padding: $spacing-M;
+      border-radius: $radius-M;
+      p {
+        font-size: $font-size-S;
+      }
+    }
+  }
+</style>

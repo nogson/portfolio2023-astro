@@ -1,0 +1,367 @@
+---
+layout: ../../layouts/BlogLayout.astro
+title: "Astro.js覚書"
+pubDate: 2022-07-01
+description: "これは私の新しいAstroブログの最初の記事です。"
+author: "Astro学習者"
+image:
+  url: "https://astro.build/assets/press/astro-logo-dark.png"
+  alt: "Astroのロゴ。"
+tags: ["astro", "ブログ", "公開学習"]
+draft: false
+
+---
+import { Image } from '@astrojs/image/components';
+import img20230802_1 from "./src/assets/blog/20230802-1.png";
+
+
+Astro.jsは、コアコンセプトが`No JavaScript`の静的サイトジェネレーターとして使われるJavaScriptフレームワークです。
+Astro.jsは、ReactやVueなどのフロントエンドライブラリをサポートし、コンポーネントベースのアプローチを採用しています。
+
+コーポレートサイトや、ポートフォリオページ、個人サイトなどに適しています。
+
+ただし、SSR（サーバーサイドレンダリング)、CSR(クライアントサイトレンダリング)、SSG(静的ファイルジェネレーター)を、ページによって使い分け得ることも可能です。
+
+# 準備
+
+VSCodeを利用する場合は、公式のプラグインが便利。
+
+[](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode)
+
+# プロジェクトを作成する
+
+```tsx
+npm create astro@latest
+```
+
+プロジェクトを起動。
+
+```tsx
+// もし依存関係ファイルをインストールしてなければ
+npm i
+
+// ローカルサーバーを起動
+npm run dev
+```
+
+[http://localhost:3000/](http://localhost:3000/)でローカルサーバーが起動される。
+
+# ****AstroサイトをVercelにデプロイする****
+
+Vercelを利用して、静的サイトまたは、SSR(サーバーサイドレンダリング)されるサイトとしてデプロイできる。
+
+### ◎静的サイト
+
+Astroプロジェクトはデフォルトで静的サイトです。静的なAstroサイトをVercelにデプロイするために追加の設定は必要ありません。
+
+### ◎SSR
+
+SSRを有効にする為に、Vercelアダプターを追加します。
+以下のコマンドを実行すると、`astro.config.mjs`ファイルへの適切な変更が1ステップで行われます。
+
+```tsx
+npx astro add vercel
+
+Astro will run the following command:
+  If you skip this step, you can always run it yourself later
+
+ ╭──────────────────────────────╮
+ │ npm install @astrojs/vercel  │
+ ╰──────────────────────────────╯
+
+✔ Continue? … yes
+✔ Installing dependencies...
+
+  Astro will make the following changes to your config file:
+
+ ╭ astro.config.mjs ─────────────────────────────────╮
+ │ import { defineConfig } from 'astro/config';      │
+ │                                                   │
+ │ import vercel from "@astrojs/vercel/serverless";  │
+ │                                                   │
+ │ // https://astro.build/config                     │
+ │ export default defineConfig({                     │
+ │   output: "server",                               │
+ │   adapter: vercel()                               │
+ │ });                                               │
+ ╰───────────────────────────────────────────────────╯
+
+  For complete deployment options, visit
+  https://docs.astro.build/en/guides/deploy/
+
+✔ Continue? … yes
+  
+   success  Added the following integration to your project:
+  - @astrojs/vercel
+```
+
+## デプロイ方法
+
+Vercelへのデプロイは、[ウェブサイトのUI](https://docs.astro.build/ja/guides/deploy/vercel/#%E3%82%A6%E3%82%A7%E3%83%96%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AEui%E3%81%8B%E3%82%89%E3%81%AE%E3%83%87%E3%83%97%E3%83%AD%E3%82%A4)またはVercelのCLI（コマンドラインインターフェイス）が利用できます。静的サイト、SSRサイトともに手順は同じです。
+
+### CLIを使ったデプロイ方法
+
+```tsx
+// vercel cli をインストール
+npm install -g vercel
+
+// デプロイ 
+vercel
+```
+
+# 好みでライブラリをインストール
+
+```tsx
+// Reactを入れる
+npx astro add react
+
+// prettierを入れる
+npm install --save-dev prettier prettier-plugin-astro
+```
+
+# astroのコンポーネントについて
+
+astroはコンポーネントスクリプトとコンポーネントテンプレートという２つの主要な要素で構成されています。
+Astroコンポーネント内のコンポーネントスクリプトを識別するためにコードフェンス（`---`）を使用します。
+
+```tsx
+// sample.astro
+
+---
+// コンポーネントスクリプト (JavaScript)
+---
+<!-- コンポーネントテンプレート (HTML + JS Expressions) -->
+```
+
+# Markdownでブログを作る
+
+Astroは、`/src/pages/`ディレクトリ内の`.md`（または対応する別の拡張子）または`.mdx`ファイルをページとして扱います。
+
+1. `src/pages`にposts(任意)ディレクトリを作成する。
+2. `post-1.md`ファイルを作成
+
+◎pages/posts/post-1.md
+
+```markdown
+---
+title: '私の最初のブログ記事'
+pubDate: 2022-07-01
+description: 'これは私の新しいAstroブログの最初の記事です。'
+author: 'Astro学習者'
+image:
+    url: 'https://docs.astro.build/assets/full-logo-light.png'
+    alt: 'Astroのロゴ。'
+tags: ["astro", "ブログ", "公開学習"]
+---
+# 私の最初のブログ記事
+
+投稿日: 2022-07-01
+
+Astroの学習についての私の _新しいブログ_ へようこそ！ここでは、新しいウェブサイトを作りながら、私の学習過程を共有します。
+
+## 達成したこと
+
+1. **Astroのインストール**: まず、新しいAstroプロジェクトを作成し、オンラインアカウントを設定しました。
+
+2. **ページの作成**: 次に、新しい`.astro`ファイルを作成し、それを`src/pages/`フォルダに配置することで、ページを作成する方法を学びました。
+
+3. **ブログ記事の作成**: これが私の最初のブログ記事です！AstroページとMarkdownの記事があります！
+
+## 次の目標
+
+Astroチュートリアルを終え、さらに記事を追加していきます。これからもこの場所をご覧ください。
+```
+
+`http://localhost/3000/posts/post-1`を開くとページが表示される。
+
+<Image src={img20230802_1} alt="markdown"/>
+
+
+## 下書きページ
+
+`draft: true`はオプションのフロントマターの値で、個々のMarkdownまたはMDXページや投稿を「非公開」としてマークできます。デフォルトでは、マークされたページは次の動作になります。
+
+- サイトのビルド対象から外す（**ページはビルドされない**）
+- `[Astro.glob()](https://docs.astro.build/ja/reference/api-reference/#astroglob)`によって返される (**投稿の一覧で表示されます**)
+
+```markdown
+---
+title: ブログ記事
+draft: true
+---
+
+これは、作成中のブログ記事です。
+
+この記事のためにページは作成されません。
+
+この記事をビルドして公開するには
+
+- フロントマターを`draft: false`に更新する。
+- または、`draft`プロパティ全体を削除してください。
+
+しかし、このページは `Astro.glob()` にマッチするすべてのリクエストで返されます。
+```
+
+## レイアウト
+
+レイアウトコンポーネントへの相対パスを指定できるプロパティがあります。
+
+◎pages/posts/post-1.md
+
+```markdown
+---
+layout: ../../layouts/BlogLayout.astro
+title: Astroの概要
+author: Himanshu
+description: Astroの凄さを知ってください！
+---
+これはMarkdownで書かれた記事です。
+```
+
+markdownの定義したプロパティはAstro.propsを通してレイアウトコンポーネントで利用できます。
+
+◎layouts/BlogLayout.astro
+
+```markdown
+---
+const { frontmatter } = Astro.props;
+---
+
+<html>
+  <head>
+    <title>{frontmatter.title}</title>
+    <meta name="description" content={frontmatter.description} />
+  </head><body>
+    <!-- ... -->
+    <slot />
+    <!-- Markdownコンテンツはここに挿入されます -->
+    <!-- ... -->
+  </body>
+</html>
+```
+
+## mdxを利用する
+
+Markdownの拡張言語である MDX を有効にすることで、コンポーネントを利用できるようになります。
+
+`npx astro add mdx`コマンドを実行すると、`astro.config.mjs`ファイルへの適切な変更が1ステップで行われます。
+
+```markdown
+npx astro add mdx
+
+✔ Resolving packages...
+
+  Astro will run the following command:
+  If you skip this step, you can always run it yourself later
+
+ ╭───────────────────────────╮
+ │ npm install @astrojs/mdx  │
+ ╰───────────────────────────╯
+
+✔ Continue? … yes
+⠦ Installing dependencies...
+✔ Installing dependencies...
+
+  Astro will make the following changes to your config file:
+
+ ╭ astro.config.mjs ─────────────────────────────────╮
+ │ import { defineConfig } from 'astro/config';      │
+ │ import vercel from "@astrojs/vercel/serverless";  │
+ │ import react from "@astrojs/react";               │
+ │                                                   │
+ │ import mdx from "@astrojs/mdx";                   │
+ │                                                   │
+ │ // https://astro.build/config                     │
+ │ export default defineConfig({                     │
+ │   output: "server",                               │
+ │   adapter: vercel(),                              │
+ │   integrations: [react(), mdx()]                  │
+ │ });                                               │
+ ╰───────────────────────────────────────────────────╯
+
+✔ Continue? … yes
+  
+   success  Added the following integration to your project:
+  - @astrojs/mdx
+```
+
+frontmatterを通してプロパティのアクセスすることもできます。
+
+```markdown
+---
+layout: ../../layouts/BlogLayout.astro
+title: "私の最初のブログ記事"
+pubDate: 2022-07-01
+description: "これは私の新しいAstroブログの最初の記事です。"
+author: "Astro学習者"
+image:
+  url: "https://docs.astro.build/assets/full-logo-light.png"
+  alt: "Astroのロゴ。"
+tags: ["astro", "ブログ", "公開学習"]
+---
+
+# {frontmatter.title}
+```
+
+## 記事一覧を取得する
+
+Markdownで追加した記事一覧は`Astro.glob()`で取得することができます。
+
+```markdown
+---
+const allPosts = await Astro.glob("../pages/posts/**/*.mdx");
+// draft: trueは除外する
+const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+---
+<ul>
+{nonDraftPosts.map((post) => <li>{post.frontmatter.title}</li>)}
+</ul>
+```
+
+## Markdown内での画像
+
+### 保存先
+
+画像の保存先が`src`配下の場合は、`.astro、.mdx、その他のフレームワークのコンポーネント`からの参照は可能です。
+
+```:astro
+---
+// `src/images/`内の画像へアクセスします。
+import logo from '../images/logo.png';
+---
+<img src={logo} width="40" alt="Astro" />
+```
+
+`.md`ファイル内では`public`フォルダ配下に配置する必要があります。
+
+```markdown
+<!-- public/assets/stars.png に保存されたローカル画像 -->
+![A starry night sky.](/assets/stars.png)
+<img src="/assets/stars.png" alt="A starry night sky.">
+
+```
+
+### 参照方法
+画像を相対ファイルパスまたはimportエイリアスを利用してコンポーネントファイル内でインポートして利用します。
+
+
+### Astro画像インテグレーション
+Astro公式の画像のインテグレーションは、最適化された画像をレンダリングするためのAstroコンポーネント`<Image />`と`<Picture />`を提供しています。
+
+`.astroと.mdx`で利用できます。
+
+`npx astro add image`コマンドを実行すると、`astro.config.mjs`ファイルへの適切な変更が1ステップで行われます。
+
+```
+npx astro add image
+``` 
+
+```
+---
+import { Image } from '@astrojs/image/components';
+import localImage from "../assets/logo.png";
+const localAlt = "The Astro Logo";
+---
+<Image src={localImage} width={300} aspectRatio="1:1" format="png" alt={localAlt} />
+
+```

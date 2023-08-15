@@ -1,0 +1,52 @@
+---
+import "the-new-css-reset";
+import "@fontsource-variable/oswald";
+import "@fontsource-variable/noto-sans-jp";
+
+import GlobalNav from "../components/GlobalNav.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <GlobalNav />
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+<style is:global lang="scss">
+  html {
+    font-family: $font-family-noto, sans-serif;
+    background: $color-background;
+    width: 100%;
+    font-size: 16px;
+    color: $color-black;
+    line-height: 1.8;
+  }
+  body {
+  }
+  main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: $spacing-XL;
+  }
+  img {
+    height: auto;
+  }
+</style>
