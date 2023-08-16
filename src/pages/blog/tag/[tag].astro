@@ -1,0 +1,25 @@
+---
+import TwoColLayout from "../../../layouts/TwoColLayout.astro";
+import TagList from "../../../components/blog/TagList.astro";
+import Card from "../../../components/blog/Card.astro";
+const { tag } = Astro.params;
+const allPosts = await Astro.glob("../../../pages/blog/**/*.mdx");
+const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
+const uniqueTags = [...new Set(tags.flat())];
+const posts = nonDraftPosts.filter((post) =>
+  post.frontmatter.tags.includes(tag)
+);
+---
+
+<TwoColLayout title={`${tag} | Fumihiko Sato Portfolio`}>
+  <div slot="header">
+    <h1 class="title-XXXL mb-M text-center">{tag}</h1>
+  </div>
+  <div slot="content">
+    {posts.map((post: any) => <Card post={post.frontmatter} url={post.url} />)}
+  </div>
+  <div slot="nav">
+    <TagList tags={uniqueTags} selectedTag={tag} />
+  </div>
+</TwoColLayout>

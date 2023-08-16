@@ -1,16 +1,14 @@
 ---
-layout: ../../layouts/BlogLayout.astro
+layout: ../../layouts/BlogDetailLayout.astro
 title: "Astro.jsでGoogleFontsを利用する"
 pubDate: 2022-08-10
 description: "Astro.jsでカスタムフォントの利用する為の手順です"
-author: "Astro学習者"
 image:
   url: "https://docs.astro.build/assets/full-logo-light.png"
   alt: "Astroのロゴ。"
-tags: ["astro", "ブログ", "公開学習"]
+tags: ["astro"]
 draft: false
 ---
-
 
 # カスタムフォントをインストールする
 
@@ -18,17 +16,19 @@ astro.jsでGoogleFontsを利用するための手順になります。
 
 [Fontsource](https://fontsource.org/)を利用することで、簡単にGoogle Fontsやその他のオープンソースのフォントを使用できます。使用したいフォントをnpmモジュールとしてインストールできます。
 
-
 Fontsourceで、利用したいフォントを選択の上、画面右上の`Install`ボタンを押します。　　
 ダウンロード用のコマンドと、利用方法が表示されるので実行します。
 
 ## 例
-### Installation  
+
+### Installation
+
 ```
 npm install @fontsource-variable/oswald
 ```
 
 ### Import
+
 ```
 // Supports weights 200-700
 import '@fontsource-variable/oswald';

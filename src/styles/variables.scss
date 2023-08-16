@@ -27,7 +27,8 @@ $radius-L: 20px;
 
 // Colors
 $color-white: #ffffff;
-$color-background: #F3F3F3;
+$color-background: #f1f1f1;
+$color-background-darken: darken($color-background, 2%);
 $color-shadow: #c9c9c9;
 $color-black: #242424;
 $color-primary: #BB4DFF;

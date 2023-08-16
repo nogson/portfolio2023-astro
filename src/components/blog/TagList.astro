@@ -1,0 +1,39 @@
+---
+interface Props {
+  tags: string[];
+  selectedTag?: string;
+}
+
+const { tags, selectedTag } = Astro.props;
+---
+
+<nav class="tags">
+  <h2 class="title-M">Tags</h2>
+  <ul>
+    {
+      tags.map((tag) => (
+        <li class={tag === selectedTag ? "act" : ""}>
+          <a href={`/blog/tag/${tag}`}>{tag}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style lang="scss">
+  .tags {
+    font-size: $font-size-S;
+    position: sticky;
+    top: $spacing-XXXL;
+    box-shadow: $shadow-03;
+    padding: $spacing-M;
+    border-radius: $radius-M;
+    margin-bottom: $spacing-XL;
+    li {
+      margin-bottom: $spacing-S;
+      &.act {
+        font-weight: 700;
+      }
+    }
+  }
+</style>

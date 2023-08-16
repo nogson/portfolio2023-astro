@@ -1,10 +1,35 @@
 ---
+import Card from "../../components/blog/Card.astro";
+import TagList from "../../components/blog/TagList.astro";
 import TwoColLayout from "../../layouts/TwoColLayout.astro";
+
+const allPosts = await Astro.glob("../../pages/blog/**/*.mdx");
+const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
+const uniqueTags = [...new Set(tags.flat())];
 ---
 
 <TwoColLayout
   title="ブログ記事一覧"
   description="年齢のせいかすぐ忘れてしまうので、学んだことを備忘録的に書いてます。"
 >
-  <h1>Page 1</h1>
+  <div slot="header" class="header">
+    <h1 class="title-XXXL mb-M">Blog</h1>
+    <p>年齢のせいかすぐ忘れてしまうので、学んだことを備忘録的に書いてます。</p>
+  </div>
+  <div slot="content">
+    {
+      nonDraftPosts.map((post: any) => (
+        <Card post={post.frontmatter} url={post.url} />
+      ))
+    }
+  </div>
+  <div slot="nav">
+    <TagList tags={uniqueTags} />
+  </div>
 </TwoColLayout>
+<style lang="scss">
+  .header {
+    text-align: center;
+  }
+</style>

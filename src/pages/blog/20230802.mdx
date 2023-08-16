@@ -1,19 +1,17 @@
 ---
-layout: ../../layouts/BlogLayout.astro
+layout: ../../layouts/BlogDetailLayout.astro
 title: "Astro.js覚書"
 pubDate: 2022-07-01
 description: "これは私の新しいAstroブログの最初の記事です。"
-author: "Astro学習者"
 image:
   url: "https://astro.build/assets/press/astro-logo-dark.png"
   alt: "Astroのロゴ。"
-tags: ["astro", "ブログ", "公開学習"]
+tags: ["astro"]
 draft: false
-
 ---
-import { Image } from '@astrojs/image/components';
-import img20230802_1 from "./src/assets/blog/20230802-1.png";
 
+import { Image } from "@astrojs/image/components";
+import img20230802_1 from "./src/assets/blog/20230802-1.png";
 
 Astro.jsは、コアコンセプトが`No JavaScript`の静的サイトジェネレーターとして使われるJavaScriptフレームワークです。
 Astro.jsは、ReactやVueなどのフロントエンドライブラリをサポートし、コンポーネントベースのアプローチを採用しています。
@@ -46,7 +44,7 @@ npm run dev
 
 [http://localhost:3000/](http://localhost:3000/)でローカルサーバーが起動される。
 
-# ****AstroサイトをVercelにデプロイする****
+# \***\*AstroサイトをVercelにデプロイする\*\***
 
 Vercelを利用して、静的サイトまたは、SSR(サーバーサイドレンダリング)されるサイトとしてデプロイできる。
 
@@ -90,7 +88,7 @@ Astro will run the following command:
   https://docs.astro.build/en/guides/deploy/
 
 ✔ Continue? … yes
-  
+
    success  Added the following integration to your project:
   - @astrojs/vercel
 ```
@@ -105,7 +103,7 @@ Vercelへのデプロイは、[ウェブサイトのUI](https://docs.astro.build
 // vercel cli をインストール
 npm install -g vercel
 
-// デプロイ 
+// デプロイ
 vercel
 ```
 
@@ -144,15 +142,16 @@ Astroは、`/src/pages/`ディレクトリ内の`.md`（または対応する別
 
 ```markdown
 ---
-title: '私の最初のブログ記事'
+title: "私の最初のブログ記事"
 pubDate: 2022-07-01
-description: 'これは私の新しいAstroブログの最初の記事です。'
-author: 'Astro学習者'
+description: "これは私の新しいAstroブログの最初の記事です。"
+author: "Astro学習者"
 image:
-    url: 'https://docs.astro.build/assets/full-logo-light.png'
-    alt: 'Astroのロゴ。'
+  url: "https://docs.astro.build/assets/full-logo-light.png"
+  alt: "Astroのロゴ。"
 tags: ["astro", "ブログ", "公開学習"]
 ---
+
 # 私の最初のブログ記事
 
 投稿日: 2022-07-01
@@ -174,8 +173,7 @@ Astroチュートリアルを終え、さらに記事を追加していきます
 
 `http://localhost/3000/posts/post-1`を開くとページが表示される。
 
-<Image src={img20230802_1} alt="markdown"/>
-
+<Image src={img20230802_1} alt="markdown" />
 
 ## 下書きページ
 
@@ -210,17 +208,18 @@ draft: true
 
 ```markdown
 ---
-layout: ../../layouts/BlogLayout.astro
+layout: ../../layouts/BlogDetailLayout.astro
 title: Astroの概要
 author: Himanshu
 description: Astroの凄さを知ってください！
 ---
+
 これはMarkdownで書かれた記事です。
 ```
 
 markdownの定義したプロパティはAstro.propsを通してレイアウトコンポーネントで利用できます。
 
-◎layouts/BlogLayout.astro
+◎layouts/BlogDetailLayout.astro
 
 ```markdown
 ---
@@ -251,45 +250,46 @@ npx astro add mdx
 
 ✔ Resolving packages...
 
-  Astro will run the following command:
-  If you skip this step, you can always run it yourself later
+Astro will run the following command:
+If you skip this step, you can always run it yourself later
 
- ╭───────────────────────────╮
- │ npm install @astrojs/mdx  │
- ╰───────────────────────────╯
+╭───────────────────────────╮
+│ npm install @astrojs/mdx │
+╰───────────────────────────╯
 
 ✔ Continue? … yes
 ⠦ Installing dependencies...
 ✔ Installing dependencies...
 
-  Astro will make the following changes to your config file:
+Astro will make the following changes to your config file:
 
- ╭ astro.config.mjs ─────────────────────────────────╮
- │ import { defineConfig } from 'astro/config';      │
- │ import vercel from "@astrojs/vercel/serverless";  │
- │ import react from "@astrojs/react";               │
- │                                                   │
- │ import mdx from "@astrojs/mdx";                   │
- │                                                   │
- │ // https://astro.build/config                     │
- │ export default defineConfig({                     │
- │   output: "server",                               │
- │   adapter: vercel(),                              │
- │   integrations: [react(), mdx()]                  │
- │ });                                               │
- ╰───────────────────────────────────────────────────╯
+╭ astro.config.mjs ─────────────────────────────────╮
+│ import { defineConfig } from 'astro/config'; │
+│ import vercel from "@astrojs/vercel/serverless"; │
+│ import react from "@astrojs/react"; │
+│ │
+│ import mdx from "@astrojs/mdx"; │
+│ │
+│ // https://astro.build/config │
+│ export default defineConfig({ │
+│ output: "server", │
+│ adapter: vercel(), │
+│ integrations: [react(), mdx()] │
+│ }); │
+╰───────────────────────────────────────────────────╯
 
 ✔ Continue? … yes
-  
-   success  Added the following integration to your project:
-  - @astrojs/mdx
+
+success Added the following integration to your project:
+
+- @astrojs/mdx
 ```
 
 frontmatterを通してプロパティのアクセスすることもできます。
 
 ```markdown
 ---
-layout: ../../layouts/BlogLayout.astro
+layout: ../../layouts/BlogDetailLayout.astro
 title: "私の最初のブログ記事"
 pubDate: 2022-07-01
 description: "これは私の新しいAstroブログの最初の記事です。"
@@ -313,6 +313,7 @@ const allPosts = await Astro.glob("../pages/posts/**/*.mdx");
 // draft: trueは除外する
 const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
 ---
+
 <ul>
 {nonDraftPosts.map((post) => <li>{post.frontmatter.title}</li>)}
 </ul>
@@ -336,16 +337,17 @@ import logo from '../images/logo.png';
 
 ```markdown
 <!-- public/assets/stars.png に保存されたローカル画像 -->
+
 ![A starry night sky.](/assets/stars.png)
 <img src="/assets/stars.png" alt="A starry night sky.">
-
 ```
 
 ### 参照方法
+
 画像を相対ファイルパスまたはimportエイリアスを利用してコンポーネントファイル内でインポートして利用します。
 
-
 ### Astro画像インテグレーション
+
 Astro公式の画像のインテグレーションは、最適化された画像をレンダリングするためのAstroコンポーネント`<Image />`と`<Picture />`を提供しています。
 
 `.astroと.mdx`で利用できます。
@@ -354,7 +356,7 @@ Astro公式の画像のインテグレーションは、最適化された画像
 
 ```
 npx astro add image
-``` 
+```
 
 ```
 ---

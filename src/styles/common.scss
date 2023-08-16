@@ -2,15 +2,15 @@
 @use "src/styles/variables.scss" as *;
 
 .mb-M {
-  margin-bottom: $spacing-M;
+  margin-bottom: $spacing-M !important;
 }
 
 .mb-L {
-  margin-bottom: $spacing-L;
+  margin-bottom: $spacing-L !important;
 }
 
 .mb-XL {
-  margin-bottom: $spacing-XL;
+  margin-bottom: $spacing-XL !important ;
 }
 
 .title-main {

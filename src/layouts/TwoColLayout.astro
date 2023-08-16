@@ -5,6 +5,9 @@ const { title, description } = Astro.props;
 
 <Layout title={title} description={description}>
   <section>
+    <div class="header">
+      <slot name="header" />
+    </div>
     <div class="content-wrap">
       <div class="main">
         <slot name="content" />
@@ -13,19 +16,20 @@ const { title, description } = Astro.props;
         <slot name="nav" />
       </aside>
     </div>
+    <slot name="footer" />
     <style lang="scss">
+      section {
+        margin-top: $spacing-XXXL;
+        width: 100%;
+      }
+      .header {
+        margin-bottom: $spacing-XXL;
+      }
       .content-wrap {
+        width: 100%;
         display: grid;
         grid-template-columns: auto 300px;
         column-gap: $spacing-XL;
-
-        .main {
-          flex: 1;
-        }
-        .nav {
-          width: 260px;
-          font-size: $font-size-S;
-        }
       }
     </style>
   </section>

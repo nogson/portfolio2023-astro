@@ -1,0 +1,56 @@
+---
+import dayjs from "dayjs";
+import type { FrontmatterType } from "../../types/Post";
+
+interface Props {
+  post: FrontmatterType;
+  url: string;
+}
+
+const { post, url } = Astro.props;
+---
+
+<div class="card">
+  <a href={url} class="card-link">
+    <p class="pubDate">{dayjs(post.pubDate).format("YYYY/MM/DD")}</p>
+    <h2 class="title-L">{post.title}</h2>
+    <p class="description">{post.description}</p>
+    <div>{post.tags.map((tag: string) => <span class="tag">{tag}</span>)}</div>
+  </a>
+</div>
+
+<style lang="scss">
+  .card {
+    padding: $spacing-M;
+    margin-bottom: $spacing-XL;
+    border-radius: $radius-M;
+    box-shadow: $shadow-01;
+
+    .pubDate {
+      color: $color-gray-04;
+      font-size: $font-size-S;
+      margin-bottom: $spacing-S;
+    }
+
+    .description {
+      margin-bottom: $spacing-S;
+    }
+
+    .tag {
+      font-size: $font-size-S;
+      color: $color-gray-04;
+      display: inline-block;
+      padding: $spacing-S $spacing-M;
+      border-radius: 20px;
+      border: 1px solid $color-gray-04;
+      margin-right: $spacing-S;
+      line-height: 1;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+    &:hover {
+      background-color: $color-background-darken;
+    }
+  }
+</style>
