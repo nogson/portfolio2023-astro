@@ -1,15 +1,16 @@
 ---
 import CommonImage from "../components/CommonImage.astro";
 import Layout from "../layouts/Layout.astro";
-import main from "../assets/main/main.png";
-import aboutMe from "../assets/main/aboutMe.png";
 import Slider from "../components/Slider.astro";
+import main from "@/assets/images/main/main.png";
+import aboutMe from "@/assets/images/main/aboutMe.png";
 ---
 
 <Layout
   title="Satofactoin.net | Fumihiko Sato Portfolio"
   description="このサイトは、特にやりたいこともなく無気力に生きる汚い中年おじさんデザイナー佐藤文彦のポートフォリオサイトです。応援よろしくお願いします。"
 >
+ 
   <article class="box-hero">
     <div class="box-hero-title">
       <h2 class="title-main">Hello, I’M<br />Fumihiko Sato</h2>
@@ -44,16 +45,32 @@ import Slider from "../components/Slider.astro";
         <h3 class="title-L">Design</h3>
         <ul class="levels">
           <li class="level6">
-            <img src="/images/skill-ai.svg" alt="Adobe Illustrator" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-ai.svg")}
+              alt="Adobe Illustrator"
+              width={30}
+            />
           </li>
           <li class="level6">
-            <img src="/images/skill-ps.svg" alt="Adobe Photoshop" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-ps.svg")}
+              alt="Adobe Photoshop"
+              width={30}
+            />
           </li>
           <li class="level6">
-            <img src="/images/skill-figma.svg" alt="Figma" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-figma.svg")}
+              alt="Figma"
+              width={25}
+            />
           </li>
           <li class="level3">
-            <img src="/images/skill-blender.svg" alt="Blender" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-blender.svg")}
+              alt="Blender"
+              width={35}
+            />
           </li>
         </ul>
         <p>
@@ -66,16 +83,32 @@ import Slider from "../components/Slider.astro";
         <h3 class="title-L">Frontend</h3>
         <ul class="levels">
           <li class="level5">
-            <img src="/images/skill-ts.svg" alt="Typescript" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-ts.svg")}
+              alt="Typescript"
+              width={35}
+            />
           </li>
           <li class="level6">
-            <img src="/images/skill-vue.svg" alt="Vue" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-vue.svg")}
+              alt="Vue"
+              width={35}
+            />
           </li>
           <li class="level4">
-            <img src="/images/skill-react.svg" alt="React" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-react.svg")}
+              alt="React"
+              width={35}
+            />
           </li>
           <li class="level2">
-            <img src="/images/skill-astro.svg" alt="Astro.js" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-astro.svg")}
+              alt="Astro.js"
+              width={35}
+            />
           </li>
         </ul>
         <p>
@@ -88,13 +121,25 @@ import Slider from "../components/Slider.astro";
         <h3 class="title-L">Backend</h3>
         <ul class="levels">
           <li class="level3">
-            <img src="/images/skill-laravel.svg" alt="Laravel" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-laravel.svg")}
+              alt="Laravel"
+              width={35}
+            />
           </li>
           <li class="level2">
-            <img src="/images/skill-nest.svg" alt="nest.js" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-nest.svg")}
+              alt="nest.js"
+              width={35}
+            />
           </li>
           <li class="level3">
-            <img src="/images/skill-docker.svg" alt="Docker" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-docker.svg")}
+              alt="Docker"
+              width={50}
+            />
           </li>
         </ul>
         <p>
@@ -107,10 +152,18 @@ import Slider from "../components/Slider.astro";
         <h3 class="title-L">Infrastructure</h3>
         <ul class="levels">
           <li class="level2">
-            <img src="/images/skill-aws.svg" alt="AWS" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-aws.svg")}
+              alt="AWS"
+              width={40}
+            />
           </li>
           <li class="level2">
-            <img src="/images/skill-firebase.svg" alt="Firebase" />
+            <CommonImage
+              src={import("@/assets/images/main/skill-firebase.svg")}
+              alt="Firebase"
+              width={25}
+            />
           </li>
         </ul>
         <p>
@@ -223,28 +276,28 @@ import Slider from "../components/Slider.astro";
         margin-right: 0;
       }
       &.level1 {
-        background-image: url("src/assets/main/level1.png");
+        background-image: url("src/assets/images/main/level1.png");
       }
       &.level2 {
-        background-image: url("src/assets/main/level2.png");
+        background-image: url("src/assets/images/main/level2.png");
       }
       &.level3 {
-        background-image: url("src/assets/main/level3.png");
+        background-image: url("src/assets/images/main/level3.png");
       }
       &.level4 {
-        background-image: url("src/assets/main/level4.png");
+        background-image: url("src/assets/images/main/level4.png");
       }
       &.level5 {
-        background-image: url("src/assets/main/level5.png");
+        background-image: url("src/assets/images/main/level5.png");
       }
       &.level6 {
-        background-image: url("src/assets/main/level6.png");
+        background-image: url("src/assets/images/main/level6.png");
       }
       &.level7 {
-        background-image: url("src/assets/main/level7.png");
+        background-image: url("src/assets/images/main/level7.png");
       }
       &.level8 {
-        background-image: url("src/assets/main/level8.png");
+        background-image: url("ssrc/assets/images/main/level8.png");
       }
     }
   }

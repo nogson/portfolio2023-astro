@@ -1,12 +1,9 @@
 export type FrontmatterType = {
   layout: string;
   title: string;
-  pubDate: string;
+  createAt: string;
   description: string;
-  image: {
-    url: string;
-    alt: string;
-  };
+  thumbnail: string;
   tags: string[];
   draft: boolean;
 };

@@ -1,17 +1,15 @@
 ---
-layout: ../../layouts/BlogDetailLayout.astro
+layout: "@/layouts/BlogDetailLayout.astro"
 title: "Astro.js覚書"
-pubDate: 2022-07-01
+createAt: 2022-07-01
 description: "これは私の新しいAstroブログの最初の記事です。"
-image:
-  url: "https://astro.build/assets/press/astro-logo-dark.png"
-  alt: "Astroのロゴ。"
+thumbnail: "../../assets/images/blog/thumbnail/note_thumb.png"
 tags: ["astro"]
 draft: false
 ---
 
 import { Image } from "@astrojs/image/components";
-import img20230802_1 from "./src/assets/blog/20230802-1.png";
+import img20230802_1 from "./src/assets/images/blog/20230802-1.png";
 
 Astro.jsは、コアコンセプトが`No JavaScript`の静的サイトジェネレーターとして使われるJavaScriptフレームワークです。
 Astro.jsは、ReactやVueなどのフロントエンドライブラリをサポートし、コンポーネントベースのアプローチを採用しています。
@@ -143,7 +141,7 @@ Astroは、`/src/pages/`ディレクトリ内の`.md`（または対応する別
 ```markdown
 ---
 title: "私の最初のブログ記事"
-pubDate: 2022-07-01
+createAt: 2022-07-01
 description: "これは私の新しいAstroブログの最初の記事です。"
 author: "Astro学習者"
 image:
@@ -291,7 +289,7 @@ frontmatterを通してプロパティのアクセスすることもできます
 ---
 layout: ../../layouts/BlogDetailLayout.astro
 title: "私の最初のブログ記事"
-pubDate: 2022-07-01
+createAt: 2022-07-01
 description: "これは私の新しいAstroブログの最初の記事です。"
 author: "Astro学習者"
 image:

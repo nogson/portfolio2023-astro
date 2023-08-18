@@ -1,7 +1,8 @@
 ---
 import dayjs from "dayjs";
 import type { FrontmatterType } from "../../types/Post";
-
+import CommonImage from "../CommonImage.astro";
+import abc from "@/assets/images/blog/thumbnail/note_thumb.png";
 interface Props {
   post: FrontmatterType;
   url: string;
@@ -12,10 +13,22 @@ const { post, url } = Astro.props;
 
 <div class="card">
   <a href={url} class="card-link">
-    <p class="pubDate">{dayjs(post.pubDate).format("YYYY/MM/DD")}</p>
-    <h2 class="title-L">{post.title}</h2>
-    <p class="description">{post.description}</p>
-    <div>{post.tags.map((tag: string) => <span class="tag">{tag}</span>)}</div>
+    <div class="thumbnail">
+      <CommonImage
+        src={import(post.thumbnail)}
+        width={200}
+        format="webp"
+        alt="aaa"
+      />
+    </div>
+    <div>
+      <p class="createAt">{dayjs(post.createAt).format("YYYY/MM/DD")}</p>
+      <h2 class="title-L">{post.title}</h2>
+      <p class="description">{post.description}</p>
+      <div>
+        {post.tags.map((tag: string) => <span class="tag">{tag}</span>)}
+      </div>
+    </div>
   </a>
 </div>
 
@@ -26,7 +39,16 @@ const { post, url } = Astro.props;
     border-radius: $radius-M;
     box-shadow: $shadow-01;
 
-    .pubDate {
+    .thumbnail {
+      line-height: 1;
+      margin-right: $spacing-L;
+    }
+
+    .card-link {
+      display: flex;
+    }
+
+    .createAt {
       color: $color-gray-04;
       font-size: $font-size-S;
       margin-bottom: $spacing-S;

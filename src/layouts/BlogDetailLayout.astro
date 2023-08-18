@@ -12,8 +12,8 @@ const topHeading = headings.filter((heading: any) => heading.depth <= 2);
   <div slot="header">
     <div class="title">
       <h1 class="title-XXXL">{frontmatter.title}</h1>
-      <div class="pubDate">
-        {dayjs(frontmatter.pubDate).format("YYYY/MM/DD")}
+      <div class="createAt">
+        {dayjs(frontmatter.createAt).format("YYYY/MM/DD")}
       </div>
       <div class="tags">
         {frontmatter.tags.map((tag: string) => <span class="tag">{tag}</span>)}
@@ -50,7 +50,7 @@ const topHeading = headings.filter((heading: any) => heading.depth <= 2);
       h1 {
         margin-bottom: 0;
       }
-      .pubDate {
+      .createAt {
         color: $color-gray-04;
         margin-bottom: $spacing-M;
       }

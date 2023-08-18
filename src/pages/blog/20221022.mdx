@@ -1,0 +1,475 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: ExpressとMongoDBでAPIサーバーを作る
+createAt: 2022-10-22
+description: node.jsを利用してバックエンドをやってみます。
+thumbnail: "../../assets/images/blog/thumbnail/note_thumb.png"
+tags: ["Node.js"]
+draft: false
+---
+
+普段はフロントエンドをやることが多い（というかフロントしかできない）ので、node.jsを利用してバックエンド環境も準備してみます。
+
+## 前提
+
+- サーバーにExpressを利用
+- DBにMongoDBを利用
+- typescriptを利用
+- Dockerは利用しない
+
+## ファイル構成
+
+とりあえずこんな感じ。
+
+```
+.
+├── index.ts
+├── node_modules
+├── package-lock.json
+├── package.json
+├── src
+    └── models
+└── tsconfig.json
+
+```
+
+## バックエンドサーバーを用意
+
+バックエンドサーバー用のExpressをインストール。
+
+```
+npm i express
+```
+
+ファイルを保存時にサーバーを自動で再起動してくれるNodemonをインストール。
+
+```
+npm i nodemon
+```
+
+↑に合わせて、package.jsonはサーバー立ち上げ用にscriptsだけ変更。
+
+```
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.ts" // ←これ
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  ...
+
+}
+```
+
+## ローカルサーバーを立ち上げ
+
+Expressを利用してローカルサーバーを立ち上げます。
+
+index.tsに追加。
+
+```typescript
+import express from "express";
+const app = express();
+const PORT = 5050; // ポートはお好みで
+
+app.listen(PORT, () => {
+  console.log("ローカルサーバー起動中");
+});
+```
+
+サーバーと立ち上げてみる。
+
+```
+$ npm run start
+[nodemon] starting `ts-node index.ts`
+サーバー起動中
+```
+
+サーバーが立ち上がっているか確認したい場合は、以下のようにルーティングを追加して確認してみます。
+
+```typescript
+import express from "express";
+const app = express();
+const PORT = 5050; // ポートはお好みで
+
+// localhost:5050をブラウザで確認してみる
+app.get("/", (req, res) => {
+  res.send("OK");
+});
+
+app.listen(PORT, () => {
+  console.log("ローカルサーバー起動中");
+});
+```
+
+## DBを用意する
+
+データベースには[MongoDB](https://www.mongodb.com/ja-jp)を利用します。  
+MongoDBのページから「無料で始める」のボタンを押して、signupします。
+
+<dynamic-image path="blog/images/20221022/01.png" alt="DBを用意する" ></dynamic-image>
+
+signupが完了したら、「New Project」から新規プロジェクトを作成します。
+
+<dynamic-image path="blog/images/20221022/02.png" alt="DBを用意する" ></dynamic-image>
+<dynamic-image path="blog/images/20221022/03.png" alt="DBを用意する" ></dynamic-image>
+<dynamic-image path="blog/images/20221022/04.png" alt="DBを用意する" ></dynamic-image>
+
+プロジェクトを作成したらデータベースも作成します。
+
+<dynamic-image path="blog/images/20221022/05.png" alt="DBを用意する" ></dynamic-image>
+
+無料で使いたいので、「FREE」を選択します。
+Providerは「AWS」を選択、Regionは「Tokyo」を選択します。
+
+<dynamic-image path="blog/images/20221022/06.png" alt="DBを用意する" ></dynamic-image>
+
+プロジェクトへの認証方法を設定します。
+
+ユーザー名とパスワードで認証するようにします。
+<dynamic-image path="blog/images/20221022/07.png" alt="DBを用意する" ></dynamic-image>
+
+接続環境を設定します。
+とりあえずどこからでも接続できるようにするには`0.0.0.0`としておきます。  
+接続IPを絞りたいなら、「Add My Current IP Address」を押すと、現在のIPが設定されます。
+
+<dynamic-image path="blog/images/20221022/08.png" alt="DBを用意する" ></dynamic-image>
+
+## DBにデータを登録する
+
+用意したMongoDBにデータを登録する準備をします。
+
+DBの操作には[mongoose](https://mongoosejs.com/)を利用します。
+
+インストールする。
+
+```
+npm i mongoose
+```
+
+### DBに接続する
+
+公式ドキュメントは[こちら](https://mongoosejs.com/docs/connections.html)。
+
+`mongoose.connect(接続先パス)`でDBに接続します。
+
+接続先のURLは以下の手順で確認できます。
+
+「Connect」ボタンを押します。
+<dynamic-image path="blog/images/20221022/09.png" alt="DBを用意する" ></dynamic-image>
+
+「Connect your application」ボタンを押します。
+<dynamic-image path="blog/images/20221022/10.png" alt="DBを用意する" ></dynamic-image>
+
+接続先パスが表示される。passwordはDBを作成した際のものを利用します。
+<dynamic-image path="blog/images/20221022/11.png" alt="DBを用意する" ></dynamic-image>
+
+```typescript
+import express from "express";
+import mongoose from "mongoose";
+
+const app = express();
+const PORT = 5050;
+
+// DB接続
+try {
+  mongoose.connect(
+    "mongodb+srv://hogehoge:hogehoge@cluster0.wxiritf.mongodb.net/?retryWrites=true&w=majority"
+  );
+} catch (error) {
+  console.log(error);
+}
+```
+
+DBのURLは直接コードに記載すると問題があるので、envファイルに定義します。
+
+dotenvを利用するためにライブラリをインストール。
+
+```
+npm i -D dotdenv
+```
+
+`.env`ファイルを作成。パスを定義する。
+
+```
+MONGODB_URL="mongodb+srv://hogehoge:hogehoge@cluster0.wxiritf.mongodb.net/?retryWrites=true&w=majority"
+```
+
+envファイルから`process.env.MONGODB_URL`でパスを読み込む。
+
+```typescript
+import express from "express";
+import mongoose from "mongoose";
+
+const app = express();
+const PORT = 5050;
+
+// DB接続
+try {
+  mongoose.connect(process.env.MONGODB_URL!);
+} catch (error) {
+  console.log(error);
+}
+```
+
+## ユーザー登録用のAPIを作成する
+
+1. ユーザーがEメールとパスワードを入力(クライアント)
+2. 1の登録内容をバリデーションチェック(APIサーバー)
+3. 同じEメールのユーザーがいないかの重複チェック(APIサーバー)
+4. パスワードの暗号化(APIサーバー)
+5. がEメールとパスワードをDBに保存(APIサーバー)
+6. JWTをクライアントに返却する(APIサーバー)
+
+### スキーマーを作成する
+
+スキーマーとは、どのようなデータを格納するかの定義です。  
+[ドキュメント](https://mongoosejs.com/docs/models.html)を参考にスキーマを作成していきます。
+
+スキーマのデータは`src/models`に作成していきます。
+
+試しにUserモデルを作成してみます。
+
+`src/models/user.ts`に追加。
+
+```typescript
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
+
+// スキーマからモデルを生成する
+// 外部から呼び出せるようexportする
+export const User = mongoose.model("User", userSchema);
+```
+
+ユーザー登録用のAPIを作成する。  
+作成したUserスキーマを利用してDBに登録する。
+
+index.tsに追加。
+
+```typescript
+import express from 'express'
+import mongoose from 'mongoose'
+import 'dotenv/config'
+import {User} from './src/models/user'
+
+省略...
+app.post('register',(req: express.Request, res: express.Response) => {
+  try {
+    // ユーザーの新規作成
+    const user = await User.create(req.body)
+    return res.status(200).json({user})
+  } catch (error) {
+    return res.status(500).json(error)
+  }
+})
+```
+
+### パスワードを暗号化して登録する
+
+[crypto-js](https://github.com/brix/crypto-js)を利用してパスワードを暗号化します。
+
+```
+npm i -D crypto-js
+```
+
+[こちらのドキュメント](https://github.com/brix/crypto-js#api)に沿って進めます。
+
+第一引数に暗号化する文字列。第二引数に任意のランダムな文字列をシークレットキー(秘密鍵)として設定します。  
+シークレットキーは第三者からみられないように環境変数化したほうがよいです。
+
+```
+// Encrypt
+var ciphertext = CryptoJS.AES.encrypt('my message', 'secret key 123');
+```
+
+こんな感じになります。
+
+```typescript
+import express from 'express'
+import mongoose from 'mongoose'
+import 'dotenv/config'
+import cryptoJs from 'crypto-js'
+import {User} from './src/models/user'
+
+省略...
+app.post('register',(req: express.Request, res: express.Response) => {
+  try {
+    const password = req.body.password
+    req.body.password = cryptoJs.AES.encrypt(password, process.env.SECRET_KEY!)
+    // ユーザーの新規作成
+    const user = await User.create(req.body)
+    return res.status(200).json({user})
+  } catch (error) {
+    return res.status(500).json(error)
+  }
+})
+```
+
+### JWTを発行する
+
+クライアントに返却するJWTを発行するようにします。
+
+[jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)を利用します。
+
+```
+npm i -D jsonwebtoken
+```
+
+[こちらのドキュメント](https://github.com/auth0/node-jsonwebtoken#usage)に沿って進めます。
+
+こちらも第二引数のシークレットキーはenvファイルに環境変数として設定します。
+第三引数には、有効期限などのoptionsの設定ができます。
+
+```
+jwt.sign(payload, secretOrPrivateKey, [options, callback])
+```
+
+こんな感じになります。
+optionsには、24時間の有効期限を設定してみます。
+
+```typescript
+import express from 'express'
+import mongoose from 'mongoose'
+import 'dotenv/config'
+import cryptoJs from 'crypto-js'
+import {User} from './src/models/user'
+import JWT from 'jsonwebtoken'
+省略...
+app.post('register',(req: express.Request, res: express.Response) => {
+  try {
+    const password = req.body.password
+    req.body.password = cryptoJs.AES.encrypt(password, process.env.SECRET_KEY!)
+    // ユーザーの新規作成
+    const user = await User.create(req.body)
+    // JWTの発行
+    const token = JWT.sign({id: user._id}, process.env.TOKEN_SECRET_KEY!, {expiresIn: '24h'})
+    // tokenもレスポンスに含める
+    return res.status(200).json({user, token})
+  } catch (error) {
+    return res.status(500).json(error)
+  }
+})
+```
+
+### バリデーションをおこなう
+
+クライアントから送られてくる、リクエストパラメータのバリデーションチェックを行います。  
+ユーザーを作成する前に、入力のバリデーションを行い、エラーがあれば報告するようにします。
+
+バリデーションには[express-validator](https://express-validator.github.io/docs/)を利用します。
+
+```
+npm i -D express-validator
+```
+
+公式ドキュメントの以下を参考にします。
+
+```typescript
+// ...rest of the initial code omitted for simplicity.
+import { body, validationResult } from "express-validator";
+
+app.post(
+  "/user",
+  // username must be an email
+  body("username").isEmail(),
+  // password must be at least 5 chars long
+  body("password").isLength({ min: 5 }),
+  (req: express.Request, res: express.Response) => {
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    User.create({
+      username: req.body.username,
+      password: req.body.password,
+    }).then((user) => res.json(user));
+  }
+);
+```
+
+```typescript
+import express from 'express'
+import mongoose from 'mongoose'
+import 'dotenv/config'
+import cryptoJs from 'crypto-js'
+import {User} from './src/v1/models/user'
+import JWT from 'jsonwebtoken'
+import {body, validationResult, CustomValidator} from 'express-validator'
+省略...
+app.post('/register',
+    body('username')
+        .isLength({min: 8})
+        .withMessage('ユーザー名は8文字以上である必要があります'),
+    body('password')
+        .isLength({min: 8})
+        .withMessage('パスワードは8文字以上である必要があります'),
+    body('username').custom(isValidUser),
+    async (req: express.Request, res: express.Response) => {
+
+        // エラーがあればレスポンスで返却する
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()});
+        }
+
+        // パスワードの受け取り
+        const password = req.body.password
+        try {
+            // パスワードの暗号化
+            req.body.password = cryptoJs.AES.encrypt(password, process.env.SECRET_KEY!)
+            // ユーザーの新規作成
+            const user = await User.create(req.body)
+            // JWTの発行
+            const token = JWT.sign({id: user._id}, process.env.TOKEN_SECRET_KEY!, {expiresIn: '24h'})
+            return res.status(200).json({user, token})
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
+)
+```
+
+ユーザーの重複チェックも追加する。
+
+[こちら](https://express-validator.github.io/docs/custom-error-messages.html#custom-validator-level)を参考に追加します。
+
+```typescript
+app.post(
+  "/register",
+  body("username")
+    .isLength({ min: 8 })
+    .withMessage("ユーザー名は8文字以上である必要があります"),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage("パスワードは8文字以上である必要があります"),
+  body("confirmPassword")
+    .isLength({ min: 8 })
+    .withMessage("確認用パスワードは8文字以上である必要があります"),
+  body("username").custom((value: string) => {
+    return User.findOne({ username: value }).then((user: IUser) => {
+      if (user) {
+        return Promise.reject("このユーザーはすでに使われています");
+      }
+    });
+  }),
+  ...省略
+);
+```

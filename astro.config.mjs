@@ -11,6 +11,11 @@ export default defineConfig({
   adapter: vercel(),
   integrations: [react(), mdx(), image()] ,
   vite: {
+    resolve: {
+      alias: {
+        "@": "/src",
+      },
+    },
     css: {
       preprocessorOptions: {
         scss: {

@@ -1,0 +1,348 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Docker初心者によるDockerfile、Docker Composeのメモ
+description: Dockerfile、Docker Compose関連のメモです
+createdAt: 2023-01-13
+thumbnail: "../../assets/images/blog/thumbnail/note_thumb.png"
+tags: ["Docker"]
+draft: false
+---
+
+# DockerFileとDocker Composeの違い
+
+DockerFileとdocker-compose.yamlの違いがわからなくなることが多かったので、少しまとめておきます。
+
+## DockerFileの役割
+
+DockerFileの役割は、カスタマイズしたDockerイメージを作成することです。
+
+DockerFileを利用した場合、`docker container run`実行後にコンテナにログインして、あれこれコマンドを実行する手順をまとめることができます。
+
+## Docker Composeの役割
+
+複数のコンテナの作成を行うことです。  
+Docker Image のビルドや各コンテナの起動・停止、ネットワーク接続を行うことができます。
+
+# Docker Compose
+
+Docker Compose関連のメモです。  
+Docker Composeファイルを利用してコンテナを作成します。
+
+## Docker Composeファイルを書いてみる
+
+Docker composeはyaml(yml)ファイルで定義します。
+
+◎ docker-compose.yaml
+
+```text
+services:          ・・・ 1
+ web:              ・・・ 1-A
+  image: httpd:2.4 ・・・ 1-B
+  ports:
+   - "8080:80"     ・・・ 1-C
+networks:          ・・・ 2
+ net01:
+volumes:           ・・・ 3
+ vol01:
+```
+
+- 1: services配下に、コンテナの定義を書きます。
+  - 1-A : コンテナ名です。Apache(httpd)を利用したWebServerなのでwebとしています。
+  - 1-B : 利用するimage名を記述します。  
+    「httpd:2.4」の場合、Apacheのバージョン2.4を指定してます。
+  - 1-C : Dockerホストとコンテナのポート番号の紐付けを文字列で指定します。  
+    「ホストのポート番号:コンテナのポート番号」
+- 2: コンテナで利用するネットワーク設定。
+
+- 3: データの保存に関する設定
+
+## コンテナに環境変数設定する
+
+コンテナでDBを作成した場合、ユーザー名や、パスワードを設定する為に環境変数を利用する為に`enviroment`を設定します。
+
+例) MariaDBの場合
+
+設定できる環境変数は[こちら](https://hub.docker.com/_/mariadb)を参照する。
+
+```yaml
+services:
+  db:
+    image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: testdb
+      MARIADB_USER: testuser
+      MARIADB_PASSWORD: testpass
+    volumes:
+      - db_data:/var/lib/mysql
+```
+
+## 複数のコンテナを設定する
+
+例) wordpress + mariadb
+
+```shell
+services:
+ db:
+  image: mariadb:10.7
+  environment:
+    MARIADB_ROOT_PASSWORD: rootpass
+    MARIADB_DATABASE: wordpress
+    MARIADB_USER: wordpress
+    MARIADB_PASSWORD: wordpress
+  volumes:
+    - db-data:/var/lib/mysql
+ wordpress:
+  image: wordpress:6.0
+  depends_on:
+   - db
+  environment:
+   WORDPRESS_DB_HOST: db
+   WORDPRESS_DB_NAME: wordpress
+   WORDPRESS_DB_USER: wordpress
+   WORDPRESS_DB_PASSWORD: wordpress
+  ports:
+   - "8080:80"
+  volumes:
+   - wordpress-data:/var/www/html
+volumes:
+ data-data:
+ wordpress-data:
+```
+
+複数のコンテナを利用する場合は、コンテナの依存関係を指定する`depends_on`を利用する。  
+depends_onに`db`を指定すると、`db → wordpress`の順にコンテナを作成されます。
+
+## Docker Composeでコンテナを作成する
+
+docker compose yaml(yml)ファイル配下で以下のコマンドを実行。  
+`-d`のオプションを付けることバックグランドで処理を実行することができますので、続けてコマンドを実行することができます。
+
+```shell
+docker compose up -d
+```
+
+## Docker Composeで作成したコンテナを削除する
+
+Docker Composeで作成したコンテナを削除する方法です。
+
+コンテナを削除した場合は、コンテナ内のデータも合わせて削除されます。  
+データの永続化の方法は後述します。
+
+#### 1. docker compose down
+
+コンテナとそれに紐づくネットワークを削除します。  
+コンテナ起動中でも実行できます。
+
+```shell
+docker compose down
+```
+
+#### 2. docker compose rm
+
+コンテナのみ削除します。コンテナに紐づくネットワークは削除されません。  
+コンテナ起動中は実行できないです。
+
+```shell
+docker compose rm
+```
+
+イメージも合わせて削除する場合は、`rmi` オプションを利用します。
+
+```shell
+docker compose down --rmi all
+```
+
+※ 削除するイメージを利用しているコンテナが他にもある場合はエラーになります。
+
+## コンテナのデータを永続化する
+
+コンテナ内に作成されファイルは、コンテナが削除されると合わせて削除されます。  
+データを維持するには以下の、ボリュームとバイマウントの2つの方法があります。
+
+公式ではボリューム方式を推奨しているようです。
+
+### ① ボリューム方式
+
+ボリューム機能は、ホストマシーン内のDockerの管理領域をコンテナにマウントします。  
+Docker composeファイルの大項目のvolumesに記述した内容が永続化されます。
+
+```shell
+services:
+  コンテナ名:
+    image: イメージ
+    volumes:
+      - 大項目のvolumesに定義したボリューム名:コンテナ内のパス
+volumes:
+  ボリューム名:
+```
+
+例 ) MariaDBの場合
+
+```yaml
+services:
+  db:
+    image: mariadb:10.7
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+    volumes:
+      - db-data:/var/lib/mysql
+volumes:
+  db-data:
+```
+
+### ② バイマウント方式
+
+ホストマシーン上のディレクトリやファイルをコンテナにマウントして永続化します。
+
+```shell
+services:
+  コンテナ名:
+    image: イメージ
+    volumes:
+      - ホストOSのフォルダー:コンテナ内のパス
+```
+
+例 ) MariaDBの場合
+
+```yaml
+services:
+  db:
+    image: mariadb:10.7
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+    volumes:
+      - ./db-data:/var/lib/mysql
+```
+
+## コンテナ作成コマンド
+
+| コマンド                           |            イメージのビルド            | コンテナの作成 | コンテナの実行 |
+| :--------------------------------- | :------------------------------------: | :------------: | :------------: |
+| build                              |                   ○                    |                |                |
+| start                              |                                        |                |       ○        |
+| up                                 | 対象のイメージがない場合はビルドを実行 |       ○        |       ○        |
+| up --build                         |                   ○                    |       ○        |       ○        |
+| run (特定のコンテナのみが操作対象) | 対象のイメージがない場合はビルドを実行 |       ○        |       ○        |
+
+## コンテナの停止、削除コマンド
+
+| コマンド      | コンテナの停止 | コンテナの削除 | イメージの削除 |
+| :------------ | :------------: | :------------: | :------------: |
+| stop          |       ○        |                |                |
+| rm            |                |       ○        |                |
+| rm -s         |       ○        |       ○        |                |
+| down          |       ○        |       ○        |                |
+| down --rm all |       ○        |       ○        |       ○        |
+
+# Dockerfile
+
+Python用のアプリケーションフレームワーク[flask](https://msiz07-flask-docs-ja.readthedocs.io/ja/latest/) を利用したコンテナを作成してみます。
+
+構成は以下。
+
+```shell
+.
+├── Dockerfile
+├── compose.yaml
+└── src
+    └── app.py
+```
+
+### 手順
+
+1. Flaskをインストール
+2. アプリケーションファイル(app.py)をコンテナ内にコピー
+3. Flaskに組み込まれているWebサーバーを実行
+
+◎ Dockerfile
+
+```dockerfile
+FROM python:3.10 ・・・イメージを指定
+WORKDIR /usr/src/app ・・・作業ディレクトリを指定
+RUN pip install flask==2.1.0 ・・・イメージのビルド時にコマンドを実行
+CMD ["flask","run","--host=0.0.0.0"] ・・・コンテナ起動時にコマンドを実行
+```
+
+CMDは`flask run --host=0.0.0.0`のようにも書けるが、`[]`で囲んでカンマ区切りにするのが推奨されている。
+
+◎ compose.yaml
+pythonコンテナの定義を書きます。
+
+```
+services:
+  web:
+    build: .
+    environment:
+      FLASK_ENV: development
+    ports:
+      - "5000:5000"　 ・・・Flaskのデフォルトのポート番号
+    volumes:
+      - ./src:/usr/src/app ・・・バイマウント方式
+```
+
+`build: .`とドットを指定すると、カレントフォルダーにあるDockerfileを利用してイメージが作成されます。
+
+◎ app.py
+
+```
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_flask():
+  return 'Hello Flask!'
+```
+
+`docker compose up -d`を実行してコンテナを立ち上げ、`http://localhost:5000`でアクセスすると画面に「Hello Flask!」が表示されます。
+
+もしページが表示されない場合は`docker compose logs コンテナ名`でログを確認すると原因がわかるかもしれません。
+
+## Dockerのネットワーク
+
+コンテナとコンテナの外をつないだり、コンテナ同士をつないだりする為のDockerのネットワーク(仮想ネットワーク)の仕組みについてのメモです。
+
+### Dockerのデフォルトネットワーク
+
+`docker network ls`でネットワーク一覧を表示することができます。
+
+```shell
+$docker network ls
+NETWORK ID     NAME                          DRIVER    SCOPE
+b759c8cf0b4d   bridge                        bridge    local
+1ed31e64384e   flask_default                 bridge    local
+13d34fc5e48d   host                          host      local
+fed85ea2c7c9   none                          null      local
+abf2f829aaa7   wordpress_default             bridge    local
+```
+
+「bridge、host、none」のネットワークはDockerが自動で作成したデフォルトネットワークになります。  
+`docker container run`でコンテナを作る際、ネットワークを指定しない場合はbridgeネットワークに接続されます。
+
+| ネットワーク名 | 役割                                           |
+| -------------- | ---------------------------------------------- |
+| bridge         | コンテナ間、コンテナ外と通信できるネットワーク |
+| host           | Dockerホストのネットワークをそのまま使う       |
+| none           | コンテナ間、コンテナ外とも通信できない         |
+
+## 外部からコンテナに通信するには
+
+Docker composeファイルにportを指定することで、特定のポート番号宛の通信を別のポート番号へ転送することができます。
+
+以下の例の場合ホストのポート番号8080を、コンテナ内のポート番号80に紐づけています。  
+※wordpressイメージの公開するポートは80番です
+
+```yaml
+services:
+  web:
+    image: httpd:2.4
+    ports:
+      - "8080:80"
+```

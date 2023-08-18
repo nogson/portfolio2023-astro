@@ -1,0 +1,126 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Typescriptの型で悩んだとき用小ネタメモ
+description: Typescriptの型の指定の仕方でしばしばで悩んだのでメモしておきます
+createdAt: 2023-02-04
+thumbnail: "../../assets/images/blog/thumbnail/note_thumb.png"
+tags: ["Typescript"]
+draft: false
+---
+
+## オブジェクト関連
+
+### オブジェクトのkeyの型指定
+
+オブジェクトのプロパティそれぞれの型を指定しない場合などの指定方法。  
+以下のような指定が面倒な場合など。
+
+```typescript
+type User = {
+  name: string;
+  age: number;
+};
+const user: User = { name: "sato", age: 30 };
+```
+
+こんな感じで指定することができます。
+
+```typescript
+type User = { [key: string]: string | number };
+const user: User = { name: "sato" };
+```
+
+keyの指定をする場合は、key用の型をMapped Typesで割り当てます。  
+そのまま割り当てると初期値の設定する必要がある為`?`でOptional設定にします。
+
+```typescript
+type Key = "name" | "age";
+type User = { [key in Key]?: string | number };
+const user: User = { name: "sato" };
+```
+
+### typeofを利用して型の再利用
+
+typeofを利用して、他の変数の型定義を使いまわす。
+
+```typescript
+const obj = {
+  foo: 123,
+  bar: "hello",
+};
+
+type T = typeof obj;
+
+const obj2: T = {
+  foo: 1000,
+  bar: "",
+};
+```
+
+↑の例の場合、`type T`は以下になる。
+
+```
+type T = {
+    foo: number
+    bar: string
+}
+```
+
+## ジェネリクス (generics)関連
+
+ジェネリクスを利用すると、型を変数(引数？）のように扱うことができ、
+抽象的な型指定ができるので、汎用的に利用することができます。
+
+※「T」の指定は別の文字でも問題ないですが、Typeを表すTを使うのが一般的のようです。
+
+```typescript
+type Item<T> = { value: T };
+
+const item1: Item = { value: "my item" }; // NG
+const item2: Item<string> = { value: "my item" }; // OK
+const item３: Item<number> = { value: 1 }; // OK
+```
+
+関数の引数の場合。
+
+```typescript
+function func<T>(v1: T, v2: T): T {
+  return Math.random() <= 0.5 ? v1 : v2;
+}
+
+func<string>("○", "✗");
+func<number>(1, 2);
+```
+
+使用できる型を限定する場合は、以下のように`extends`シグネチャを利用します。
+
+```typescript
+type Item<T extends string | number> = {
+  value: T;
+};
+
+const item1: Item<string> = { value: "my item" }; // OK
+const item2: Item<number> = { value: 1 }; // OK
+const item３: Item<boolean> = { value: true }; // NG
+```
+
+## 外部moudle関連
+
+### 外部moduleの型定義ファイルをimportする。
+
+外部ファイルにtype、interfaceを定義してimportして利用する場合、  
+`import tyoe {User} from "./types"`のようにimoortの後に`type` or `interface`をつけないとmoduleが読み込めない。
+
+```
+import tyoe {User} from "./type"
+
+let user:User = {name:"Kato"}
+```
+
+◎types.ts
+
+```
+export type User = {
+    name: string;
+};
+```
