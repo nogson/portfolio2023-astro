@@ -1,7 +1,7 @@
 ---
 import CommonImage from "../components/CommonImage.astro";
 import Layout from "../layouts/Layout.astro";
-import Slider from "../components/Slider.astro";
+import Slider from "../components/home/Slider";
 import main from "@/assets/images/main/main.png";
 import aboutMe from "@/assets/images/main/aboutMe.png";
 ---
@@ -10,7 +10,6 @@ import aboutMe from "@/assets/images/main/aboutMe.png";
   title="Satofactoin.net | Fumihiko Sato Portfolio"
   description="このサイトは、特にやりたいこともなく無気力に生きる汚い中年おじさんデザイナー佐藤文彦のポートフォリオサイトです。応援よろしくお願いします。"
 >
- 
   <article class="box-hero">
     <div class="box-hero-title">
       <h2 class="title-main">Hello, I’M<br />Fumihiko Sato</h2>
@@ -179,14 +178,14 @@ import aboutMe from "@/assets/images/main/aboutMe.png";
     <p class="text-center mb-XL">
       業務ではなく個人的な趣味で制作したものです。
     </p>
-    <Slider />
+    <!-- <Slider /> -->
   </article>
   <article>
     <h2 class="title-main text-center">My Blog.</h2>
     <p class="text-center mb-XL">
       年齢のせいかすぐ忘れてしまうので、学んだことを備忘録的に書いてます。
     </p>
-    <Slider />
+    <Slider client:only="react" />
   </article>
 </Layout>
 
