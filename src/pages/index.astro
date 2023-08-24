@@ -4,6 +4,9 @@ import Layout from "../layouts/Layout.astro";
 import Slider from "../components/home/Slider";
 import main from "@/assets/images/main/main.png";
 import aboutMe from "@/assets/images/main/aboutMe.png";
+
+const allPosts = await Astro.glob("./blog/**/*.mdx");
+const images = allPosts.map((post) => post.frontmatter.thumbnail);
 ---
 
 <Layout
@@ -185,7 +188,7 @@ import aboutMe from "@/assets/images/main/aboutMe.png";
     <p class="text-center mb-XL">
       年齢のせいかすぐ忘れてしまうので、学んだことを備忘録的に書いてます。
     </p>
-    <Slider client:only="react" />
+    <Slider client:only="react" images={images} />
   </article>
 </Layout>
 

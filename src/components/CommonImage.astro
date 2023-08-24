@@ -2,7 +2,13 @@
 import { Image } from "@astrojs/image/components";
 
 interface Props {
-  src: string | Promise<typeof import("*.svg")> | Promise<typeof import("*.png")> | Promise<typeof import("*.jpg")> | Promise<typeof import("*.jpeg")> | Promise<typeof import("*.webp")>;
+  src:
+    | string
+    | Promise<typeof import("*.svg")>
+    | Promise<typeof import("*.png")>
+    | Promise<typeof import("*.jpg")>
+    | Promise<typeof import("*.jpeg")>
+    | Promise<typeof import("*.webp")>;
   alt: string;
   width?: number;
   height?: number;
@@ -12,9 +18,4 @@ interface Props {
 const { src, alt, width, height, format } = Astro.props;
 ---
 
-<Image
-  src={src}
-  alt={alt}
-  width={width}
-  format={format}
-/>
+<Image src={src} alt={alt} width={width} format={format} />
