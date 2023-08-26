@@ -30,7 +30,18 @@ const { tags, selectedTag } = Astro.props;
     border-radius: $radius-M;
     margin-bottom: $spacing-XL;
     li {
-      margin-bottom: $spacing-S;
+      margin-top: $spacing-M;
+      &::before {
+        content: "";
+        display: inline-block;
+        border-radius: 10px;
+        width: 10px;
+        height: 10px;
+        border: 2px solid $color-primary-light;
+        box-sizing: border-box;
+        margin-right: 4px;
+        background-color: $color-primary;
+      }
       &.act {
         font-weight: 700;
       }
