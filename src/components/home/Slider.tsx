@@ -1,75 +1,138 @@
 import styled from "styled-components";
 import { Transition } from "react-transition-group";
 import { useEffect, useState } from "react";
+import { AiOutlineSwapLeft, AiOutlineSwapRight } from "react-icons/ai";
 
+type Post = {
+  thumbnail: string;
+  url: string;
+};
 type Props = {
-  images: string[];
+  posts: Post[];
 };
 
-const Slider = ({ images }: Props) => {
+const Slider = ({ posts }: Props) => {
   const windowWidth = window.innerWidth;
-  const itemWidth = windowWidth / 2;
-  const sliderListWidth = itemWidth * images.length;
-  const duration = 300;
-  const [startX, setStartX] = useState(-sliderListWidth / 2 + itemWidth / 2);
+  const itemWidth = windowWidth / 2 > 600 ? 600 : windowWidth / 2;
+  const sliderListWidth = itemWidth * posts.length;
+  const leftMargin = windowWidth >= 1280 ? 140 : 0;
+  const [startX, setStartX] = useState(
+    -sliderListWidth / 2 + itemWidth / 2 + leftMargin
+  );
+  const [containerStartX, setContainerStartX] = useState(0);
   const [items, setItems] = useState<any>([]);
+  const [animationDirection, setAnimationDirection] = useState<
+    "back" | "next"
+  >();
+  const [isTransitionEnd, setIsTransitionEnd] = useState(true);
 
   useEffect(() => {
-    const thumbnails = images.map((image: string) => {
+    const thumbnails = posts.map((post: Post) => {
       // TODO @で指定しえいるrootエイリアスをどうにかできないか
-      return import(image.replace("@/", "../../"));
+      const path = post.thumbnail.replace("@/", "../../");
+      return import(path);
     });
     const getImages = async () => {
+      const _posts = [...posts];
       const res = await Promise.all(thumbnails);
-      setItems(res.map((d) => d.default.src));
+
+      setItems(
+        _posts.map((post, index) => {
+          post.thumbnail = res[index].default.src;
+          return post;
+        })
+      );
     };
     getImages();
-  }, [images]);
+  }, [posts]);
 
   const back = () => {
-    console.log("back");
+    if (!isTransitionEnd) return;
+    setIsTransitionEnd(false);
+    setAnimationDirection("back");
     setStartX(startX + itemWidth);
   };
 
   const next = () => {
-    console.log("next");
+    if (!isTransitionEnd) return;
+    setIsTransitionEnd(false);
+    setAnimationDirection("next");
     setStartX(startX - itemWidth);
   };
 
+  const onTransitionEnd = () => {
+    const _items = [...items];
+
+    if (animationDirection === "next") {
+      //　先頭の要素を末尾に追加
+      _items.push(_items.shift());
+      setItems(_items);
+      setContainerStartX(containerStartX + itemWidth);
+    } else {
+      //　末尾の要素を先頭に追加
+      _items.unshift(_items.pop());
+      setItems(_items);
+      setContainerStartX(containerStartX - itemWidth);
+    }
+    setIsTransitionEnd(true);
+  };
+
   return (
-    <SliderWrapper>
+    <SliderWrapper $width={windowWidth}>
       <BackButton onClick={back} type="button">
-        左
+        <AiOutlineSwapLeft />
       </BackButton>
-      <Transition timeout={duration}>
-        <SliderList $width={sliderListWidth} $startX={startX}>
+      <SliderListMoveContainer $startX={containerStartX}>
+        <SliderList
+          $width={sliderListWidth}
+          $startX={startX}
+          onTransitionEnd={onTransitionEnd}
+        >
           {items.map((item: any, index: number) => (
             <SliderItem key={index} $width={itemWidth}>
-              <img src={item} alt="" />
+              <a href={item.url}>
+                <img src={item.thumbnail} alt="" />
+              </a>
             </SliderItem>
           ))}
         </SliderList>
-      </Transition>
-      <NextButton onClick={next}>右</NextButton>
+      </SliderListMoveContainer>
+      <NextButton onClick={next}>
+        <AiOutlineSwapRight />
+      </NextButton>
     </SliderWrapper>
   );
 };
 
-const SliderWrapper = styled.div`
-  width: 100%;
+const SliderWrapper = styled.div<{ $width: number }>`
+  width: ${({ $width }) => $width}px;
   height: 100%;
   position: relative;
   display: block;
   overflow: hidden;
   transform: translateZ(0);
+  margin-left: calc(var(--spacing-XL) * -1);
+  @media (min-width: var(--breakpoint-L)) {
+    margin-left: calc(var(--spacing-XL) * -1);
+  }
 `;
 
-const SliderList = styled.div<{ $width: number; $startX: number }>`
+const SliderList = styled.div<{
+  $width: number;
+  $startX: number;
+}>`
   width: ${({ $width }) => $width}px;
   height: 100%;
   position: relative;
   display: block;
-  transition: 0.5s;
+  transition-duration: 500ms;
+  transform: ${({ $startX }) => `translate3d(${$startX}px, 0px, 0px)`};
+`;
+
+const SliderListMoveContainer = styled.div<{ $startX: number }>`
+  width: 100%;
+  height: 100%;
+  transition-duration: 0ms;
   transform: ${({ $startX }) => `translate3d(${$startX}px, 0px, 0px)`};
 `;
 
@@ -93,6 +156,18 @@ const BaseButton = styled.button`
   transform: translateY(-50%);
   z-index: 10;
   cursor: pointer;
+  font-size: var(--font-size-XXL);
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: var(--color-white);
+  text-align: center;
+  line-height: 50px;
+  transition-duration: 200ms;
+  &:hover {
+    transform: translateY(-50%) scale(1.2);
+  }
 `;
 
 const BackButton = styled(BaseButton)`

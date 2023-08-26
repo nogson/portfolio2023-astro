@@ -1,17 +1,27 @@
 ---
-import CommonImage from "../components/CommonImage.astro";
-import Layout from "../layouts/Layout.astro";
-import Slider from "../components/home/Slider";
+import CommonImage from "@/components/CommonImage.astro";
+import Layout from "@/layouts/Layout.astro";
+import Slider from "@/components/home/Slider";
 import main from "@/assets/images/main/main.png";
 import aboutMe from "@/assets/images/main/aboutMe.png";
 
-const allPosts = await Astro.glob("./blog/**/*.mdx");
-const images = allPosts.map((post) => post.frontmatter.thumbnail);
+const allBlogs = await Astro.glob("./blog/**/*.mdx");
+const blogs = allBlogs.map((blog) => {
+  {
+    const thumbnail: string = blog.frontmatter.thumbnail;
+    const url: string = blog.url || "";
+    return {
+      thumbnail,
+      url,
+    };
+  }
+});
 ---
 
 <Layout
   title="Satofactoin.net | Fumihiko Sato Portfolio"
   description="このサイトは、特にやりたいこともなく無気力に生きる汚い中年おじさんデザイナー佐藤文彦のポートフォリオサイトです。応援よろしくお願いします。"
+  useMaxWidth={false}
 >
   <article class="box-hero">
     <div class="box-hero-title">
@@ -176,25 +186,30 @@ const images = allPosts.map((post) => post.frontmatter.thumbnail);
       </div>
     </div>
   </article>
-  <article>
+  <article class="full-width">
     <h2 class="title-main text-center">My Portfolio.</h2>
     <p class="text-center mb-XL">
       業務ではなく個人的な趣味で制作したものです。
     </p>
-    <!-- <Slider /> -->
+    <Slider client:only="react" posts={blogs} />
   </article>
-  <article>
+  <article class="full-width">
     <h2 class="title-main text-center">My Blog.</h2>
     <p class="text-center mb-XL">
       年齢のせいかすぐ忘れてしまうので、学んだことを備忘録的に書いてます。
     </p>
-    <Slider client:only="react" images={images} />
+    <Slider client:only="react" posts={blogs} />
   </article>
 </Layout>
 
 <style lang="scss">
   article {
-    margin-bottom: $spacing-XXL;
+    max-width: var(--breakpoint-L);
+    margin: 0 auto var(--spacing-XXL);
+
+    &.full-width {
+      max-width: none;
+    }
   }
   .box-hero {
     position: relative;
@@ -206,18 +221,18 @@ const images = allPosts.map((post) => post.frontmatter.thumbnail);
       transform: translate(0, -50%);
 
       .title-main {
-        margin-bottom: $spacing-S;
+        margin-bottom: var(--spacing-S);
       }
       .role {
-        color: $color-primary;
-        font-size: $font-size-XL;
+        color: var(--color-primary);
+        font-size: var(--font-size-XL);
         font-weight: 400;
       }
     }
 
     .box-hero-img {
       margin-left: auto;
-      margin-right: $spacing-XL * -1;
+      margin-right: calc(var(--spacing-XL) * -1);
     }
   }
   .box-2col {
@@ -227,10 +242,10 @@ const images = allPosts.map((post) => post.frontmatter.thumbnail);
       flex-direction: row-reverse;
     }
     h3 {
-      margin-bottom: $spacing-L;
+      margin-bottom: var(--spacing-L);
     }
     p {
-      font-size: $font-size-M;
+      font-size: var(--font-size-M);
       line-height: 2;
     }
     div {
@@ -240,23 +255,23 @@ const images = allPosts.map((post) => post.frontmatter.thumbnail);
   .skills {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    column-gap: $spacing-XL;
-    row-gap: $spacing-XL;
+    column-gap: var(--spacing-XL);
+    row-gap: var(--spacing-XL);
 
     .slkill {
       background: rgba($color-background, 0.8);
-      border-radius: $radius-L;
-      padding: $spacing-XL;
-      box-shadow: $shadow-02;
+      border-radius: var(--radius-L);
+      padding: var(--spacing-XL);
+      box-shadow: var(--shadow-02);
 
       h3 {
-        font-size: $font-size-XL;
-        margin-bottom: $spacing-L;
+        font-size: var(--font-size-XL);
+        margin-bottom: var(--spacing-L);
         text-align: center;
-        color: $color-primary;
+        color: var(--color-primary);
       }
       p {
-        font-size: $font-size-M;
+        font-size: var(--font-size-M);
         line-height: 2;
       }
     }
@@ -264,12 +279,12 @@ const images = allPosts.map((post) => post.frontmatter.thumbnail);
   .levels {
     display: flex;
     justify-content: center;
-    margin-bottom: $spacing-L;
+    margin-bottom: var(--spacing-L);
     li {
       width: 80px;
       height: 80px;
       border-radius: 100%;
-      margin-right: $spacing-S;
+      margin-right: var(--spacing-S);
       display: flex;
       justify-content: center;
       align-items: center;

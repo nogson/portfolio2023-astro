@@ -1,0 +1,46 @@
+---
+import { Icon } from "astro-icon";
+
+// interface Props {
+//   title: string;
+//   body: string;
+//   href: string;
+// }
+
+// const { href, title, body } = Astro.props;
+---
+
+<article class="contact">
+  <h2 class="title-main text-center">Contact.</h2>
+  <p class="text-center mb-XL">
+    なにかお手伝いできることがあればご連絡ください。
+  </p>
+  <div class="text-center">
+    <a
+      href="https://docs.google.com/forms/u/1/d/e/1FAIpQLScy1FaPsaeA9a7Pv9N8BMBvNhevnLAnRSWnbrsrlpYfDKFB9g/viewform"
+      class="button-01 mb-S"
+    >
+      <span>お問い合わせはこちらから</span>
+      <span class="icon-M">
+        <Icon name="ic:baseline-keyboard-arrow-right" />
+      </span>
+    </a>
+    <p class="text-center text-note text-S">※ google formが標示されます</p>
+  </div>
+  <p class="text-center mb-M"></p>
+</article>
+
+<style lang="scss">
+  .contact {
+    margin-bottom: var(--spacing-XXL);
+  }
+
+  .button-01 {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 auto;
+    .icon-M {
+      margin-left: $spacing-S;
+    }
+  }
+</style>

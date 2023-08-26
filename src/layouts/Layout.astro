@@ -3,14 +3,16 @@ import "the-new-css-reset";
 import "@fontsource-variable/oswald";
 import "@fontsource-variable/noto-sans-jp";
 
-import GlobalNav from "../components/GlobalNav.astro";
+import GlobalNav from "@/components/GlobalNav.astro";
+import CommonFooter from "@/components/CommonFooter.astro";
 
 interface Props {
   title: string;
   description?: string;
+  useMaxWidth?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, useMaxWidth = true } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -25,9 +27,10 @@ const { title, description } = Astro.props;
   </head>
   <body>
     <GlobalNav />
-    <main>
+    <main class={useMaxWidth ? "use-max-width" : ""}>
       <slot />
     </main>
+    <CommonFooter />
   </body>
 </html>
 <style is:global lang="scss">
@@ -36,15 +39,17 @@ const { title, description } = Astro.props;
     background: $color-background;
     width: 100%;
     font-size: 16px;
-    color: $color-black;
+    color: var(--color-black);
     line-height: 1.8;
   }
   body {
   }
   main {
-    max-width: 1280px;
+    &.use-max-width {
+      max-width: var(--breakpoint-L);
+    }
     margin: 0 auto;
-    padding: $spacing-XL 0;
+    padding: var(--spacing-XL);
   }
   img {
     height: auto;

@@ -1,0 +1,61 @@
+---
+import Contact from "@/components/Contact.astro";
+import { Icon } from "astro-icon";
+
+// interface Props {
+//   title: string;
+//   body: string;
+//   href: string;
+// }
+
+// const { href, title, body } = Astro.props;
+---
+
+<Contact />
+<footer>
+  <div class="footer">
+    <div class="sns">
+      <a href="https://www.instagram.com/nogson2/">
+        <Icon name="mdi:instagram" class="icon-L" />
+      </a>
+      <a href="https://twitter.com/nogson2">
+        <Icon name="mdi:twitter" class="icon-L" />
+      </a>
+      <a href="https://www.behance.net/fhsato2e03">
+        <Icon name="mdi:behance" class="icon-L" />
+      </a>
+    </div>
+    <p class="thanks">
+      <span>最後までスクロールしてくれてありがとうございました</span>
+      <Icon name="mdi:star-face" class="icon-M" />
+    </p>
+  </div>
+</footer>
+
+<style lang="scss">
+  footer {
+    background-color: var(--color-black);
+    padding: var(--spacing-XXXL);
+  }
+  .footer {
+    max-width: var(--breakpoint-L);
+    margin: 0 auto;
+    color: var(--color-white);
+
+    .sns {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-XL);
+    }
+
+    .thanks {
+      color: var(--color-gray-03);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-S);
+      margin-top: var(--spacing-XL);
+    }
+  }
+</style>

@@ -1,6 +1,10 @@
 
 @use "src/styles/variables.scss" as *;
 
+.mb-S {
+  margin-bottom: $spacing-S !important;
+}
+
 .mb-M {
   margin-bottom: $spacing-M !important;
 }
@@ -49,6 +53,37 @@
   line-height: 1.2;
 }
 
+.text-S {
+  font-size: var(--font-size-S);
+}
+
+.text-note {
+  color: var(--color-gray-02);
+}
+
 .text-center {
   text-align: center;
+}
+
+.button-base {
+  border-radius:200px;
+  padding: $spacing-L $spacing-XL;
+  font-weight: bold;
+}
+
+.button-01 {
+  @extend .button-base;
+  box-shadow: var(--shadow-01);
+  color: var(--color-primary);
+  display: inline-block;
+}
+
+.icon-M {
+  width: var(--icon-size-M);
+  height: var(--icon-size-M);
+}
+
+.icon-L {
+  width: var(--icon-size-L);
+  height: var(--icon-size-L);
 }
