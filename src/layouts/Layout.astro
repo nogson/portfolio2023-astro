@@ -5,6 +5,7 @@ import "@fontsource-variable/noto-sans-jp";
 
 import GlobalNav from "@/components/GlobalNav.astro";
 import CommonFooter from "@/components/CommonFooter.astro";
+import Background from "@/components/home/Background";
 
 interface Props {
   title: string;
@@ -15,7 +16,6 @@ interface Props {
 const { title, description, useMaxWidth = true } = Astro.props;
 ---
 
-<!DOCTYPE html>
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -26,6 +26,7 @@ const { title, description, useMaxWidth = true } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    <Background client:only="react" />
     <GlobalNav />
     <main class={useMaxWidth ? "use-max-width" : ""}>
       <slot />

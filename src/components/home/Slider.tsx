@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { Transition } from "react-transition-group";
 import { useEffect, useState } from "react";
 import { AiOutlineSwapLeft, AiOutlineSwapRight } from "react-icons/ai";
 
