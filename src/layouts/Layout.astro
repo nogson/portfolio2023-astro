@@ -5,7 +5,7 @@ import "@fontsource-variable/noto-sans-jp";
 
 import GlobalNav from "@/components/GlobalNav.astro";
 import CommonFooter from "@/components/CommonFooter.astro";
-import Background from "@/components/home/Background";
+import Background from "@/components/background/Background";
 
 interface Props {
   title: string;
@@ -22,6 +22,11 @@ const { title, description, useMaxWidth = true } = Astro.props;
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      data-n-head="ssr"
+      name="viewport"
+      content="width=device-width,initial-scale=1"
+    />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
@@ -51,6 +56,9 @@ const { title, description, useMaxWidth = true } = Astro.props;
     }
     margin: 0 auto;
     padding: var(--spacing-XL);
+    @media screen and (max-width: $breakpoint-M) {
+      padding: var(--spacing-XL) var(--spacing-L);
+    }
   }
   img {
     height: auto;

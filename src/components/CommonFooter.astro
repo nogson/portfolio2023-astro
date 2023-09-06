@@ -36,6 +36,9 @@ import { Icon } from "astro-icon";
   footer {
     background-color: var(--color-black);
     padding: var(--spacing-XXXL);
+    @media screen and (max-width: $breakpoint-M) {
+      padding: var(--spacing-XL);
+    }
   }
   .footer {
     max-width: var(--breakpoint-L);
@@ -56,6 +59,13 @@ import { Icon } from "astro-icon";
       align-items: center;
       gap: var(--spacing-S);
       margin-top: var(--spacing-XL);
+      @media screen and (max-width: $breakpoint-M) {
+        display: block;
+        text-align: center;
+        svg {
+          margin-bottom: -5px;
+        }
+      }
     }
   }
 </style>

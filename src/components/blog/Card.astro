@@ -7,7 +7,7 @@ interface Props {
   url: string;
 }
 const { post, url } = Astro.props;
-const imgPath = import(post.thumbnail.replace("@/","../../"));
+const imgPath = import(post.thumbnail.replace("@/", "../../"));
 ---
 
 <div class="card">
@@ -28,14 +28,15 @@ const imgPath = import(post.thumbnail.replace("@/","../../"));
 
 <style lang="scss">
   .card {
-    padding: $spacing-M;
-    margin-bottom: $spacing-XL;
-    border-radius: $radius-M;
-    box-shadow: $shadow-01;
+    padding: var(--spacing-M);
+    margin-bottom: var(--spacing-XL);
+    border-radius: var(--radius-M);
+    box-shadow: var(--shadow-01);
+    background-color: var(--color-background);
 
     .thumbnail {
       line-height: 1;
-      margin-right: $spacing-L;
+      margin-right: var(--spacing-L);
     }
 
     .card-link {
@@ -43,30 +44,30 @@ const imgPath = import(post.thumbnail.replace("@/","../../"));
     }
 
     .createAt {
-      color: $color-gray-04;
-      font-size: $font-size-S;
-      margin-bottom: $spacing-S;
+      color: var(--color-gray-04);
+      font-size: var(--font-size-S);
+      margin-bottom: var(--spacing-S);
     }
 
     .description {
-      margin-bottom: $spacing-S;
+      margin-bottom: var(--$spacing-S);
     }
 
     .tag {
-      font-size: $font-size-S;
-      color: $color-gray-04;
+      font-size: var(--font-size-S);
+      color: var(--color-gray-04);
       display: inline-block;
-      padding: $spacing-S $spacing-M;
+      padding: var(--spacing-S) var(--spacing-M);
       border-radius: 20px;
-      border: 1px solid $color-gray-04;
-      margin-right: $spacing-S;
+      border: 1px solid var(--color-gray-04);
+      margin-right: var(--spacing-S);
       line-height: 1;
       &:last-child {
         margin-right: 0;
       }
     }
     &:hover {
-      background-color: $color-background-darken;
+      background-color: var(--color-background-darken);
     }
   }
 </style>

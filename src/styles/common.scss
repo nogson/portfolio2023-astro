@@ -23,6 +23,9 @@
   font-size: $font-size-title;
   font-weight: 700;
   line-height: 1.2;
+  @media screen and (max-width: $breakpoint-S) {
+    font-size: var(--font-size-XXXL);
+  }
 }
 
 .title-XXXL {
@@ -69,6 +72,7 @@
   border-radius:200px;
   padding: $spacing-L $spacing-XL;
   font-weight: bold;
+  background-color: var(--color-background);
 }
 
 .button-01 {

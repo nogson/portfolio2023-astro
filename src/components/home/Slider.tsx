@@ -111,9 +111,6 @@ const SliderWrapper = styled.div<{ $width: number }>`
   overflow: hidden;
   transform: translateZ(0);
   margin-left: calc(var(--spacing-XL) * -1);
-  @media (min-width: var(--breakpoint-L)) {
-    margin-left: calc(var(--spacing-XL) * -1);
-  }
 `;
 
 const SliderList = styled.div<{
@@ -141,6 +138,9 @@ const SliderItem = styled.div<{ $width: number }>`
   min-height: 1px;
   box-sizing: border-box;
   padding: var(--spacing-XL) var(--spacing-XL);
+  @media screen and (max-width: 767px) {
+    padding: var(--spacing-M);
+  }
   img {
     width: 100%;
     height: auto;

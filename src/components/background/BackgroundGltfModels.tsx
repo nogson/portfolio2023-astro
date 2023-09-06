@@ -18,7 +18,9 @@ const filePath = [
   "/PS.gltf",
   "/XD.gltf",
   "/Blender.gltf",
-  "/man.gltf",
+  "/vue.gltf",
+  "/next.gltf",
+  "/docker.gltf",
 ];
 
 const items: ItemProps[] = [
@@ -64,6 +66,24 @@ const items: ItemProps[] = [
     rotation: [0.2, 0.25, 0],
     rate: { x: 0.3, y: -0.6, z: -0.2 },
   },
+  {
+    path: filePath[7],
+    position: [6, -2.5, -4],
+    rotation: [0.4, 0.4, 0.2],
+    rate: { x: 0.3, y: -0.6, z: -0.2 },
+  },
+  {
+    path: filePath[8],
+    position: [7, 2, -6],
+    rotation: [-0.2, -0.1, 0],
+    rate: { x: 0.3, y: -0.6, z: -0.2 },
+  },
+  {
+    path: filePath[9],
+    position: [9, 0, -4],
+    rotation: [-0.2, -0.1, 0],
+    rate: { x: 0.1, y: -0.2, z: -0.6 },
+  },
 ];
 
 export default function BackgrounGltfModels({ scrollY }: { scrollY: number }) {
@@ -76,6 +96,9 @@ export default function BackgrounGltfModels({ scrollY }: { scrollY: number }) {
       ref.current.rotation.x = item.rotation[0] + scrollY * 0.001 * item.rate.x;
       ref.current.rotation.y = item.rotation[1] + scrollY * 0.001 * item.rate.y;
       ref.current.rotation.z = item.rotation[2] + scrollY * 0.001 * item.rate.z;
+
+      ref.current.position.z =
+        item.position[2] + Math.sin(scrollY * 0.001 );
     }, [scrollY]);
 
     useFrame((state) => {

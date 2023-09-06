@@ -30,6 +30,9 @@
 
   // breakpoints
   --breakpoint-L: 1280px;
+  --breakpoint-M: 1024px;
+  --breakpoint-S: 768px;
+  --breakpoint-XS: 480px;
 
   // Colors
   --color-white: #ffffff;
@@ -108,3 +111,8 @@ $shadow-03:
 $ttl-shadow:
   5px 5px 10px $color-shadow,
   -5px -5px 10px #ffffff;
+
+$breakpoint-L: 1280px;
+$breakpoint-M: 1024px;
+$breakpoint-S: 768px;
+$-breakpoint-XS: 480px;
