@@ -93,9 +93,9 @@ export default function BackgrounGltfModels({ scrollY }: { scrollY: number }) {
     const r = 0.4;
 
     useEffect(() => {
-      ref.current.rotation.x = item.rotation[0] + scrollY * 0.001 * item.rate.x;
-      ref.current.rotation.y = item.rotation[1] + scrollY * 0.001 * item.rate.y;
-      ref.current.rotation.z = item.rotation[2] + scrollY * 0.001 * item.rate.z;
+      ref.current.rotation.x = item.rotation[0] + scrollY * 0.003 * item.rate.x;
+      ref.current.rotation.y = item.rotation[1] + scrollY * 0.003 * item.rate.y;
+      ref.current.rotation.z = item.rotation[2] + scrollY * 0.003 * item.rate.z;
 
       ref.current.position.z =
         item.position[2] + Math.sin(scrollY * 0.001 );

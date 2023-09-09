@@ -87,18 +87,19 @@ const blogs = allBlogs.map((blog) => {
     display: flex;
     .box-hero-title {
       position: absolute;
-      top: 50%;
+      bottom: 0;
       left: 0;
       transform: translate(0, -50%);
 
       .title-main {
+        font-size: var(--font-size-hero-title);
         margin-bottom: var(--spacing-S);
         filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 1));
       }
       .role {
         font-family: $font-family-oswald;
         color: var(--color-primary);
-        font-size: var(--font-size-XL);
+        font-size: var(--font-size-XXL);
         font-weight: 500;
         letter-spacing: 0.05em;
         filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 1));

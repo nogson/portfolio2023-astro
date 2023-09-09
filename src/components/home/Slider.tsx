@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { AiOutlineSwapLeft, AiOutlineSwapRight } from "react-icons/ai";
+import media from "styled-media-query";
 
 type Post = {
   thumbnail: string;
@@ -138,9 +139,9 @@ const SliderItem = styled.div<{ $width: number }>`
   min-height: 1px;
   box-sizing: border-box;
   padding: var(--spacing-XL) var(--spacing-XL);
-  @media screen and (max-width: 767px) {
+  ${media.lessThan("medium")`
     padding: var(--spacing-M);
-  }
+  `}
   img {
     width: 100%;
     height: auto;
