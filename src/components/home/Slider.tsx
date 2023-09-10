@@ -11,13 +11,33 @@ type Props = {
   posts: Post[];
 };
 
+const getItemWidth = () => {
+  const windowWidth = window.innerWidth;
+  if (windowWidth < 768) {
+    return windowWidth - 100;
+  }
+  return windowWidth / 2 > 600 ? 600 : windowWidth / 2;
+};
+
+const getStartX = (
+  sliderListWidth: number,
+  itemWidth: number,
+  leftMargin: number
+) => {
+  const windowWidth = window.innerWidth;
+  if (windowWidth < 768) {
+    return -sliderListWidth / 2 + (windowWidth - itemWidth) / 2;
+  }
+  return -sliderListWidth / 2 + itemWidth / 2 + leftMargin;
+};
+
 const Slider = ({ posts }: Props) => {
   const windowWidth = window.innerWidth;
-  const itemWidth = windowWidth / 2 > 600 ? 600 : windowWidth / 2;
+  const itemWidth = getItemWidth();
   const sliderListWidth = itemWidth * posts.length;
   const leftMargin = windowWidth >= 1280 ? 140 : 0;
   const [startX, setStartX] = useState(
-    -sliderListWidth / 2 + itemWidth / 2 + leftMargin
+    getStartX(sliderListWidth, itemWidth, leftMargin)
   );
   const [containerStartX, setContainerStartX] = useState(0);
   const [items, setItems] = useState<any>([]);
@@ -112,6 +132,9 @@ const SliderWrapper = styled.div<{ $width: number }>`
   overflow: hidden;
   transform: translateZ(0);
   margin-left: calc(var(--spacing-XL) * -1);
+  ${media.lessThan("medium")`
+    margin-left: calc(var(--spacing-L) * -1);
+  `}
 `;
 
 const SliderList = styled.div<{

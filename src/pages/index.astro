@@ -110,7 +110,7 @@ const blogs = allBlogs.map((blog) => {
       margin-left: auto;
       margin-right: calc(var(--spacing-XL) * -1);
     }
-    @media screen and (max-width: $breakpoint-M) {
+    @media screen and (max-width: $breakpoint-S) {
       display: flex;
       flex-direction: column-reverse;
 
@@ -138,7 +138,7 @@ const blogs = allBlogs.map((blog) => {
     align-items: center;
     &.reverse {
       flex-direction: row-reverse;
-      @media screen and (max-width: $breakpoint-M) {
+      @media screen and (max-width: $breakpoint-S) {
         flex-direction: column;
       }
     }
