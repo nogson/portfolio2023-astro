@@ -112,6 +112,7 @@ const Slider = ({ posts }: Props) => {
             <SliderItem key={index} $width={itemWidth}>
               <a href={item.url}>
                 <img src={item.thumbnail} alt="" />
+                <h4>{item.title}</h4>
               </a>
             </SliderItem>
           ))}
@@ -165,11 +166,22 @@ const SliderItem = styled.div<{ $width: number }>`
   ${media.lessThan("medium")`
     padding: var(--spacing-M);
   `}
-  img {
-    width: 100%;
-    height: auto;
+  a {
     border-radius: 50px;
     box-shadow: var(--shadow-02);
+    background-color: var(--color-white);
+    display: block;
+  }
+  img {
+    display: block;
+    width: 80%;
+    margin: 0 auto;
+  }
+  h4 {
+    padding: 0 var(--spacing-L) var(--spacing-L);
+    font-weight: 700;
+    text-align: center;
+    margin-top: -30px;
   }
 `;
 

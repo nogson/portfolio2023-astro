@@ -30,6 +30,12 @@ const { title, description } = Astro.props;
         display: grid;
         grid-template-columns: auto 300px;
         column-gap: $spacing-XL;
+        @media screen and (max-width: $breakpoint-S) {
+          display: block;
+          .nav {
+            display: none;
+          }
+        }
       }
     </style>
   </section>

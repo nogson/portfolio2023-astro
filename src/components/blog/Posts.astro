@@ -28,6 +28,10 @@ const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-gap: $spacing-XL;
+      @media screen and (max-width: $breakpoint-S) {
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: $spacing-L;
+      }
     }
     li {
       margin-bottom: $spacing-S;
