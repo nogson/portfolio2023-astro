@@ -1,4 +1,3 @@
-
 @use "src/styles/variables.scss" as *;
 
 .mb-S {
@@ -15,6 +14,10 @@
 
 .mb-XL {
   margin-bottom: $spacing-XL !important ;
+}
+
+.mt-XXXL {
+  margin-top: $spacing-XXXL !important;
 }
 
 .title-main {
@@ -69,7 +72,7 @@
 }
 
 .button-base {
-  border-radius:200px;
+  border-radius: 200px;
   padding: $spacing-L $spacing-XL;
   font-weight: bold;
   background-color: var(--color-background);

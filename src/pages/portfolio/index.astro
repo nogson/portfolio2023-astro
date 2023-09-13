@@ -1,5 +1,12 @@
 ---
+import Card from "@/components/blog/PortfolioCard.astro";
 import TwoColLayout from "../../layouts/TwoColLayout.astro";
+import TagList from "@/components/blog/TagList.astro";
+
+const allPosts = await Astro.glob("../../pages/portfolio/**/*.mdx");
+const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
+const uniqueTags = [...new Set(tags.flat())];
 ---
 
 <TwoColLayout
@@ -10,12 +17,27 @@ import TwoColLayout from "../../layouts/TwoColLayout.astro";
     <h1 class="title-XXXL mb-M">Portfolio</h1>
     <p>業務ではなく個人的な趣味で制作したものです。</p>
   </div>
-  <div slot="content">aaa</div>
-  <div slot="nav">bbb</div>
+  <div slot="content" class="content">
+    {
+      nonDraftPosts.map((post: any) => (
+        <Card post={post.frontmatter} url={post.url} />
+      ))
+    }
+  </div>
+  <div slot="nav">
+    <TagList tags={uniqueTags} />
+  </div>
 </TwoColLayout>
 
-<style>
+<style lang="scss">
   .header {
     text-align: center;
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: var(--spacing-L);
+    grid-gap: var(--spacing-L);
   }
 </style>

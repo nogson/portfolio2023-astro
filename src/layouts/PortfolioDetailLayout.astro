@@ -1,0 +1,42 @@
+---
+import Layout from "./Layout.astro";
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
+import Posts from "../components/blog/Posts.astro";
+const { frontmatter, content, headings } = Astro.props;
+const topHeading = headings.filter((heading: any) => heading.depth <= 2);
+const isBlog = frontmatter.url.startsWith("/blog");
+---
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+  <section class="mt-XXXL">
+    <div class="detail-page">
+      <!-- head  -->
+      <div class="header">
+        <div class="title">
+          <h1 class="title-XXXL">{frontmatter.title}</h1>
+          <div class="createAt">
+            {dayjs(frontmatter.createAt).format("YYYY/MM/DD")}
+          </div>
+          <div class="tags">
+            {
+              frontmatter.tags.map((tag: string) => (
+                <span class="tag">{tag}</span>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+      <!-- content -->
+      <div class="content">
+        <slot />
+      </div>
+      <!-- footer -->
+      <div>
+        <Posts />
+      </div>
+    </div>
+  </section>
+
+  <style lang="scss"></style>
+</Layout>

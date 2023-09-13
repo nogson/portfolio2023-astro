@@ -5,156 +5,54 @@ import "dayjs/locale/ja";
 import Posts from "../components/blog/Posts.astro";
 const { frontmatter, content, headings } = Astro.props;
 const topHeading = headings.filter((heading: any) => heading.depth <= 2);
+const isBlog = frontmatter.url.startsWith("/blog");
 ---
 
-<TwoColLayout title={frontmatter.title} description={frontmatter.description}>
-  <!-- head  -->
-  <div slot="header">
-    <div class="title">
-      <h1 class="title-XXXL">{frontmatter.title}</h1>
-      <div class="createAt">
-        {dayjs(frontmatter.createAt).format("YYYY/MM/DD")}
-      </div>
-      <div class="tags">
-        {frontmatter.tags.map((tag: string) => <span class="tag">{tag}</span>)}
-      </div>
-    </div>
-  </div>
-  <!-- content -->
-  <div slot="content" class="content">
-    <slot />
-  </div>
-  <!-- nav -->
-  <div slot="nav">
-    <div class="headings">
-      <h2 class="title-M">目次</h2>
-      <nav>
-        <ul>
+<div class="detail-page">
+  <TwoColLayout title={frontmatter.title} description={frontmatter.description}>
+    <!-- head  -->
+    <div slot="header">
+      <div class="title">
+        <h1 class="title-XXXL">{frontmatter.title}</h1>
+        <div class="createAt">
+          {dayjs(frontmatter.createAt).format("YYYY/MM/DD")}
+        </div>
+        <div class="tags">
           {
-            topHeading.map((heading: any) => (
-              <li class={`depth-${heading.depth}`}>
-                <a href={`#${heading.text}`}>{heading.text}</a>
-              </li>
+            frontmatter.tags.map((tag: string) => (
+              <span class="tag">{tag}</span>
             ))
           }
-        </ul>
-      </nav>
+        </div>
+      </div>
     </div>
-  </div>
-  <div slot="footer">
-    <Posts />
-  </div>
-  <style lang="scss">
-    .title {
-      text-align: center;
-      h1 {
-        margin-bottom: 0;
+    <!-- content -->
+    <div slot="content" class="content">
+      <slot />
+    </div>
+    <!-- nav -->
+    <div slot="nav">
+      {
+        isBlog ? (
+          <div class="headings">
+            <h2 class="title-M">目次</h2>
+            <nav>
+              <ul>
+                {topHeading.map((heading: any) => (
+                  <li class={`depth-${heading.depth}`}>
+                    <a href={`#${heading.text}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        ) : null
       }
-      .createAt {
-        color: var(--color-gray-04);
-        margin-bottom: var(--spacing-M);
-      }
-      .tags {
-        .tag {
-          font-size: var(--font-size-S);
-          color: var(--color-gray-04);
-          display: inline-block;
-          padding: var(--spacing-S) var(--spacing-M);
-          border-radius: 20px;
-          border: 1px solid var(--color-gray-04);
-          margin-right: var(--spacing-S);
-          line-height: 1;
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-      }
-    }
+    </div>
+    <div slot="footer">
+      <Posts />
+    </div>
+  </TwoColLayout>
+</div>
 
-    .content {
-      box-shadow: var(--shadow-03);
-      padding: var(--spacing-L);
-      border-radius: var(--radius-M);
-      box-sizing: border-box;
-      background: rgba(#f1f1f1, 0.9);
-    }
-
-    .headings {
-      font-size: var(--font-size-S);
-      position: sticky;
-      top: var(--spacing-XXXL);
-      box-shadow: var(--shadow-03);
-      padding: var(--spacing-M);
-      border-radius: var(--radius-M);
-      margin-bottom: var(--spacing-XL);
-      background-color: var(--color-background);
-      li {
-        margin-bottom: var(--spacing-S);
-        &.depth-1 {
-          &::before {
-            content: "";
-            display: inline-block;
-            border-radius: 10px;
-            width: 10px;
-            height: 10px;
-            border: 2px solid var(--color-primary-light);
-            box-sizing: border-box;
-            margin-right: 4px;
-            background-color: var(--color-primary);
-          }
-        }
-        &.depth-2 {
-          margin-left: 1em;
-          &::before {
-            content: "";
-            display: inline-block;
-            border-radius: 10px;
-            width: 6px;
-            height: 6px;
-            box-sizing: border-box;
-            margin-right: 6px;
-            background-color: var(--color-primary-light);
-          }
-        }
-      }
-    }
-
-    .content :global(pre) {
-      padding: 20px;
-      display: block;
-      max-width: 700px;
-      overflow-x: scroll !important;
-      box-sizing: border-box;
-      border-radius: var(--radius-M);
-      margin-bottom: var(--spacing-XL);
-    }
-
-    .content :global(p) {
-      margin-bottom: var(--spacing-M);
-    }
-
-    .content :global(h1) {
-      @extend .title-XL;
-      margin-bottom: var(--spacing-L);
-      padding: var(--spacing-M) 0;
-      border-bottom: 1px solid var(--color-gray-01);
-      &:not(:first-child) {
-        margin-top: var(--spacing-XXL);
-      }
-    }
-
-    .content :global(h2) {
-      @extend .title-L;
-      margin: var(--spacing-XL) 0 var(--spacing-M) 0;
-    }
-
-    .content :global(h3) {
-      @extend .title-M;
-      margin: var(--spacing-L) 0 var(--spacing-S) 0;
-    }
-
-    .content :global(img) {
-      border: 1px solid var(--color-gray-01);
-    }
-  </style>
-</TwoColLayout>
+<style lang="scss"></style>

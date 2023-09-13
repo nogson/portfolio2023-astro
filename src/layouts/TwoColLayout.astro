@@ -4,7 +4,7 @@ const { title, description } = Astro.props;
 ---
 
 <Layout title={title} description={description}>
-  <section>
+  <section class="mt-XXXL">
     <div class="header">
       <slot name="header" />
     </div>
@@ -17,26 +17,23 @@ const { title, description } = Astro.props;
       </aside>
     </div>
     <slot name="footer" />
-    <style lang="scss">
-      section {
-        margin-top: $spacing-XXXL;
-        width: 100%;
-      }
-      .header {
-        margin-bottom: $spacing-XXL;
-      }
-      .content-wrap {
-        width: 100%;
-        display: grid;
-        grid-template-columns: auto 300px;
-        column-gap: $spacing-XL;
-        @media screen and (max-width: $breakpoint-S) {
-          display: block;
-          .nav {
-            display: none;
-          }
-        }
-      }
-    </style>
   </section>
 </Layout>
+<style lang="scss">
+
+  .header {
+    margin-bottom: $spacing-XXL;
+  }
+  .content-wrap {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 300px;
+    column-gap: $spacing-XL;
+    @media screen and (max-width: $breakpoint-S) {
+      display: block;
+      .nav {
+        display: none;
+      }
+    }
+  }
+</style>
