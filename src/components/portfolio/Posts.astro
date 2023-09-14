@@ -1,0 +1,75 @@
+---
+import type { FrontmatterType } from "../../types/Post";
+
+interface Props {
+  posts: any[];
+}
+const { posts } = Astro.props;
+// import img from posts[0].frontmatter.thumbnail;
+// console.log(posts[0].frontmatter.thumbnail);
+
+const thumbnails = posts.map((post: any) => {
+  // TODO @で指定しえいるrootエイリアスをどうにかできないか
+  const path = post.frontmatter.thumbnail.replace("@/", "../../");
+  console.log("-------", path);
+  return import(path);
+});
+
+const res = await Promise.all(thumbnails);
+const _posts = posts.map((post, i) => {
+  return {
+    ...post,
+    frontmatter: {
+      ...post.frontmatter,
+      thumbnail: res[i].default.src,
+    },
+  };
+});
+---
+
+<div class="posts">
+  <h2 class="title-L">Other</h2>
+  <nav>
+    <ul>
+      {
+        _posts.map((post) => (
+          <li>
+            <a href={post.url}>
+              <img
+                src={post.frontmatter.thumbnail}
+                alt={post.frontmatter.title}
+              />
+              <div class="title-M">{post.frontmatter.title}</div>
+              <p>{post.frontmatter.description}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</div>
+
+<style lang="scss">
+  .posts {
+    margin-top: $spacing-XL;
+    ul {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: $spacing-XL;
+      @media screen and (max-width: $breakpoint-S) {
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: $spacing-L;
+      }
+    }
+    li {
+      margin-bottom: $spacing-S;
+      box-shadow: $shadow-01;
+      padding: $spacing-M;
+      border-radius: $radius-M;
+      background-color: var(--color-background);
+      p {
+        font-size: $font-size-S;
+      }
+    }
+  }
+</style>

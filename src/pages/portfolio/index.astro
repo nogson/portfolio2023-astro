@@ -1,5 +1,5 @@
 ---
-import Card from "@/components/blog/PortfolioCard.astro";
+import Card from "@/components/portfolio/Card.astro";
 import TwoColLayout from "../../layouts/TwoColLayout.astro";
 import TagList from "@/components/blog/TagList.astro";
 
@@ -39,5 +39,8 @@ const uniqueTags = [...new Set(tags.flat())];
     grid-template-columns: 1fr 1fr;
     row-gap: var(--spacing-L);
     grid-gap: var(--spacing-L);
+    @media screen and (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

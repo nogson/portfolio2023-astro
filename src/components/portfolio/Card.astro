@@ -7,12 +7,13 @@ interface Props {
   url: string;
 }
 const { post, url } = Astro.props;
+const imgPath = import(post.thumbnail.replace("@/", "../../"));
 ---
 
 <div class="card">
   <a href={url} class="card-link">
     <div class="thumbnail">
-      <img src={post.thumbnail} />
+      <CommonImage src={imgPath} width={200} format="webp" alt="" />
     </div>
     <div>
       <p class="createAt">{dayjs(post.createAt).format("YYYY/MM/DD")}</p>
@@ -35,10 +36,9 @@ const { post, url } = Astro.props;
 
     .thumbnail {
       line-height: 1;
-      margin-right: var(--spacing-L);
+      text-align: center;
+      margin-bottom: var(--spacing-S);
     }
-
-  
 
     .createAt {
       color: var(--color-gray-02);

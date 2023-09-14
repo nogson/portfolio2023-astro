@@ -2,10 +2,15 @@
 import Layout from "./Layout.astro";
 import dayjs from "dayjs";
 import "dayjs/locale/ja";
-import Posts from "../components/blog/Posts.astro";
-const { frontmatter, content, headings } = Astro.props;
-const topHeading = headings.filter((heading: any) => heading.depth <= 2);
-const isBlog = frontmatter.url.startsWith("/blog");
+import Posts from "../components/portfolio/Posts.astro";
+const { frontmatter } = Astro.props;
+console.log(frontmatter.url);
+
+const allPosts = await Astro.glob("../pages/portfolio/**/*.mdx");
+
+const nonDraftPosts = allPosts.filter((post) => {
+  return !post.frontmatter.draft && post.url !== frontmatter.url;
+});
 ---
 
 <Layout title={frontmatter.title} description={frontmatter.description}>
@@ -33,7 +38,7 @@ const isBlog = frontmatter.url.startsWith("/blog");
       </div>
       <!-- footer -->
       <div>
-        <Posts />
+        <Posts posts={nonDraftPosts} />
       </div>
     </div>
   </section>

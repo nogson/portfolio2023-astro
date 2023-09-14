@@ -175,13 +175,12 @@ const SliderItem = styled.div<{ $width: number }>`
   img {
     display: block;
     width: 80%;
-    margin: 0 auto;
+    margin: var(--spacing-S) auto;
   }
   h4 {
     padding: 0 var(--spacing-L) var(--spacing-L);
     font-weight: 700;
     text-align: center;
-    margin-top: -30px;
   }
 `;
 

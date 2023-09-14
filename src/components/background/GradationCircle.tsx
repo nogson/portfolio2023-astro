@@ -38,21 +38,27 @@ export default function GradationCircle({
   );
 }
 
-const GradationCircleSpan = styled.span<{
+type GradationCircleProps = {
   $pos: { x: number; y: number };
   $color: string;
   $size: number;
-}>`
+};
+
+const GradationCircleSpan = styled.span.attrs<GradationCircleProps>((props) => {
+  return {
+    style: {
+      transform: `translate3d(${props.$pos.x}px,${props.$pos.y}px, 0px)`,
+      height: `${props.$size}px`,
+      width: `${props.$size}px`,
+      backgroundImage: `radial-gradient(circle, ${rgba(
+        props.$color,
+        0.7
+      )} 20%,${rgba(props.$color, 0)} 60%)`,
+    },
+  };
+})`
   position: absolute;
-  transform: ${({ $pos }) => `translate3d(${$pos.x}px,${$pos.y}px, 0px)`};
   top: 0;
   left: 0;
-  height: ${({ $size }) => `${$size}px`};
-  width: ${({ $size }) => `${$size}px`};
   mix-blend-mode: screen;
-  background-image: ${({ $color }) => `radial-gradient(
-      circle,
-      ${rgba($color, 0.7)} 20%,
-      ${rgba($color, 0)} 60%
-    )`};
 `;

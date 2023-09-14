@@ -7,6 +7,8 @@ import aboutMe from "@/assets/images/main/aboutMe.png";
 import Skills from "@/components/home/Skills.astro";
 
 const allBlogs = await Astro.glob("./blog/**/*.mdx");
+const allPortfolio = await Astro.glob("./portfolio/**/*.mdx");
+
 const blogs = allBlogs.map((blog) => {
   {
     const thumbnail: string = blog.frontmatter.thumbnail;
@@ -18,6 +20,19 @@ const blogs = allBlogs.map((blog) => {
     };
   }
 });
+
+const portfolios = allPortfolio.map((portfolio) => {
+  {
+    const thumbnail: string = portfolio.frontmatter.thumbnail;
+    const url: string = portfolio.url || "";
+    return {
+      thumbnail,
+      url,
+      title: portfolio.frontmatter.title,
+    };
+  }
+});
+console.log(portfolios)
 ---
 
 <Layout
@@ -63,7 +78,7 @@ const blogs = allBlogs.map((blog) => {
     <p class="text-center mb-XL">
       業務ではなく個人的な趣味で制作したものです。
     </p>
-    <Slider client:only="react" posts={blogs} />
+    <Slider client:only="react" posts={portfolios} />
   </article>
   <article class="full-width">
     <h2 class="title-main text-center">My Blog.</h2>

@@ -29,19 +29,13 @@ const CommonHeader = () => {
         <nav>
           <ul>
             <li>
-              <a href="/">
-                Home
-              </a>
+              <a href="/">Home</a>
             </li>
             <li>
-              <a href="/portfolio">
-                Portfolio
-              </a>
+              <a href="/portfolio">Portfolio</a>
             </li>
             <li>
-              <a href="/blog">
-                Blog
-              </a>
+              <a href="/blog">Blog</a>
             </li>
             <li>Contact</li>
           </ul>
@@ -90,6 +84,7 @@ const Header = styled.header`
         display: block;
         width: 0;
         height: 100%;
+        padding: 0;
         nav {
           display: none;
         }
@@ -99,6 +94,9 @@ const Header = styled.header`
       font-weight: 700;
       font-size: var(--font-size-L);
       letter-spacing: 0.03em;
+      ${media.lessThan("medium")`
+      padding: var(--spacing-XL);
+      `}
     }
     nav {
       margin-left: auto;

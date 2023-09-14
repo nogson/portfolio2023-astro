@@ -3,14 +3,17 @@ layout: "@/layouts/PortfolioDetailLayout.astro"
 title: 「岩手ごちそう牛乳」パッケージデザイン
 createAt: 2022-09-01
 description: パッケージデザインとBlenderを利用したモックアップ作成です。
-thumbnail: "/portfolio/gochiso-milk/thumbnail.png"
+thumbnail: "@/assets/images/portfolio/gochiso-milk/thumbnail.png"
 tags: ["パッケージデザイン"]
 draft: false
 ---
 
+import img01 from "@/assets/images/portfolio/gochiso-milk/01.png";
+import img02 from "@/assets/images/portfolio/gochiso-milk/02.png";
+
 パッケージデザインとBlenderを利用したモックアップ作成です。
 
 <div class="multi-column">
-  <img src="/portfolio/gochiso-milk/01.png" alt="岩手ごちそう牛乳" />
-  <img src="/portfolio/gochiso-milk/02.png" alt="岩手ごちそう牛乳" />
+  <img src={img01.src} alt="岩手ごちそう牛乳" />
+  <img src={img02.src} alt="岩手ごちそう牛乳" />
 </div>
