@@ -39,46 +39,6 @@
     background: rgba(#f1f1f1, 0.9);
   }
 
-  .headings {
-    font-size: var(--font-size-S);
-    position: sticky;
-    top: var(--spacing-XXXL);
-    box-shadow: var(--shadow-03);
-    padding: var(--spacing-M);
-    border-radius: var(--radius-M);
-    margin-bottom: var(--spacing-XL);
-    background-color: var(--color-background);
-    li {
-      margin-bottom: var(--spacing-S);
-      &.depth-1 {
-        &::before {
-          content: "";
-          display: inline-block;
-          border-radius: 10px;
-          width: 10px;
-          height: 10px;
-          border: 2px solid var(--color-primary-light);
-          box-sizing: border-box;
-          margin-right: 4px;
-          background-color: var(--color-primary);
-        }
-      }
-      &.depth-2 {
-        margin-left: 1em;
-        &::before {
-          content: "";
-          display: inline-block;
-          border-radius: 10px;
-          width: 6px;
-          height: 6px;
-          box-sizing: border-box;
-          margin-right: 6px;
-          background-color: var(--color-primary-light);
-        }
-      }
-    }
-  }
-
   .content pre {
     padding: 20px;
     display: block;

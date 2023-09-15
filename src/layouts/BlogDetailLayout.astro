@@ -5,7 +5,6 @@ import "dayjs/locale/ja";
 import Posts from "../components/blog/Posts.astro";
 const { frontmatter, content, headings } = Astro.props;
 const topHeading = headings.filter((heading: any) => heading.depth <= 2);
-const isBlog = frontmatter.url.startsWith("/blog");
 ---
 
 <div class="detail-page">
@@ -31,23 +30,21 @@ const isBlog = frontmatter.url.startsWith("/blog");
       <slot />
     </div>
     <!-- nav -->
-    <div slot="nav">
-      {
-        isBlog ? (
-          <div class="headings">
-            <h2 class="title-M">目次</h2>
-            <nav>
-              <ul>
-                {topHeading.map((heading: any) => (
-                  <li class={`depth-${heading.depth}`}>
-                    <a href={`#${heading.text}`}>{heading.text}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        ) : null
-      }
+    <div slot="nav" class="headings-wrapper">
+      <div class="headings">
+        <h2 class="title-M">目次</h2>
+        <nav>
+          <ul>
+            {
+              topHeading.map((heading: any) => (
+                <li class={`depth-${heading.depth}`}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
     </div>
     <div slot="footer">
       <Posts />
@@ -55,4 +52,48 @@ const isBlog = frontmatter.url.startsWith("/blog");
   </TwoColLayout>
 </div>
 
-<style lang="scss"></style>
+<style lang="scss">
+  .headings-wrapper {
+    height: 100%;
+  }
+  .headings {
+    font-size: var(--font-size-S);
+    position: sticky;
+    top: 0;
+    top: var(--spacing-XXXL);
+    box-shadow: var(--shadow-03);
+    padding: var(--spacing-M);
+    border-radius: var(--radius-M);
+    margin-bottom: var(--spacing-XL);
+    background-color: var(--color-background);
+    li {
+      margin-bottom: var(--spacing-S);
+      &.depth-1 {
+        &::before {
+          content: "";
+          display: inline-block;
+          border-radius: 10px;
+          width: 10px;
+          height: 10px;
+          border: 2px solid var(--color-primary-light);
+          box-sizing: border-box;
+          margin-right: 4px;
+          background-color: var(--color-primary);
+        }
+      }
+      &.depth-2 {
+        margin-left: 1em;
+        &::before {
+          content: "";
+          display: inline-block;
+          border-radius: 10px;
+          width: 6px;
+          height: 6px;
+          box-sizing: border-box;
+          margin-right: 6px;
+          background-color: var(--color-primary-light);
+        }
+      }
+    }
+  }
+</style>
