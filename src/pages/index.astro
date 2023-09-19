@@ -5,6 +5,7 @@ import Slider from "@/components/home/Slider";
 import main from "@/assets/images/main/main.png";
 import aboutMe from "@/assets/images/main/aboutMe.png";
 import Skills from "@/components/home/Skills.astro";
+import CommonTitle from "@/components/CommonTitle";
 
 const allBlogs = await Astro.glob("./blog/**/*.mdx");
 const allPortfolio = await Astro.glob("./portfolio/**/*.mdx");
@@ -32,7 +33,6 @@ const portfolios = allPortfolio.map((portfolio) => {
     };
   }
 });
-console.log(portfolios)
 ---
 
 <Layout
@@ -42,7 +42,8 @@ console.log(portfolios)
 >
   <article class="box-hero">
     <div class="box-hero-title">
-      <h2 class="title-main">Hello, I’M<br />Fumihiko Sato</h2>
+      <CommonTitle client:only="react" text="Hello, I’M" delay={0} />
+      <CommonTitle client:only="react" text="Fumihiko Sato" delay={1} />
       <div class="role">Designer / Front-End Developer</div>
     </div>
     <div class="box-hero-img">
