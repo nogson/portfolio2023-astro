@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon";
+import CommonTitle from "@/components/CommonTitle";
 
 // interface Props {
 //   title: string;
@@ -11,7 +12,9 @@ import { Icon } from "astro-icon";
 ---
 
 <article class="contact">
-  <h2 class="title-main text-center">Contact.</h2>
+  <h2 class="title-main text-center">
+    <CommonTitle client:only="react" text="Contact." size={4} sizeUnit="rem" />
+  </h2>
   <p class="text-center mb-XL">
     なにかお手伝いできることがあればご連絡ください。
   </p>

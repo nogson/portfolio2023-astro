@@ -42,9 +42,32 @@ const portfolios = allPortfolio.map((portfolio) => {
 >
   <article class="box-hero">
     <div class="box-hero-title">
-      <CommonTitle client:only="react" text="Hello, I’M" delay={0} />
-      <CommonTitle client:only="react" text="Fumihiko Sato" delay={1} />
-      <div class="role">Designer / Front-End Developer</div>
+      <CommonTitle
+        client:only="react"
+        text="Hello, I’M"
+        delay={0}
+        size={5}
+        sizeUnit="rem"
+        color="#242424"
+      />
+      <CommonTitle
+        client:only="react"
+        text="Fumihiko Sato"
+        delay={0.5}
+        size={5}
+        sizeUnit="rem"
+        color="#242424"
+      />
+      <div class="role">
+        <CommonTitle
+          client:only="react"
+          text="Designer / Front-End Developer"
+          delay={0.75}
+          size={2}
+          sizeUnit="rem"
+          color="#bb4dff"
+        />
+      </div>
     </div>
     <div class="box-hero-img">
       <div class="box-hero-img-inner">
@@ -54,7 +77,14 @@ const portfolios = allPortfolio.map((portfolio) => {
   </article>
   <article class="box-2col reverse">
     <div>
-      <h2 class="title-main">About Me.</h2>
+      <h2 class="title-main">
+        <CommonTitle
+          client:only="react"
+          text="About Me."
+          size={4}
+          sizeUnit="rem"
+        />
+      </h2>
       <p class="mb-M">
         主にデザインとフロントエンド開発をやっています。<br />
          どちらかと言えばデザイナーが、少しプログラムを書くような感じです。<br
@@ -71,18 +101,39 @@ const portfolios = allPortfolio.map((portfolio) => {
     </div>
   </article>
   <article>
-    <h2 class="title-main">My Skills.</h2>
+    <h2 class="title-main">
+      <CommonTitle
+        client:only="react"
+        text="My Skills."
+        size={4}
+        sizeUnit="rem"
+      />
+    </h2>
     <Skills />
   </article>
   <article class="full-width">
-    <h2 class="title-main text-center">My Portfolio.</h2>
+    <h2 class="title-main text-center">
+      <CommonTitle
+        client:only="react"
+        text="My Portfolio."
+        size={4}
+        sizeUnit="rem"
+      />
+    </h2>
     <p class="text-center mb-XL">
       業務ではなく個人的な趣味で制作したものです。
     </p>
     <Slider client:only="react" posts={portfolios} />
   </article>
   <article class="full-width">
-    <h2 class="title-main text-center">My Blog.</h2>
+    <h2 class="title-main text-center">
+      <CommonTitle
+        client:only="react"
+        text="My Blog."
+        size={4}
+        sizeUnit="rem"
+      />
+    </h2>
     <p class="text-center mb-XL">
       年齢のせいかすぐ忘れてしまうので、学んだことを備忘録的に書いてます。
     </p>
@@ -145,7 +196,9 @@ const portfolios = allPortfolio.map((portfolio) => {
       }
 
       .role {
-        font-size: var(--font-size-L) !important;
+        span {
+          font-size: var(--font-size-L) !important;
+        }
       }
     }
   }

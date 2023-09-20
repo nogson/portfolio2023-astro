@@ -92,10 +92,10 @@ const Header = styled.header`
    `}
     h1 {
       font-weight: 700;
-      font-size: var(--font-size-L);
+      font-size: var(--font-size-XL);
       letter-spacing: 0.03em;
       ${media.lessThan("medium")`
-      padding: var(--spacing-XL);
+      padding: var(--spacing-L);
       `}
     }
     nav {
