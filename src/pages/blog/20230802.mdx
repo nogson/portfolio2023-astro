@@ -8,8 +8,8 @@ tags: ["astro"]
 draft: false
 ---
 
-import { Image } from "@astrojs/image/components";
-import img20230802_1 from "./src/assets/images/blog/20230802-1.png";
+import CommonImage from "@/components/CommonImage.astro";
+import img01 from "@/assets/images/blog/20230802/01.png";
 
 Astro.jsは、コアコンセプトが`No JavaScript`の静的サイトジェネレーターとして使われるJavaScriptフレームワークです。
 Astro.jsは、ReactやVueなどのフロントエンドライブラリをサポートし、コンポーネントベースのアプローチを採用しています。
@@ -171,7 +171,8 @@ Astroチュートリアルを終え、さらに記事を追加していきます
 
 `http://localhost/3000/posts/post-1`を開くとページが表示される。
 
-<Image src={img20230802_1} alt="markdown" />
+
+<CommonImage src={img01} alt="markdown" width={500} />
 
 ## 下書きページ
 

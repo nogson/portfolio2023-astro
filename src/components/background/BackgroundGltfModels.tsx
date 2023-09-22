@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
+
 type ItemProps = {
   path: string;
   position: number[];

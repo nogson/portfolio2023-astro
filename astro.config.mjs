@@ -27,5 +27,9 @@ export default defineConfig({
         }
       }
     }
-  }
+  },
+  // github pages hosting
+  site: 'https://nogson.github.io/',
+  outDir: "./docs",
+  base: '/portfolio2023-astro',
 });
