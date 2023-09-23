@@ -30,5 +30,5 @@ export default defineConfig({
   },
   // github pages hosting
   site: 'https://nogson.github.io/',
-  base: '/portfolio2023-astro',
+  base: '/',
 });
