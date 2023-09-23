@@ -12,16 +12,16 @@ type ItemProps = {
 };
 
 const filePath = [
-  "/Javascript.gltf",
-  "/AI.gltf",
-  "/Figma.gltf",
-  "/Typescript.gltf",
-  "/PS.gltf",
-  "/XD.gltf",
-  "/Blender.gltf",
-  "/vue.gltf",
-  "/next.gltf",
-  "/docker.gltf",
+  "/home/Javascript.gltf",
+  "/home/AI.gltf",
+  "/home/Figma.gltf",
+  "/home/Typescript.gltf",
+  "/home/PS.gltf",
+  "/home/XD.gltf",
+  "/home/Blender.gltf",
+  "/home/vue.gltf",
+  "/home/next.gltf",
+  "/home/docker.gltf",
 ];
 
 const items: ItemProps[] = [

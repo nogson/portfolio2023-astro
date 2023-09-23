@@ -1,19 +1,17 @@
 ---
 import dayjs from "dayjs";
 import type { FrontmatterType } from "../../types/Post";
-import CommonImage from "../CommonImage.astro";
 interface Props {
   post: FrontmatterType;
   url: string;
 }
 const { post, url } = Astro.props;
-const imgPath = import(post.thumbnail.replace("@/", "../../"));
 ---
 
 <div class="card">
   <a href={url} class="card-link">
     <div class="thumbnail">
-      <CommonImage src={imgPath} width={200} format="webp" alt="" />
+      <img src={post.thumbnail} alt={post.title} />
     </div>
     <div>
       <p class="createAt">{dayjs(post.createAt).format("YYYY/MM/DD")}</p>
@@ -37,10 +35,28 @@ const imgPath = import(post.thumbnail.replace("@/", "../../"));
     .thumbnail {
       line-height: 1;
       margin-right: var(--spacing-L);
+      border-radius: var(--spacing-M);
+      img {
+        width: 200px;
+        border-radius: var(--spacing-M);
+      }
+
+      @media screen and (max-width: $breakpoint-S) {
+        display: block;
+        margin: 0 auto var(--spacing-M) auto;
+        text-align: center;
+        background: var(--color-white);
+        img {
+          border-radius: 0;
+        }
+      }
     }
 
     .card-link {
       display: flex;
+      @media screen and (max-width: $breakpoint-S) {
+        display: block;
+      }
     }
 
     .createAt {

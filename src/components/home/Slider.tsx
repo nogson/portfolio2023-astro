@@ -40,31 +40,11 @@ const Slider = ({ posts }: Props) => {
     getStartX(sliderListWidth, itemWidth, leftMargin)
   );
   const [containerStartX, setContainerStartX] = useState(0);
-  const [items, setItems] = useState<any>([]);
+  const [items, setItems] = useState<any>(posts);
   const [animationDirection, setAnimationDirection] = useState<
     "back" | "next"
   >();
   const [isTransitionEnd, setIsTransitionEnd] = useState(true);
-
-  useEffect(() => {
-    const thumbnails = posts.map((post: Post) => {
-      // TODO @で指定しえいるrootエイリアスをどうにかできないか
-      const path = post.thumbnail.replace("@/", "../../");
-      return import(path);
-    });
-    const getImages = async () => {
-      const _posts = [...posts];
-      const res = await Promise.all(thumbnails);
-
-      setItems(
-        _posts.map((post, index) => {
-          post.thumbnail = res[index].default.src;
-          return post;
-        })
-      );
-    };
-    getImages();
-  }, [posts]);
 
   const back = () => {
     if (!isTransitionEnd) return;

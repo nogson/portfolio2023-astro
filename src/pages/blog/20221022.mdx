@@ -3,25 +3,12 @@ layout: "@/layouts/BlogDetailLayout.astro"
 title: ExpressとMongoDBでAPIサーバーを作る
 createAt: 2022-10-22
 description: node.jsを利用してバックエンドをやってみます。
-thumbnail: "@/assets/images/blog/thumbnail/note_thumb.png"
+thumbnail: "/blog/thumbnail/note_thumb.png"
 tags: ["Node.js"]
 draft: false
 ---
 
 import CommonImage from "@/components/CommonImage.astro";
-
-import img01 from "@/assets/images/blog/20221022/01.png";
-import img02 from "@/assets/images/blog/20221022/02.png";
-import img03 from "@/assets/images/blog/20221022/03.png";
-import img04 from "@/assets/images/blog/20221022/04.png";
-import img05 from "@/assets/images/blog/20221022/05.png";
-import img06 from "@/assets/images/blog/20221022/06.png";
-import img07 from "@/assets/images/blog/20221022/07.png";
-import img08 from "@/assets/images/blog/20221022/08.png";
-import img09 from "@/assets/images/blog/20221022/09.png";
-import img10 from "@/assets/images/blog/20221022/10.png";
-import img11 from "@/assets/images/blog/20221022/11.png";
-
 
 普段はフロントエンドをやることが多い（というかフロントしかできない）ので、node.jsを利用してバックエンド環境も準備してみます。
 
@@ -127,34 +114,34 @@ app.listen(PORT, () => {
 データベースには[MongoDB](https://www.mongodb.com/ja-jp)を利用します。  
 MongoDBのページから「無料で始める」のボタンを押して、signupします。
 
-<CommonImage src={img01} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/01.png" alt="DBを用意する" width={500} />
 
 signupが完了したら、「New Project」から新規プロジェクトを作成します。
 
-<CommonImage src={img02} alt="DBを用意する" width={500} />
-<CommonImage src={img03} alt="DBを用意する" width={500} />
-<CommonImage src={img04} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/02.png" alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/03.png" alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/04.png" alt="DBを用意する" width={500} />
 
 プロジェクトを作成したらデータベースも作成します。
 
-<CommonImage src={img05} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/05.png" alt="DBを用意する" width={500} />
 
 無料で使いたいので、「FREE」を選択します。
 Providerは「AWS」を選択、Regionは「Tokyo」を選択します。
 
-<CommonImage src={img06} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/06.png" alt="DBを用意する" width={500} />
 
 プロジェクトへの認証方法を設定します。
 
 ユーザー名とパスワードで認証するようにします。
 
-<CommonImage src={img07} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/07.png" alt="DBを用意する" width={500} />
 
 接続環境を設定します。
 とりあえずどこからでも接続できるようにするには`0.0.0.0`としておきます。  
 接続IPを絞りたいなら、「Add My Current IP Address」を押すと、現在のIPが設定されます。
 
-<CommonImage src={img08} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/08.png" alt="DBを用意する" width={500} />
 
 ## DBにデータを登録する
 
@@ -178,15 +165,15 @@ npm i mongoose
 
 「Connect」ボタンを押します。
 
-<CommonImage src={img09} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/09.png" alt="DBを用意する" width={500} />
 
 「Connect your application」ボタンを押します。
 
-<CommonImage src={img10} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/10.png" alt="DBを用意する" width={500} />
 
 接続先パスが表示される。passwordはDBを作成した際のものを利用します。
 
-<CommonImage src={img11} alt="DBを用意する" width={500} />
+<CommonImage src="/blog/20221022/11.png" alt="DBを用意する" width={500} />
 
 ```typescript
 import express from "express";

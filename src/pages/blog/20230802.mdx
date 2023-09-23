@@ -3,13 +3,12 @@ layout: "@/layouts/BlogDetailLayout.astro"
 title: "Astro.js覚書"
 createAt: 2022-07-01
 description: "Astro.jsを学ぶに当たっての覚書です。"
-thumbnail: "@/assets/images/blog/thumbnail/note_thumb.png"
+thumbnail: "/blog/thumbnail/note_thumb.png"
 tags: ["astro"]
 draft: false
 ---
 
 import CommonImage from "@/components/CommonImage.astro";
-import img01 from "@/assets/images/blog/20230802/01.png";
 
 Astro.jsは、コアコンセプトが`No JavaScript`の静的サイトジェネレーターとして使われるJavaScriptフレームワークです。
 Astro.jsは、ReactやVueなどのフロントエンドライブラリをサポートし、コンポーネントベースのアプローチを採用しています。
@@ -171,7 +170,7 @@ Astroチュートリアルを終え、さらに記事を追加していきます
 
 `http://localhost/3000/posts/post-1`を開くとページが表示される。
 
-<CommonImage src={img01} alt="markdown" width={500} />
+<CommonImage src="/blog/20230802/01.png" alt="markdown" width={500} />
 
 ## 下書きページ
 
