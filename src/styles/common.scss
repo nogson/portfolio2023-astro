@@ -72,17 +72,17 @@
 }
 
 .button-base {
-  border-radius: 200px;
+  border-radius: 40px;
   padding: $spacing-L $spacing-XL;
   font-weight: bold;
   background-color: var(--color-background);
+  min-width: 200px;
 }
 
 .button-01 {
   @extend .button-base;
   box-shadow: var(--shadow-01);
   color: var(--color-primary);
-  display: inline-block;
 }
 
 .icon-M {
