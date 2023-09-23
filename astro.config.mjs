@@ -9,6 +9,9 @@ import image from "@astrojs/image";
 export default defineConfig({
   // output: "server",
   // adapter: vercel(),
+  // github pages hosting
+  site: 'https://nogson.github.io/',
+  base: '/portfolio2023-astro',
   integrations: [react(), mdx(), image()],
   vite: {
     resolve: {
@@ -28,7 +31,4 @@ export default defineConfig({
       }
     }
   },
-  // github pages hosting
-  site: 'https://nogson.github.io/',
-  base: '/',
 });
