@@ -5,26 +5,6 @@ interface Props {
   posts: any[];
 }
 const { posts } = Astro.props;
-// import img from posts[0].frontmatter.thumbnail;
-// console.log(posts[0].frontmatter.thumbnail);
-
-const thumbnails = posts.map((post: any) => {
-  // TODO @で指定しえいるrootエイリアスをどうにかできないか
-  const path = post.frontmatter.thumbnail.replace("@/", "../../");
-  console.log("-------", path);
-  return import(path);
-});
-
-const res = await Promise.all(thumbnails);
-const _posts = posts.map((post, i) => {
-  return {
-    ...post,
-    frontmatter: {
-      ...post.frontmatter,
-      thumbnail: res[i].default.src,
-    },
-  };
-});
 ---
 
 <div class="posts">
@@ -32,7 +12,7 @@ const _posts = posts.map((post, i) => {
   <nav>
     <ul>
       {
-        _posts.map((post) => (
+        posts.map((post) => (
           <li>
             <a href={post.url}>
               <img
