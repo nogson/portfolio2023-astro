@@ -9,6 +9,9 @@
     text-align: center;
     h1 {
       margin-bottom: 0;
+      @media screen and (max-width: $breakpoint-S) {
+        font-size: var(--font-size-XL);
+      }
     }
     .createAt {
       color: var(--color-gray-03);
@@ -37,6 +40,9 @@
     border-radius: var(--radius-M);
     box-sizing: border-box;
     background: rgba(#f1f1f1, 0.9);
+    @media screen and (max-width: $breakpoint-S) {
+      padding: var(--spacing-L);
+    }
   }
 
   .content pre {
