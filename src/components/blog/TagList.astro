@@ -2,9 +2,10 @@
 interface Props {
   tags: string[];
   selectedTag?: string;
+  type: "blog" | "portfolio";
 }
 
-const { tags, selectedTag } = Astro.props;
+const { tags, selectedTag, type } = Astro.props;
 ---
 
 <nav class="tags">
@@ -13,7 +14,7 @@ const { tags, selectedTag } = Astro.props;
     {
       tags.map((tag) => (
         <li class={tag === selectedTag ? "act" : ""}>
-          <a href={`/blog/tag/${tag}`}>{tag}</a>
+          <a href={`/${type}/tag/${tag}`}>{tag}</a>
         </li>
       ))
     }

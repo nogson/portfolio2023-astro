@@ -3,7 +3,7 @@ import TwoColLayout from "../../../layouts/TwoColLayout.astro";
 import TagList from "../../../components/blog/TagList.astro";
 import Card from "../../../components/blog/Card.astro";
 const { tag } = Astro.params;
-const allPosts = await Astro.glob("../../../pages/blog/**/*.mdx");
+const allPosts = await Astro.glob("../../../pages/portfolio/**/*.mdx");
 const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
 const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
 const uniqueTags = [...new Set(tags.flat())];
@@ -20,6 +20,6 @@ const posts = nonDraftPosts.filter((post) =>
     {posts.map((post: any) => <Card post={post.frontmatter} url={post.url} />)}
   </div>
   <div slot="nav">
-    <TagList tags={uniqueTags} selectedTag={tag} type="blog" />
+    <TagList tags={uniqueTags} selectedTag={tag} type="portfolio" />
   </div>
 </TwoColLayout>
