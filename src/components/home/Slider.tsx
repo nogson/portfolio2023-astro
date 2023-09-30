@@ -151,6 +151,7 @@ const SliderItem = styled.div<{ $width: number }>`
     box-shadow: var(--shadow-02);
     background-color: var(--color-white);
     display: block;
+    padding: var(--spacing-M);
   }
   img {
     display: block;

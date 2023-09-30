@@ -43,6 +43,11 @@
     @media screen and (max-width: $breakpoint-S) {
       padding: var(--spacing-L);
     }
+
+    ul {
+      list-style: disc;
+      margin-left: 1rem;
+    }
   }
 
   .content pre {
