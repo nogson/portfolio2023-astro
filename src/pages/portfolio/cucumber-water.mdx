@@ -8,19 +8,27 @@ tags: ["パッケージデザイン"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 パッケージデザインとBlenderを利用したモックアップ作成です。
 
-<img
+<CommonImg
   src="/portfolio/cucumber-water/01.png"
   alt="きゅうりノお水シリーズ"
   class="mb-L mt-XL"
+  client:only="react"
 />
 
 <div class="multi-column-3">
-  <img src="/portfolio/cucumber-water/02.png" alt="きゅうりノお水シリーズ" />
-  <img
+  <CommonImg
+    src="/portfolio/cucumber-water/02.png"
+    alt="きゅうりノお水シリーズ"
+    client:only="react"
+  />
+  <CommonImg
     src="/portfolio/cucumber-water/03.png"
     alt="きゅうりノお水シリーズ"
     style="background:#FFF;"
+    client:only="react"
   />
 </div>

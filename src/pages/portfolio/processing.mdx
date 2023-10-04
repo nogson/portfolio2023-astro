@@ -8,10 +8,20 @@ tags: ["Processing", "アニメーション"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 大したものでは無いですが、Processingの習作です。  
 p5.jsを利用しています。
 
 <div class="multi-column-2 mt-XL">
-  <img src="/portfolio/processing/01.gif" alt="Processing" />
-  <img src="/portfolio/processing/02.gif" alt="Processing" />
+ <CommonImg
+    src="/portfolio/processing/01.gif"
+    alt="Processing"
+    client:only="react"
+  />
+ <CommonImg
+    src="/portfolio/processing/02.gif"
+    alt="Processing"
+    client:only="react"
+  />
 </div>

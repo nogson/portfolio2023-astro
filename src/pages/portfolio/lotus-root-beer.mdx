@@ -8,20 +8,25 @@ tags: ["パッケージデザイン"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 パッケージデザインとBlenderを利用したモックアップ作成です。
 
-<img
+<CommonImg
   src="/portfolio/lotus-root-beer/03.jpg"
   alt="徳島県鳴門市のれんこんビール"
   class="mb-L mt-XL mt-XL"
+  client:only="react"
 />
 <div class="multi-column-3">
-  <img
+  <CommonImg
     src="/portfolio/lotus-root-beer/01.png"
     alt="徳島県鳴門市のれんこんビール"
+    client:only="react"
   />
-  <img
+  <CommonImg
     src="/portfolio/lotus-root-beer/02.png"
     alt="徳島県鳴門市のれんこんビール"
+    client:only="react"
   />
 </div>

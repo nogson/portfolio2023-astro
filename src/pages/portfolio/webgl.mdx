@@ -7,6 +7,7 @@ thumbnail: "/portfolio/webgl/thumbnail.png"
 tags: ["WebGL"]
 draft: false
 ---
+import CommonImg from "@/components/CommonImg.tsx";
 
 私のプログラムスキルだとWebGLはとにかく難しいです。
 
@@ -15,7 +16,7 @@ WebGLは絵がでるまでが果てしなく遠いです。
 
 <div class="multi-column-2 mb-M mt-XL">
   <div>
-    <img src="/portfolio/webgl/01.gif" alt="webgl" />
+    <CommonImg src="/portfolio/webgl/01.gif" alt="webgl" />
     <p>
       WebGLを学んだら必ずやりたくなるのがglitchです。
       デバイスのマイクの音を取得してglitchさせています。
@@ -26,7 +27,7 @@ WebGLは絵がでるまでが果てしなく遠いです。
     </div>
   </div>
   <div>
-    <img src="/portfolio/webgl/02.gif" alt="webgl" />
+    <CommonImg src="/portfolio/webgl/02.gif" alt="webgl" client:only="react" />
     <p>
       パーティクルにテクスチャをはって、ランタンの打ち上げを作りました。
       カリングの制御が上手くできていません。
@@ -36,14 +37,14 @@ WebGLは絵がでるまでが果てしなく遠いです。
     </div>
   </div>
   <div>
-    <img src="/portfolio/webgl/03.gif" alt="webgl" />
+    <CommonImg src="/portfolio/webgl/03.gif" alt="webgl" />
     <p>メタボールをやってみたくてチャレンジしましたが、ここで諦めました。</p>
     <div class="link">
       <a href="https://nogson.github.io/glsl_03/">View</a>
     </div>
   </div>
   <div>
-    <img src="/portfolio/webgl/04.gif" alt="webgl" />
+    <CommonImg src="/portfolio/webgl/04.gif" alt="webgl" client:only="react" />
     <p>
       正規ベクトルを使って向きを制御する練習のために作りました。
       ブリーフ履いて歩いているのは私のキャラクターです。
@@ -53,7 +54,7 @@ WebGLは絵がでるまでが果てしなく遠いです。
     </div>
   </div>
   <div>
-    <img src="/portfolio/webgl/05.gif" alt="webgl" />
+    <CommonImg src="/portfolio/webgl/05.gif" alt="webgl" />
     <p>一応時計になっています。見えませんが。。。</p>
     <div class="link">
       <a href="https://nogson.github.io/webgl_clock/app/">View</a>

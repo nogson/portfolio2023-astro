@@ -8,9 +8,19 @@ tags: ["パッケージデザイン"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 パッケージデザインとBlenderを利用したモックアップ作成です。
 
 <div class="multi-column-3 mt-XL">
-  <img src="/portfolio/gochiso-milk/01.png" alt="岩手ごちそう牛乳" />
-  <img src="/portfolio/gochiso-milk/02.png" alt="岩手ごちそう牛乳" />
+  <CommonImg
+    src="/portfolio/gochiso-milk/01.png"
+    alt="岩手ごちそう牛乳"
+    client:only="react"
+  />
+  <CommonImg
+    src="/portfolio/gochiso-milk/02.png"
+    alt="岩手ごちそう牛乳"
+    client:only="react"
+  />
 </div>

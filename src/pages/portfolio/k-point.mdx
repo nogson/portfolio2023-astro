@@ -8,6 +8,8 @@ tags: ["UIデザイン"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 子供が自宅で毎日ダラダラと自堕落なを過ごしているので、紙でポイントカードを作りポイントが貯まったら何かに交換してあげる制度を作ったら、思った以上に楽しそうにポイントを貯め出しました。
 
 ただ、紙で作ったので、修正が発生した場合はその都度プリントアウトが必要で少し面倒でした。
@@ -21,20 +23,33 @@ Vue3とFirebaseを使って作成しました。
   <div>
     <h2>トップページ</h2>
     <p>獲得しているポイントと、各画面へのナビゲーションを表示。</p>
-    <img src="/portfolio/k-point/01.png" alt="k-point" />
+    <CommonImg
+      src="/portfolio/k-point/01.png"
+      alt="k-point"
+      client:only="react"
+    />
   </div>
   <div>
     <h2>ポイント付与、プレゼント付与ページ</h2>
     <p>
       がんばったらポイントをあげるページと、ポイントが貯まったらプレゼントに交換してあげるページ。
     </p>
-    <img src="/portfolio/k-point/02.png" alt="k-point" class="mb-XL" />
+    <CommonImg
+      src="/portfolio/k-point/02.png"
+      alt="k-point"
+      class="mb-XL"
+      client:only="react"
+    />
     <p>ボタンを押すとダイアログが表示される。</p>
     <img src="/portfolio/k-point/03.png" alt="k-point" />
   </div>
   <div>
     <h2>ポイント、プレゼント編集ページ</h2>
     <p>ポイントと、プレゼントの編集画面。親が使う。</p>
-    <img src="/portfolio/k-point/04.png" alt="k-point" />
+    <CommonImg
+      src="/portfolio/k-point/04.png"
+      alt="k-point"
+      client:only="react"
+    />
   </div>
 </div>

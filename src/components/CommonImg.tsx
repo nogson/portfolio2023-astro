@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
-import { AiOutlineClose } from "react-icons/ai";
+import { IoCloseSharp } from "react-icons/io5";
 
 export default function CommonImg({ src, alt }: { src: string; alt: string }) {
   const [isShow, setIsShow] = useState(false);
@@ -10,15 +10,17 @@ export default function CommonImg({ src, alt }: { src: string; alt: string }) {
   };
 
   return (
-    <>
+    <div>
       <Img src={src} alt={alt} onClick={openWindow} />
       <Dialog $isShow={isShow} onClick={openWindow}>
-        <div className="close-button">
-          <AiOutlineClose />
+        <div className="dialog">
+          <div className="close-button">
+            <IoCloseSharp />
+          </div>
+          <img src={src} alt={alt} onClick={(e) => e.stopPropagation()} />
         </div>
-        <img src={src} alt={alt} onClick={(e) => e.stopPropagation()} />
       </Dialog>
-    </>
+    </div>
   );
 }
 
@@ -43,22 +45,27 @@ const Dialog = styled.div<{ $isShow: boolean }>`
   box-sizing: border-box;
   z-index: 100;
 
-  img {
+  .dialog {
+    position: relative;
     padding: var(--spacing-L);
     background: var(--color-white);
-    border: none !important;
     border-radius: var(--radius-M);
+    .close-button {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: none;
+      border: none;
+      font-size: var(--font-size-XXL);
+      line-height: 1;
+      cursor: pointer;
+      padding: var(--spacing-M);
+      background: var(--color-white);
+      border-radius: 100%;
+    }
   }
 
-  .close-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: var(--spacing-M);
-    background: none;
-    border: none;
-    color: var(--color-white);
-    font-size: var(--font-size-XXL);
-    cursor: pointer;
+  img {
+    border: none !important;
   }
 `;

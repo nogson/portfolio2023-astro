@@ -8,12 +8,20 @@ tags: ["TouchDesigner", "アニメーション"]
 draft: false
 ---
 
-import { Vimeo } from "astro-embed";
+import CommonImg from "@/components/CommonImg.tsx";
 
 大したものでは無いですが、TouchDesignerの習作です。  
 TouchDesignerを習得したいですが、なかなか使う機会もなくすぐに忘れてしまいます。
 
 <div class="multi-column-3 mt-XL">
-  <img src="/portfolio/touchdesigner01/01.png" alt="TouchDesigner" />
-  <img src="/portfolio/touchdesigner01/02.png" alt="TouchDesigner" />
+  <CommonImg
+    src="/portfolio/touchdesigner01/01.png"
+    alt="TouchDesigner"
+    client:only="react"
+  />
+  <CommonImg
+    src="/portfolio/touchdesigner01/02.png"
+    alt="TouchDesigner"
+    client:only="react"
+  />
 </div>

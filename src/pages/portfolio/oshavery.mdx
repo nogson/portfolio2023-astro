@@ -8,6 +8,8 @@ tags: ["UIデザイン"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 Web Speech APIがつかってみたいという思いから作り出しました。  
 入力した文字をだた読み上げるだけのサービスです。
 
@@ -17,13 +19,21 @@ OGP画像を自動で生成するようにしているので、SNSを利用し�
   <div>
     <h2>投稿一覧ページ</h2>
     <p>設定したタグでの絞り込みや、メッセージの再生ができる。</p>
-    <img src="/portfolio/oshavery/01.gif" alt="Oシャベリ" />
+    <CommonImg
+      src="/portfolio/oshavery/01.gif"
+      alt="Oシャベリ"
+      client:only="react"
+    />
   </div>
   <div>
     <h2>投稿画面と詳細ページ</h2>
     <p>
       がんばったらポイントをあげるページと、ポイントが貯まったらプレゼントに交換してあげるページ。
     </p>
-    <img src="/portfolio/oshavery/02.png" alt="Oシャベリ" />
+    <CommonImg
+      src="/portfolio/oshavery/02.png"
+      alt="Oシャベリ"
+      client:only="react"
+    />
   </div>
 </div>

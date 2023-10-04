@@ -8,12 +8,30 @@ tags: ["パッケージデザイン", "グラッフィックデザイン"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 パッケージデザインとBlenderを利用したモックアップ作成です。  
 はめ方によってハンバガーに見えるデザインになります。
 
 <div class="multi-column-3 mt-XL">
-  <img src="/portfolio/battery-king/01.png" alt="battery king" />
-  <img src="/portfolio/battery-king/02.png" alt="battery king" />
-  <img src="/portfolio/battery-king/03.png" alt="battery king" />
-  <img src="/portfolio/battery-king/04.png" alt="battery king" />
+  <CommonImg
+    src="/portfolio/battery-king/01.png"
+    alt="battery king"
+    client:only="react"
+  />
+  <CommonImg
+    src="/portfolio/battery-king/02.png"
+    alt="battery king"
+    client:only="react"
+  />
+  <CommonImg
+    src="/portfolio/battery-king/03.png"
+    alt="battery king"
+    client:only="react"
+  />
+  <CommonImg
+    src="/portfolio/battery-king/04.png"
+    alt="battery king"
+    client:only="react"
+  />
 </div>

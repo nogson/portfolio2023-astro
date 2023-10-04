@@ -7,16 +7,30 @@ thumbnail: "/portfolio/rabbit-coffee/thumbnail.png"
 tags: ["パッケージデザイン"]
 draft: false
 ---
+import CommonImg from "@/components/CommonImg.tsx";
 
 パッケージデザインとBlenderを利用したモックアップ作成です。
 
 <div class="multi-column-3 mt-XL">
-  <img src="/portfolio/rabbit-coffee/01.png" alt="徳之島ラビットコーヒー" />
-  <img src="/portfolio/rabbit-coffee/02.png" alt="徳之島ラビットコーヒー" />
-  <img
+  <CommonImg
+    src="/portfolio/rabbit-coffee/01.png"
+    alt="徳之島ラビットコーヒー"
+    client:only="react"
+  />
+  <CommonImg
+    src="/portfolio/rabbit-coffee/02.png"
+    alt="徳之島ラビットコーヒー"
+    client:only="react"
+  />
+  <CommonImg
     src="/portfolio/rabbit-coffee/03.png"
     alt="徳之島ラビットコーヒー"
     style="background: #fff;"
+    client:only="react"
   />
-  <img src="/portfolio/rabbit-coffee/04.png" alt="徳之島ラビットコーヒー" />
+  <CommonImg
+    src="/portfolio/rabbit-coffee/04.png"
+    alt="徳之島ラビットコーヒー"
+    client:only="react"
+  />
 </div>
