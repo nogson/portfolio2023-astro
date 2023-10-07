@@ -57,6 +57,9 @@ const { post, url } = Astro.props;
       @media screen and (max-width: $breakpoint-S) {
         display: block;
       }
+      & > div:last-child {
+        flex: 1;
+      }
     }
 
     .createAt {

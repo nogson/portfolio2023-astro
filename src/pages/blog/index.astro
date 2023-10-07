@@ -5,6 +5,10 @@ import TwoColLayout from "../../layouts/TwoColLayout.astro";
 
 const allPosts = await Astro.glob("../../pages/blog/**/*.mdx");
 const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+nonDraftPosts.sort(
+  (a, b) =>
+    Date.parse(b.frontmatter.createAt) - Date.parse(a.frontmatter.createAt)
+);
 const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
 const uniqueTags = [...new Set(tags.flat())];
 ---
@@ -24,12 +28,21 @@ const uniqueTags = [...new Set(tags.flat())];
       ))
     }
   </div>
-  <div slot="nav">
-    <TagList tags={uniqueTags} type="blog" />
+  <div slot="nav" class="nav">
+    <div class="tags">
+      <TagList tags={uniqueTags} type="blog" />
+    </div>
   </div>
 </TwoColLayout>
 <style lang="scss">
   .header {
     text-align: center;
+  }
+  .nav {
+    height: 100%;
+  }
+  .tags {
+    position: sticky;
+    top: var(--spacing-XXXL);
   }
 </style>

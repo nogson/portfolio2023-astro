@@ -5,6 +5,10 @@ import TagList from "@/components/blog/TagList.astro";
 
 const allPosts = await Astro.glob("../../pages/portfolio/**/*.mdx");
 const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+nonDraftPosts.sort(
+  (a, b) =>
+    Date.parse(b.frontmatter.createAt) - Date.parse(a.frontmatter.createAt)
+);
 const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
 const uniqueTags = [...new Set(tags.flat())];
 ---
@@ -24,8 +28,10 @@ const uniqueTags = [...new Set(tags.flat())];
       ))
     }
   </div>
-  <div slot="nav">
-    <TagList tags={uniqueTags} type="portfolio" />
+  <div slot="nav" class="nav">
+    <div class="tags">
+      <TagList tags={uniqueTags} type="portfolio" />
+    </div>
   </div>
 </TwoColLayout>
 
@@ -42,5 +48,13 @@ const uniqueTags = [...new Set(tags.flat())];
     @media screen and (max-width: 768px) {
       grid-template-columns: 1fr;
     }
+  }
+
+  .nav {
+    height: 100%;
+  }
+  .tags {
+    position: sticky;
+    top: var(--spacing-XXXL);
   }
 </style>
