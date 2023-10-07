@@ -1,0 +1,42 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: vesselでmysqlのパスワードを変更しようとして困ったメモ
+description: vesselで.envのmysqlのパスワードを変更しようとしたとところ、変更できず困ったので。
+createAt: 2020-08-15
+thumbnail: "/blog/thumbnail/note_thumb.png"
+tags: ["Mysql"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+vesselで.envのmysqlのパスワードを変更しようとしたとところ、変更できず困ったのでメモを残しておく。
+そもそもDockerを正しく理解できていない。
+
+ともかく、以下を参照したらできた。  
+volumeを削除しないとだめなのかな。。。
+
+[Vessel - Docker dev environments for Laravel](https://vessel.shippingdocker.com/docs/common-issues/)
+
+```
+# Spin down the containers
+./vessel stop
+
+# Destroy the volume created
+## List volumes to find it
+docker volume ls
+## Destroy the appropriate one
+docker volume rm vesselexample_vesselmysql
+
+# Set a password within the .env file
+DB_PASSWORD=secret
+
+# Start the containers back up
+./vessel start
+```
+
+ログインして試してみたら、パスワードが変更されていた。
+
+```
+./vessel exec mysql mysql -u root -p
+```

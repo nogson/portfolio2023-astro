@@ -1,0 +1,234 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: AWS超初心者のメモ wordpressを入れてみる
+description: 「AWS超初心者のメモ プライベートサブネットにMySQLを入れる2」の続きです。
+createAt: 2020-05-03
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# WebサーバーにWordpressをインストール
+
+「[AWS超初心者のメモ プライベートサブネットにMySQLを入れる](/blog/20200502)」の続きです。
+
+## PHPをインストールする
+
+webサーバーに入る。
+
+```
+$scp -i my-key.pem my-key.pem ec2-user@XX.XXX.XXX.XX
+```
+
+### インストールできるPHPを確認
+
+Amazon Linux Extrasを利用する。
+
+#### Amazon Linux Extrasとは
+
+> Extras は、安定したオペレーティングシステムで新しいバージョンのアプリケーションソフトウェアを利用可能にする Amazon Linux 2 のメカニズムで、2023 年 6 月 30 日までサポートされます。Extras は、OS の安定性を確保しつつ、最新のソフトウェアを利用できるようにするうえで役立ちます。例えば、5 年間サポートされる安定したオペレーティングシステムに MariaDB の新しいバージョンをインストールすることができます。Extras の例には、Ansible 2.4.2、memcached 1.5、nginx 1.12、Postgresql 9.6、MariaDB 10.2、Go 1.9、Redis 4.0、R 3.4、Rust 1.22.1 などがあります。  
+> https://aws.amazon.com/jp/amazon-linux-2/faqs/
+
+インストールできるPHPをを確認する。
+
+```
+$sudo amazon-linux-extras list | grep php
+  _  php7.2                   available    \
+  _  lamp-mariadb10.2-php7.2  available    \
+ 31  php7.3=latest            enabled      \
+  _  php7.4                   available    [ =stable ]
+```
+
+php7.3をインストール。
+
+```
+$sudo amazon-linux-extras install php7.3
+```
+
+バージョンを確認。
+
+```
+$php -v
+PHP 7.3.16 (cli) (built: Mar 27 2020 17:33:16) ( NTS )
+Copyright (c) 1997-2018 The PHP Group
+Zend Engine v3.3.16, Copyright (c) 1998-2018 Zend Technologies
+```
+
+## wordpressをインストール
+
+rootユーザーに切り替える。
+
+```
+$sudo su -
+```
+
+ディレクトリを移動。
+
+```
+#cd /var/www/html
+```
+
+wordpressをインストール。
+
+```
+#wget http://ja.wordpress.org/latest-ja.zip
+```
+
+zipファイルがあるかを確認。
+
+```
+#ls -la
+total 13636
+drwxr-xr-x 2 root root       27 May  3 09:26 .
+drwxr-xr-x 4 root root       33 Apr 23 12:28 ..
+-rw-r--r-- 1 root root 13960734 May  2 02:00 latest-ja.zip
+```
+
+zipファイルを解凍。
+
+```
+#unzip -q latest-ja.zip
+```
+
+解凍した中身をhtml配下に移動。
+
+```
+#cd /var/www/html/wordpress
+# mv * ..
+```
+
+html配下のファイルを確認。
+
+```
+# ls -la
+total 13848
+drwxr-xr-x  6 root root     4096 May  3 11:43 .
+drwxr-xr-x  4 root root       33 Apr 23 12:28 ..
+-rw-r--r--  1 root root      405 Feb  6 06:33 index.php
+-rw-r--r--  1 root root 13960734 May  2 02:00 latest-ja.zip
+-rw-r--r--  1 root root    19915 Feb 12 11:54 license.txt
+-rw-r--r--  1 root root    10089 May  2 02:00 readme.html
+drwxr-xr-x  2 root root        6 May  3 11:43 wordpress
+-rw-r--r--  1 root root     6912 Feb  6 06:33 wp-activate.php
+...
+```
+
+html配下のファイルの所有者・グループをapache/apacheに変更します。
+
+```
+#chown -R apache:apache /var/www/html
+```
+
+## wordpressを設定
+
+### Apacheを起動
+
+Apacheを起動。
+
+```
+$sudo service httpd start
+```
+
+起動中の場合は再起動。
+
+```
+$sudo service httpd restart
+```
+
+webサーバーを起動後にアクセスするとwordpressの初期設定画面が表示されます。
+
+<CommonImg
+  src="blog/images/20200503/01.png"
+  alt="初期設定画面"
+  client:only="react"
+/>
+
+### wordpress用のDBテーブルを作成する
+
+webサーバー(踏み台サーバー)からDBサーバーに接続。
+
+```
+$ssh -i my-key.pem ec2-user@XX.X.X.XX
+```
+
+MySQLに接続。
+
+```
+$mysql -u root -p
+```
+
+データベースを作成。データベース名はwordpress(任意)とします。
+
+```
+mysql> CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
+
+wordpressデータベースに接続できる一般ユーザを作成します。
+
+```
+mysql> grant all on wordpress.* to wordpress@"%" identified by 'wordpresspassword';
+```
+
+もし以下のエラーが発生した場合は...
+
+```
+ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
+```
+
+パスワードを変更するか、以下のコマンドでパスワードのポリシーを変更してください。
+
+```
+mysql> set global validate_password_policy=LOW;
+```
+
+ユーザーの作成が完了いたら、すべての変更を有効にするために以下を実行します。
+
+```
+mysql> FLUSH PRIVILEGES;
+```
+
+作成したユーザーは以下で確認できます。
+
+```
+mysql> select user,host from mysql.user;
++---------------+-----------+
+| user          | host      |
++---------------+-----------+
+| wordpress     | %         |
+| mysql.session | localhost |
+| mysql.sys     | localhost |
+| root          | localhost |
++---------------+-----------+
+```
+
+hostが`%`になっているものは、すべてのホストから接続することができます。
+
+### 設定した情報でログインする
+
+webサーバーにアクセスし、登録した情報を入力します。
+
+- データベース名 ・・・　wordpress
+- ユーザー名・・・ wordpress
+- パスワード・・・wordpresspassword
+- データベースのホスト名 10.0.2.10
+- テーブルの接頭辞・・・wp\_(そのまま)
+
+## wordpressのユーザー名やサイト名を設定する
+
+wordpressにログインするためのユーザー情報などを設定する。
+
+<CommonImg
+  src="blog/images/20200503/02.png"
+  alt="wordpressのユーザー名やサイト名を設定する"
+  client:only="react"
+/>
+
+wordpressの管理画面が表示されます。
+
+<CommonImg
+  src="blog/images/20200503/03.png"
+  alt="wordpressのユーザー名やサイト名を設定する"
+  client:only="react"
+/>

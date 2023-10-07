@@ -1,0 +1,34 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Lag SOPを利用して値の変化をなめらかにする
+description: 使い方がよくわかりませんでしたが、値の変化をなめらかにするときに便利だったのでメモしておきます。
+createAt: 2020-06-14
+thumbnail: "/blog/thumbnail/touch_designer_thumb.png"
+tags: ["TouchDesigner"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## Lag SOPとは
+
+> Lag CHOPはラグ（遅延）とオーバーシュート（超過）を追加します。 ベロシティ（速度）とアクセラレーション（加速）チャンネルを制限することもできます。 ラグ（遅延）は、入力チャネルの急速な変化速度を落とします。 オーバーシュート（超過）は、入力チャネルの変化を増幅します。 2つの値が各パラメータにあります。 例えば、ラグ・エフェクトで、入力チャネル値が増加している場合、最初のラグ・パラメータが使用されます。そして、チャンネル値が減少している場合、2番目のラグ・パラメータが使われます。 これは、急速な上昇と緩慢な降下を与えることができます。 しかし、多くの場合ラグ・アップ、ダウンは同じ値に保たれます。 急転しない効果は、Filter CHOPを参照してください。
+> [Lag CHOP | TouchDesigner 日本語ドキュメント](http://ted-kanakubo.com/touchdesigner-jp/?p=154)
+
+使い方がよくわかりませんでしたが、値の変化をなめらかにするときに便利だったのでメモしておきます。
+
+サンプルの動きとしてはこんな感じです。
+
+<CommonImg
+  src="blog/images/20200614/01.gif"
+  alt="Lag SOPを利用して値の変化をなめらかにする"
+  client:only="react"
+/>
+
+ポイントはLag SOPの`Time Slice`を**ON**にすることです。
+
+<CommonImg
+  src="blog/images/20200614/02.png"
+  alt="Lag SOPを利用して値の変化をなめらかにする"
+  client:only="react"
+/>

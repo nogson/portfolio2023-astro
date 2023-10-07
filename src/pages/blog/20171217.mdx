@@ -1,0 +1,350 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: THREE.jsでオリジナルのポストプロセスをやってみる
+description: オフスクリーンレンダリングを利用して、ポストプロセスをやってみたいと思います。
+createAt: 2017-12-17
+thumbnail: "/blog/thumbnail/webgl_thumb.png"
+tags: ["WebGL"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+前回<a href="http://nogson2.hatenablog.com/entry/2017/12/16/014029">オフスクリーンレンダリング</a>について書きました。
+
+今回は、オフスクリーンレンダリングを利用して、ポストプロセスをやってみたいと思います。
+
+ポストプロセスを簡単に言うと、作成済みのシーンに対して、あとから何か処理を行うことです。
+
+今回は以下のような２つのシーンを掛け合せてみようと思います。
+
+<CommonImg src="https://qiita-image-store.s3.amazonaws.com/0/11290/add0fcef-5926-a727-6b62-27b6f1388449.png" width="400" client:only="react" />
+
+## ベースとなるシーンを描く
+
+まずはベースとなるシーンをオフスクリーンレンダリングして、その情報をテクスチャとしてシェーダーに情報を送ります。
+この時点では何も表示されません。
+
+### JS
+
+```
+const baseVert = require('./../shader/base.vert');
+const baseFrag = require('./../shader/base.frag');
+
+var theta = 0;
+
+// ベースの描画処理（renderTarget への描画用）
+baseScene = new THREE.Scene();
+
+//ベースの描画処理用カメラ
+baseCamera = new THREE.PerspectiveCamera(50, windowWidth / windowHeight, 0.1, 1000);
+baseCamera.position.z = 20;
+
+//ベース用のマテリアルとジオメトリ
+var baseGeometry = new THREE.BoxGeometry(5, 5, 5);
+var baseMaterial = new THREE.ShaderMaterial({
+    vertexShader: baseVert,
+    fragmentShader: baseFrag
+});
+var baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+baseScene.add(baseMesh);
+
+//オフスクリーンレンダリング用
+renderTarget = new THREE.WebGLRenderTarget(windowWidth, windowHeight, {
+    magFilter: THREE.NearestFilter,
+    minFilter: THREE.NearestFilter,
+    wrapS: THREE.ClampToEdgeWrapping,
+    wrapT: THREE.ClampToEdgeWrapping
+});
+
+render();
+
+function render() {
+
+     theta += 0.01;
+
+     baseMesh.rotation.set(theta,theta,0);
+
+    //オフスクリーンレンダリング
+    renderer.setClearColor(new THREE.Color(0xffffff), 1.0);
+    renderer.render(baseScene, baseCamera, renderTarget);
+
+    requestAnimationFrame(render);
+}
+```
+
+### 頂点シェーダー
+
+```
+varying vec3 vNormal;
+
+void main() {
+  vNormal = normalMatrix * normal;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+```
+
+### フラグメントシェーダー
+
+```
+precision mediump float;
+
+varying vec3 vNormal;
+
+void main(){
+    gl_FragColor = vec4(vec3(vNormal),1.0) ;
+}
+```
+
+## ポストプロセス用のシーンを描く
+
+ポストプロセスは通常画面全体に対して適応します。
+その為、画面全体を覆うポリゴンを作成します。
+
+```
+const postVert = require('./../shader/post.vert');
+const postFrag = require('./../shader/post.frag');
+
+var clock = new THREE.Clock();
+var time = 0.0;
+
+//ポストプロセス用
+postScene = new THREE.Scene();
+postCamera = new THREE.PerspectiveCamera(60, windowWidth / windowHeight, 0.1, 1000);
+postCamera.position.z = 20;
+
+//ポストプロセス用ジオメトリ、マテリアル
+var postGeometry = new THREE.Geometry();
+
+postGeometry.vertices = [
+    new THREE.Vector3(-1.0 * aspect, 1.0, 0.0),
+    new THREE.Vector3(1.0 * aspect, 1.0, 0.0),
+    new THREE.Vector3(-1.0 * aspect, -1.0, 0.0),
+    new THREE.Vector3(1.0 * aspect, -1.0, 0.0)
+];
+
+postGeometry.faces = [
+    new THREE.Face3(0, 2, 1),
+    new THREE.Face3(1, 2, 3)
+];
+
+var postUniforms = {
+    'uTex': {
+        type: 't',
+        //ベース用シーンをテクスチャとして渡す
+        value: renderTarget
+    },
+    'uTime': {
+        type: 'f',
+        value: time
+    }
+};
+
+var postMaterial = new THREE.ShaderMaterial({
+    uniforms: postUniforms,
+    vertexShader: postVert,
+    fragmentShader: postFrag
+});
+
+var postMesh = new THREE.Mesh(postGeometry, postMaterial);
+postScene.add(postMesh);
+
+render();
+
+function render() {
+
+    //画面にレンダリング
+    renderer.setClearColor(new THREE.Color(0x000000), 1.0);
+    renderer.render(postScene, postCamera);
+
+    requestAnimationFrame(render);
+}
+```
+
+### 頂点シェーダー
+
+```
+varying vec2 vUv;
+
+void main() {
+  gl_Position = vec4( position, 1.0 );
+  //uv座標はpositionをそのまま使う。中央の座標の(0.0,0.0)にする為　＋1.0) * 0.5する
+   vUv = (position.xy + 1.0) * 0.5;
+}
+```
+
+### フラグメントシェーダー
+
+```
+precision mediump float;
+varying vec2 vUv;
+uniform float uTime;
+
+//ベースシーンのレンダリング結果
+uniform sampler2D uTex;
+
+float rnd(vec2 n){
+    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+}
+
+void main(){
+
+    float n = rnd(gl_FragCoord.st + mod(uTime, 10.0)) * 0.5 + 0.7;
+
+    gl_FragColor = texture2D(uTex, vUv) * vec4(vec3(n),1.0);
+}
+```
+
+## ベース用シーンとポストプロセス用シーンを組み合わせる
+
+両方合わせると以下のようになります。
+
+```
+const baseVert = require('./../shader/base.vert');
+const baseFrag = require('./../shader/base.frag');
+const postVert = require('./../shader/post.vert');
+const postFrag = require('./../shader/post.frag');
+
+
+window.onload = function () {
+
+    var renderer;
+    var postCamera, postScene;
+    var baseCamera, baseScene;
+    var renderTarget;
+    var theta = 0;
+    var clock = new THREE.Clock();
+    var time = 0.0;
+
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
+
+    var aspect = windowWidth / windowHeight;
+
+    // rendererの作成
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor('#CCC');
+
+    // canvasをbodyに追加
+    document.body.appendChild(renderer.domElement);
+
+    // canvasをリサイズ
+    renderer.setSize(windowWidth, windowHeight);
+
+    // ベースの描画処理（renderTarget への描画用）
+    baseScene = new THREE.Scene();
+
+    //ベースの描画処理用カメラ
+    baseCamera = new THREE.PerspectiveCamera(50, windowWidth / windowHeight, 0.1, 1000);
+    baseCamera.position.z = 20;
+
+    var baseUniforms = {
+
+        'uResolution': {
+            type: 'v2',
+            value: new THREE.Vector2(windowWidth, windowHeight)
+        }
+    };
+
+    //ベース用のマテリアルとジオメトリ
+    var baseGeometry = new THREE.BoxGeometry(5, 5, 5);
+    var baseMaterial = new THREE.ShaderMaterial({
+        uniforms: baseUniforms,
+        vertexShader: baseVert,
+        fragmentShader: baseFrag
+    });
+    var baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+    baseScene.add(baseMesh);
+
+    //オフスクリーンレンダリング用
+    renderTarget = new THREE.WebGLRenderTarget(windowWidth, windowHeight, {
+        magFilter: THREE.NearestFilter,
+        minFilter: THREE.NearestFilter,
+        wrapS: THREE.ClampToEdgeWrapping,
+        wrapT: THREE.ClampToEdgeWrapping
+    });
+
+    //ポストプロセス用
+    postScene = new THREE.Scene();
+    postCamera = new THREE.PerspectiveCamera(60, windowWidth / windowHeight, 0.1, 1000);
+    postCamera.position.z = 20;
+
+    //ポストプロセス用ジオメトリ、マテリアル
+    var postGeometry = new THREE.Geometry();
+
+    postGeometry.vertices = [
+        new THREE.Vector3(-1.0 * aspect, 1.0, 0.0),
+        new THREE.Vector3(1.0 * aspect, 1.0, 0.0),
+        new THREE.Vector3(-1.0 * aspect, -1.0, 0.0),
+        new THREE.Vector3(1.0 * aspect, -1.0, 0.0)
+    ];
+
+    postGeometry.faces = [
+        new THREE.Face3(0, 2, 1),
+        new THREE.Face3(1, 2, 3)
+    ];
+
+    var postUniforms = {
+        'uTex': {
+            type: 't',
+            value: renderTarget
+        },
+        'uTime': {
+            type: 'f',
+            value: time
+        }
+    };
+
+    var postMaterial = new THREE.ShaderMaterial({
+        uniforms: postUniforms,
+        vertexShader: postVert,
+        fragmentShader: postFrag
+    });
+
+    var postMesh = new THREE.Mesh(postGeometry, postMaterial);
+    postScene.add(postMesh);
+
+    render();
+
+    function render() {
+
+        theta += 0.01;
+
+        baseMesh.rotation.set(theta, theta, 0);
+
+        time = clock.getElapsedTime();
+        postMaterial.uniforms.uTime.value = time;
+
+        //オフスクリーンレンダリング
+        renderer.setClearColor(new THREE.Color(0xffffff), 1.0);
+        renderer.render(baseScene, baseCamera, renderTarget);
+
+        //画面にレンダリング
+        renderer.setClearColor(new THREE.Color(0x000000), 1.0);
+        renderer.render(postScene, postCamera);
+
+        requestAnimationFrame(render);
+    }
+};
+```
+
+### 表示結果
+
+<p
+  data-height="265"
+  data-theme-id="0"
+  data-slug-hash="wpKZEd"
+  data-default-tab="js,result"
+  data-user="satofaction"
+  data-embed-version="2"
+  data-pen-title="wpKZEd"
+  class="codepen"
+>
+  See the Pen <a href="https://codepen.io/satofaction/pen/wpKZEd/">wpKZEd</a> by
+  nogson (<a href="https://codepen.io/satofaction">@satofaction</a>) on{" "}
+  <a href="https://codepen.io">CodePen</a>.
+</p>
+<script
+  async
+  src="https://production-assets.codepen.io/assets/embed/ei.js"
+></script>

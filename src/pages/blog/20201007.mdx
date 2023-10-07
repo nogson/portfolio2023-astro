@@ -1,0 +1,117 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: herokuを利用してnuxtをSSRでホスティングするメモ
+description: herokuを利用してnuxtをSSRでホスティングするメモです。
+createAt: 2020-10-07
+thumbnail: "/blog/thumbnail/heroku_thumb.png"
+tags: ["Heroku"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+herokuを利用してnuxtをSSRでホスティングする。
+
+nuxtプロジェクトを作成する。  
+プロジェクトはSSRで作成する。
+
+```
+$ yarn create nuxt-app sampleApp
+$ cd sampleApp
+```
+
+SSRを試したいので、`/pages`配下に`sub/_id.vue`を作成する。
+
+```
+<template>
+  <div>sub</div>
+</template>
+
+<script>
+export default {
+  name: 'Id'
+}
+</script>
+```
+
+ビルドする。
+
+```
+$ yarn build
+```
+
+`package.json`を変更。  
+heroku-prebuild後に実行されるコマンドを`heroku-postbuild`に指定する。
+
+```
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "heroku-postbuild": "npm run build" // + 追加
+  },
+```
+
+Heroku CLIをインストール。
+
+```
+$ brew tap heroku/brew && brew install heroku
+```
+
+Herokuにアプリを作成。
+
+<CommonImg
+  src="blog/images/20201007/01.png"
+  alt="herokuを利用してnuxtをSSRでホスティングする"
+  client:only="react"
+/>
+
+環境変数を設定。
+
+```
+HOST : 0.0.0.0
+```
+
+<CommonImg
+  src="blog/images/20201007/02.png"
+  alt="herokuを利用してnuxtをSSRでホスティングする"
+  client:only="react"
+/>
+
+herokuにログインする。  
+ブラウザが立ち上がるのでログインする。
+
+```
+$ heroku login
+```
+
+gitに登録。
+
+```
+$ heroku git:remote -a sampleapp201007
+```
+
+herokuにプッシュ。
+
+```
+$ git add .
+$ git commit -m 'initial commit'
+$ git push heroku master
+```
+
+herokuのコンソールからアプリを表示。
+
+<CommonImg
+  src="blog/images/20201007/03.png"
+  alt="herokuを利用してnuxtをSSRでホスティングする"
+  client:only="react"
+/>
+
+subページも表示。
+
+<CommonImg
+  src="blog/images/20201007/04.png"
+  alt="herokuを利用してnuxtをSSRでホスティングする"
+  client:only="react"
+/>

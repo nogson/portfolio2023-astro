@@ -1,0 +1,114 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Mysql接続に関して困ったことメモ
+description: サーバーやインフラの知識は素人同然なので間違いや、説明不足が多いと思います。また、ハマりそうなので自分用のメモです。
+createAt: 2020-09-25
+thumbnail: "/blog/thumbnail/note_thumb.png"
+tags: ["Mysql"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+サーバーやインフラの知識は素人同然なので間違いや、説明不足が多いと思います。  
+また、ハマりそうなので自分用のメモです。
+
+### 前提
+
+- Laravelを利用
+- MySQL8.0.xを利用
+- EC2にDBサーバーをたてる
+
+## 問題
+
+ローカル環境では問題なくDB(mysql)に接続できていた。  
+EC2にSSH接続はできている。  
+mysqlコマンドでデータベースへログインもてきている。  
+Laravel `php artisan migrate`を実行するとエラーになる。
+
+## .envの設定
+
+```
+DB_CONNECTION=mysql
+DB_HOST=10.0.0.69 # EC2のプライベートIPアドレス
+DB_PORT=3306
+DB_DATABASE=db
+DB_USERNAME=root
+DB_PASSWORD=password
+```
+
+## ユーザーを確認
+
+EC2上でmysqlにログイン。  
+ユーザー情報を確認。
+
+```
+mysql> SELECT user, host, plugin FROM mysql.user;
++------------------+-----------+-----------------------+
+| user             | host      | plugin                |
++------------------+-----------+-----------------------+
+| mysql.infoschema | localhost | caching_sha2_password |
+| mysql.session    | localhost | caching_sha2_password |
+| mysql.sys        | localhost | caching_sha2_password |
+| root             | localhost | caching_sha2_password |
++------------------+-----------+-----------------------+
+```
+
+ローカル環境と少し違う。  
+ローカル環境はこんな感じだった。
+
+```
++---------------+-----------+-----------------------+
+| user          | host      | plugin                |
++---------------+-----------+-----------------------+
+| root          | localhost | mysql_native_password |
+| mysql.session | localhost | mysql_native_password |
+| mysql.sys     | localhost | mysql_native_password |
+| root          | %         | mysql_native_password |
+| default       | %         | mysql_native_password |
++---------------+-----------+-----------------------+
+```
+
+## ユーザーを作成して、権限や認証方式を変更
+
+ローカル環境に合わせてユーザーの追加や、権限や認証方式を変更していく。
+
+#### ◎ユーザーを追加
+
+hostが`localhost`だと外部からの接続ができない。  
+外部からの接続ができる`%`を指定する。
+
+```
+create user 'root'@'%' identified by 'password';
+```
+
+#### ◎権限を変更
+
+dbデータベースへのアクセスを許可する。
+
+```
+grant all privileges on db.* to 'root'@'%';
+```
+
+#### ◎認証方式の変更
+
+[MySQL8.0 認証方式を変更する(Laravel5)](https://qiita.com/ucan-lab/items/3ae911b7e13287a5b917)を参考にする。
+
+> MySQL8.0.4以降 のログイン認証方式は caching_sha2_password がデフォルト  
+> PHPのMySQL接続ライブラリがcaching_sha2_passwordに未対応のため接続不可
+> 解決策としては認証方式をmysql_native_password に戻す
+
+```
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+mysql> ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'password';
+```
+
+`/etc/my.cnf`に以下を追記。(コメントアウトしてあったので表示しただけ)
+
+```
+default_authentication_plugin=mysql_native_password
+```
+
+## まとめ
+
+ローカルで利用しているdockerファイルで環境を構築すればこんな問題はおこらなかったのかも。。。

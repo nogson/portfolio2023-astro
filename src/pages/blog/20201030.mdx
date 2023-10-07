@@ -1,0 +1,231 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: CodeDeployと CodePipelineを使ってEC2に自動デプロイのメモ
+description: 自動でEC2にソースをデプロイにチャレンジです。次回やるときの為ののメモです。
+createAt: 2020-10-30
+thumbnail: "/blog/thumbnail/aws_code_deploy_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+自動でEC2にソースをデプロイにチャレンジです。  
+次回やるときの為ののメモです。
+
+## 自動デプロイの流れ
+
+違うかもしれませんが、やりたいことはこんなイメージです。
+
+1. githubにpush
+2. CodePipelineをが起動
+3. codeDeployがEC2にpush
+
+## EC2の設定
+
+### CodeDeploy エージェントをインストールする
+
+そのままではCodeDeployからEC2が操作できないのでAgentを追加する必要がある。
+
+[Amazon Linux 用または RHEL 用の CodeDeploy エージェントをインストールする - AWS CodeDeploy](https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/codedeploy-agent-operations-install-linux.html)
+
+```
+$ sudo yum update
+$ sudo yum install ruby
+$ sudo yum install wget
+$ cd /home/ec2-user
+// アジアパシフィック (東京)の場合
+// wget https://aws-codedeploy-ap-northeast-1.s3.ap-northeast-1.amazonaws.com/latest/install
+$ wget https://{bucket-name}.s3.{region-identifier}.amazonaws.com/latest/install
+$ chmod +x ./install
+$ sudo ./install auto
+```
+
+サービスが正しく実行されているかは以下のコマンドで確認。
+
+```
+$ sudo service codedeploy-agent status
+```
+
+実行されていない場合、デプロイ時に以下のようなエラーが発生する。
+
+> The overall deployment failed because too many individual instances failed deployment, too few healthy instances are available for deployment, or some instances in your deployment group are experiencing problems.
+
+## クライアント側の設定
+
+CodeDeployには`appspec.yml`が必要で、同期させるファイルのルートに配置する必要がある。
+
+```
+version: 0.0
+os: linux
+files:
+    - source: /index.html
+      destination: /var/www/html/
+hooks:
+  BeforeInstall:
+    - location: scripts/install_dependencies
+      timeout: 300
+      runas: root
+    - location: scripts/start_server
+      timeout: 300
+      runas: root
+  ApplicationStop:
+    - location: scripts/stop_server
+      timeout: 300
+      runas: root
+```
+
+- files
+  - source : 同期元
+  - destination : 同期先
+- hooks
+  - BeforeInstall(例) : イベント名
+    - location : イベントで実行するファイル（場所）
+    - timeout : 実行時間
+    - runas : ユーザー
+
+##### scripts/install_dependencies
+
+apacheをインストールする。
+
+```
+ #!/bin/bash
+yum install -y httpd
+```
+
+##### scripts/start_server
+
+apacheを起動する。
+
+```
+#!/bin/bash
+service httpd start
+```
+
+##### scripts/stop_server
+
+apacheを停止する。
+
+```
+#!/bin/bash
+isExistApp=`pgrep httpd`
+if [[ -n  $isExistApp ]]; then
+    service httpd stop
+fi
+```
+
+#### イベントフック
+
+> デプロイは  
+> -アプリケーションの停止  
+> -アプリケーションファイルのダウンロード  
+> -アプリケーションファイルのインストール  
+> -アプリケーションの起動  
+> という順で実行され、 次のデプロイライフサイクル図において、オレンジ背景の箇所が実際にフック処理を割り込めるイベントです。
+
+<CommonImg
+  src="blog/images/20201030/01.png"
+  alt="イベントフック"
+  client:only="react"
+/>
+
+> [参考:CodeDeployのApplicationStopイベントフックはどう実行される?](https://dev.classmethod.jp/articles/codedeploy-applicationstop-hook-not-executed-for0first-deployment/)
+
+※ ApplicationStopは2回目のデプロイ移行実行される
+
+## CodeDeployの設定
+
+### アプリケーションとデプロイグループを作成
+
+CodeDeploy > アプリケーション > 「アプリケーションの作成」ボタンを押す。
+
+アプリケーション名を入力して、コンピューティングプラットフォームに「EC2/オンプレミス」を選択。
+
+<CommonImg
+  src="blog/images/20201030/02.png"
+  alt="アプリケーションとデプロイグループを作成"
+  client:only="react"
+/>
+
+デプロイグループを作成する。
+
+<CommonImg
+  src="blog/images/20201030/03.png"
+  alt="アプリケーションとデプロイグループを作成"
+  client:only="react"
+/>
+<CommonImg
+  src="blog/images/20201030/04.png"
+  alt="アプリケーションとデプロイグループを作成"
+  client:only="react"
+/>
+
+### githubを接続
+
+CodeDeploy > アプリケーション > codedeploy-test > codedeploy-group-test > 「デプロイ作成」を押す。
+
+必要項目を入力する。
+
+<CommonImg
+  src="blog/images/20201030/05.png"
+  alt="githubを接続"
+  client:only="react"
+/>
+
+デプロイする。
+
+<CommonImg
+  src="blog/images/20201030/06.png"
+  alt="githubを接続"
+  client:only="react"
+/>
+
+## CodePipelineの設定
+
+CodePipeline > パイプライン > 「パイプラインを作成する」ボタンを押す。
+
+### パイプラインの設定
+
+「パイプライン名」を入力。
+
+### ソースステージを追加する
+
+ソースプロバイダーに「Github」。
+リポジトリ、ブランチに対象のものを設定。
+
+### ビルドステージを追加する
+
+Dockerイメージを作成する必要がある場合や、javaなどのコンパイル言語の場合に利用します。  
+phpやrubyのソースを配置するだけであれば、ビルドが必要ないのでスキップします、
+
+### デプロイステージを追加する
+
+デプロイプロバイダーはCodeDeployを選択。  
+その他の項目もCodeDeployで作成したものを設定する。
+
+### パイプラインを作成
+
+codepipelineが作成されて、デプロイが実行されます。
+
+<CommonImg
+  src="blog/images/20201030/07.png"
+  alt="パイプラインを作成"
+  client:only="react"
+/>
+
+CodePipelineを利用する場合はEC2にS3にアクセスする権限を与える必要があります。  
+権限がない場合は以下のようなエラーが発生します。
+
+<CommonImg
+  src="blog/images/20201030/08.png"
+  alt="パイプラインを作成"
+  client:only="react"
+/>
+
+S3への権限を追加する。
+
+<CommonImg
+  src="blog/images/20201030/09.png"
+  alt="パイプラインを作成"
+  client:only="react"
+/>

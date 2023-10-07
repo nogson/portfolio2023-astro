@@ -1,0 +1,165 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: AWS超初心者のメモ プライベートサブネットにMySQLを入れる1
+description: プライベートサブネットにMySQLをいれてみる。
+createAt: 2020-05-01
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## プライベートサブネットとは
+
+データベースなど、インターネットから隔離するために利用する、インターネットから接続できないサブネットのことです。
+
+<CommonImg
+  src="blog/images/20200501/01.png"
+  alt="プライベートサブネットとは"
+  client:only="react"   
+/>
+
+## プライベートサブネットを作成する
+
+VPC > サブネットから「サブネットの作成」を押す
+
+<CommonImg
+  src="blog/images/20200501/02.png"
+  alt="プライベートサブネットを作成する"
+  client:only="react"
+/>
+
+## プライベートサブネットにサーバーを構築する
+
+EC2 > インスタンス > インスタンスを作成
+
+<CommonImg
+  src="blog/images/20200501/03.png"
+  alt="プライベートサブネットにサーバーを構築する"
+  client:only="react"
+/>
+
+<CommonImg
+  src="blog/images/20200501/04.png"
+  alt="プライベートサブネットにサーバーを構築する"
+  client:only="react"
+/>
+
+ステップ3では、VPC領域を選択して、作成いたプライベートサブネットを選択。  
+IPアドレスはインターネットから接続しないので、自動割当パブリックIPは「無効化」にします。
+
+<CommonImg
+  src="blog/images/20200501/05.png"
+  alt="プライベートサブネットにサーバーを構築する"
+  client:only="react"
+/>
+
+ステップ6のセキュリティグループでは、MySQLの通信ポートの「3306」を設定する。  
+送信元は、「任意の場所」を選択する
+
+<CommonImg
+  src="blog/images/20200501/06.png"
+  alt="プライベートサブネットにサーバーを構築する"
+  client:only="react"
+/>
+
+## DBサーバーがWebサーバーからアクセスできるかを確認する
+
+DBサーバーがWebサーバーからアクセスできるかを確認するにはpingコマンドを利用します。
+pingコマンドでは「ICMPプロコトル」を利用します。
+
+### ICMPがとおるようにする
+
+VPX > セキュリティグループ > インバウンドルール > ルールの編集
+
+<CommonImg
+  src="blog/images/20200501/07.png"
+  alt="ICMPがとおるようにする"
+  client:only="react"
+/>
+
+ルールの追加 >  
+タイプ : すべてのICMP
+ソース : 任意の場所
+
+<CommonImg
+  src="blog/images/20200501/08.png"
+  alt="ICMPがとおるようにする"
+  client:only="react"
+/>
+
+### pingコマンドを実行
+
+```
+$ping 10.0.2.10
+```
+
+疎通できると以下のようになる。
+
+```
+PING 10.0.2.10 (10.0.2.10) 56(84) bytes of data.
+64 bytes from 10.0.2.10: icmp_seq=130 ttl=255 time=0.443 ms
+64 bytes from 10.0.2.10: icmp_seq=131 ttl=255 time=0.467 ms
+```
+
+## ローカルからWebサーバーにアクセスしてみる
+
+Webサーバーのインスタンスのインバウンドルールも同じようにICMPが通るように設定します。  
+そのうえで、疎通を確認します。
+
+```
+ping ec2-13-231-207-54.ap-northeast-1.compute.amazonaws.com
+```
+
+疎通できると以下のようになる。
+
+```
+$ ping ec2-13-231-207-54.ap-northeast-1.compute.amazonaws.com
+PING ec2-13-231-207-54.ap-northeast-1.compute.amazonaws.com (13.231.207.54): 56 data bytes
+64 bytes from 13.231.207.54: icmp_seq=0 ttl=236 time=10.718 ms
+64 bytes from 13.231.207.54: icmp_seq=1 ttl=236 time=14.337 ms
+64 bytes from 13.231.207.54: icmp_seq=2 ttl=236 time=12.168 ms
+64 bytes from 13.231.207.54: icmp_seq=3 ttl=236 time=32.455 ms
+```
+
+## DBソフトをインストール
+
+SSHでログインして、MySQLをインストールします。  
+しかしDBサーバーはプライベートサブネットの為、インターネットと接続されていません。
+
+### 踏み台サーバーを利用してSSH接続
+
+インターネットから接続できるWebサーバーを利用して、DBサーバーにSSH接続します。  
+手順としては以下のような感じです。
+
+1. WebサーバーにSSH接続
+2. WebサーバーからDBサーバーにSSH接続
+
+### WebサーバーからSSH接続
+
+インスタンスにSSH接続するには、秘密鍵が必要です。  
+WebサーバーからDBサーバーに接続するために、秘密鍵をWebサーバーに置く必要があります。  
+アップするには以下のようにscpコマンドを利用します。
+
+```
+// scp -i 秘密鍵 アップするファイル ec2-user@{パブリックIP}:アップ先
+scp -i my-key.pem my-key.pem ec2-user@{パブリックIP}:~/
+```
+
+秘密鍵をアップしたら、鍵のパーミッションを変更します。  
+Webサーバーにログインした上で以下のコマンドを実行します。
+
+```
+$chmod 400 my-key.pem
+```
+
+### DBサーバーにSSH接続
+
+以下でDBサーバーにログインします。
+
+```
+ssh -i my-key.pem ec2-user@10.0.2.10
+```
+
+つづく

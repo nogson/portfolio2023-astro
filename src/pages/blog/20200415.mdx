@@ -1,0 +1,53 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Laravelでpublicフォルダ配下に保存したファイルにアクセスできない
+description: Laravelで「/storage/app/public」配下に画像などのファイルを保存した場合に、ファイルにアクセスしても404になってしまう。
+createAt: 2020-04-15
+thumbnail: "/blog/thumbnail/laravel_thumb.png"
+tags: ["Laravel"]
+draft: false
+---
+
+Laravelで`/storage/app/public`配下に画像などのファイルを保存した場合に、ファイルにアクセスしても404になってしまう。
+
+## やったこと
+
+### シンボリックリンクを追加
+
+以下でstorageフォルダにシンボリックリンクを追加します。
+
+```
+php artisan storage:link
+```
+
+### シンボリックリンクを確認
+
+シンボリックリンクのパスを以下で確認します。
+
+```
+#cd  public
+#ls -la
+
+-rw-r--r--   1 satoufumihiko  staff    24 Apr 14 22:31 robots.txt
+-rw-r--r--   1 satoufumihiko  staff  1061 Apr 14 22:31 service-worker.js
+lrwxr-xr-x   1 hoge  staff    70 Apr 13 22:44 storage -> //Users/[ユーザ名]/laravel/myapp/storage/app/public
+-rw-r--r--   1 satoufumihiko  staff  1194 Mar 25 02:31 web.config
+
+```
+
+シンボリックリンクのパスが`/Users/[ユーザ名]/laravel/myapp/storage/app/public`になっているます。
+その為、`public/storage`配下にアクセスすることができなかったようです。
+
+### シンボリックリンクを変更
+
+以下のようにアプリケーションの構造に合わせてシンボリックリンクを変更します。
+
+```
+root@0e1bb67c8b76:/var/www/html# ln -nfs /var/www/html/storage/app/public storage
+```
+
+## 参考
+
+まさにこれでした。
+
+[[Laravel]保存した画像が404エラーで表示されない - Qiita](https://qiita.com/Baisel/items/49b16ce3231c749f6c6f)

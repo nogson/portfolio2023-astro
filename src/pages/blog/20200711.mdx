@@ -1,0 +1,55 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: VesselでLaravelの開発環境を簡単に構築するメモ
+description: Vesselを利用してLaravelの開発環境を構築するのが簡単だったのでメモです。
+createAt: 2020-07-11
+thumbnail: "/blog/thumbnail/vessel_thumb.png"
+tags: ["Laravel", "Vessel"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+Vesselを利用してLaravelの開発環境を構築するのが簡単だったのでメモです。
+
+## 手順
+
+laravelブロジェクトを作成。
+
+```
+$ composer create-project --prefer-dist laravel/laravel {プロジェクト名}
+```
+
+プロジェクトに移動。
+
+```
+$ cd {プロジェクト名}
+```
+
+Docker環境のセットアップ。
+
+```
+$ composer require shipping-docker/vessel
+```
+
+```
+$ php artisan vendor:publish --provider="Vessel\VesselServiceProvider"
+```
+
+```
+$ bash vessel init
+```
+
+プロジェクトを起動。
+
+```
+./vessel start
+```
+
+[localhost](http://localhost/)でアクセス。
+
+<CommonImg
+  src="blog/images/20200711/01.png"
+  alt="プロジェクトを起動"
+  client:only="react"
+/>

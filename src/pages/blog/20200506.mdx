@@ -1,0 +1,155 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: AWS CLIの利用の基礎基礎メモ
+description: AWS CLIを利用すれば、AWSマネージメントコンソールとほぼ同じ操作が可能です。
+createAt: 2020-05-06
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+AWS CLIを利用すれば、AWSマネージメントコンソールとほぼ同じ操作が可能です。  
+※ セキュリティ面から考えると、IAMのロールを使ったほうがよいみたい。
+
+## CLIをインストール
+
+インストールは[公式](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/install-cliv2.html)を確認。
+
+macの場合はこんな感じ。
+
+```
+$ curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+$ sudo installer -pkg AWSCLIV2.pkg -target /
+```
+
+インストールできたかは以下で確認できる。
+
+```
+$ aws --version
+aws-cli/2.0.10 Python/3.7.4 Darwin/19.4.0 botocore/2.0.0dev14
+```
+
+## CLIの基本設定
+
+以下のコマンドで環境設定を行います。  
+[公式はこちら。](https://docs.aws.amazon.com/ja_jp/cli/latest/)
+
+```
+$ aws configure
+AWS Access Key ID [None]: ***********
+AWS Secret Access Key [None]: ************
+Default region name [None]: ap-northeast-1
+Default output format [None]: text
+```
+
+「AWS Access Key ID、AWS Secret Access Key」はIAMユーザー作成時に表示されるものを利用します。
+
+Default region nameは東京リージョンの場合は「ap-northeast-1」を設定します。
+
+[f:id:nogson2:20200505231923p:plain]
+
+正しく設定されたかの確認の為以下を実行。
+
+```
+$ aws ec2 describe-security-groups
+SECURITYGROUPS  default VPC security group      sg-******    default *******    vpc-*****
+IPPERMISSIONS   -1
+USERIDGROUPPAIRS        sg-********     ************
+IPPERMISSIONSEGRESS     -1
+IPRANGES        0.0.0.0/0
+```
+
+設定した内容はユーザーのホームディレクトリの`~/.aws/`に保存されています。
+
+### 複数の設定を利用する
+
+CLIの設定内容をprofileとして、複数保存して使い分けることもできます。
+
+保存する場合は以下を実行します。
+
+```
+aws configure --profile test-user
+```
+
+保存したprofileでコマンドを実行する場合は、profileオプションで以下を実行します。
+
+```
+aws ec2 describe-security-groups --profile test-user`
+```
+
+## CLIの基本的な使い方
+
+基本的な書き方は以下。
+
+```
+aws <サービス名>　<操作コマンド>
+```
+
+例:
+
+```
+aws s3 ls
+```
+
+### 基本的なオプション
+
+| オプション | 処理                                                         |
+| ---------- | ------------------------------------------------------------ |
+| --profile  | 設定したprofileを指定してコマンドを実行する                  |
+| --region   | リージョンの指定                                             |
+| --output   | 出力形式の指定                                               |
+| --filters  | 参照系のコマンド使用時に検索条件を指定してフィルタリングする |
+| --query    | 実行結果内容を絞り込んで出力する                             |
+
+例: セキュリティグループの詳細情報をjson形式で参照する
+
+```
+$ aws ec2 describe-security-groups --output json
+{
+    "SecurityGroups": [
+        {
+            "Description": "default VPC security group",
+            "GroupName": "default",
+            "IpPermissions": [
+            ...
+}
+```
+
+#### filtersオプションの使い方
+
+参照系コマンド実行時に`--filters`を利用することで、検索条件を指定することができます。
+
+基本的な書き方は以下。
+
+```
+aws <サービス名> <リソース操作コマンド> --filters "Name=<フィルタ名A>,Values=<条件A1>" "Name=<フィルタ名B>,Values=<条件B1>,<条件B2>"
+```
+
+例: t2.smallのインスタンスタイプのインスタンスを参照する
+
+```
+aws ec2 describe-instances --filters "Name=instance-type,Values=t2.small"
+```
+
+#### queryオプションの使い方
+
+コマンド実行時に`--query`を利用することで、実行結果の絞り込みをすることができます。
+
+基本的な書き方は以下です。
+
+```
+// 1階層目に出力するクエリー名がある場合
+aws <サービス名> <リソース操作コマンド> --query '<クエリー名 (1階層名)>'
+```
+
+```
+// 1階層目がリスト構造になっており、2階層目に出力するクエリー名がある場合
+aws <サービス名> <リソース操作コマンド> --query '<クエリー名 (1階層名)>[].<クエリー名 (2階層目) >'
+```
+
+#### filters、queryの使い分け
+
+queryの使い方はfiltersに比べて難しいようです。  
+基本的には、条件検索は`filters`を利用して、演算子での条件検索を利用する場合は`query`を利用すると良いらしいです。

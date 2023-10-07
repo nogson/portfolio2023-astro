@@ -1,0 +1,51 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: composer require実行時にAllowed memory size of ...のエラーが発生
+description: composer require実行時にAllowed memory size of 1610612736 bytes exhausted エラーが発生したときのメモです。
+createAt: 2021-10-21
+thumbnail: "/blog/thumbnail/php_thumb.png"
+tags: ["PHP"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+composer require実行時に以下のエラーが発生。
+
+```
+Fatal error: Allowed memory size of 1610612736 bytes exhausted (tried to allocate 4096 bytes)
+```
+
+memory_limitの設定値を確認。
+
+```
+ $ php -r "echo ini_get('memory_limit').PHP_EOL;"
+128M
+```
+
+php.iniの場所を確認する。
+
+```
+$ php -i | grep php.ini
+Configuration File (php.ini) Path => /usr/local/etc/php/7.4
+Loaded Configuration File => /usr/local/etc/php/7.4/php.ini
+
+```
+
+php.iniを編集。
+
+```
+$ vi /usr/local/etc/php/7.4/php.ini
+; memory_limit = 128M
+memory_limit = -1 ←こちらに変更
+
+```
+
+## 取りあえずの対処の場合
+
+とりあえずで良い場合の以下のコマンドできるようでした。
+
+```
+$ COMPOSER_MEMORY_LIMIT=-1 composer require xxxx/xxxx
+
+```

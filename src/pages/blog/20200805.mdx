@@ -1,0 +1,261 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: ECRにDockerイメージをプッシュして、ECSのクラスターをつくって、EC2にコンテナを起動させる為のメモ
+description: vesselで.envのmysqlのパスワードを変更しようとしたとところ、変更できず困ったので。
+createAt: 2020-08-05
+thumbnail: "/blog/thumbnail/docker_thumb.png"
+tags: ["Docker"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+ECRにDockerイメージをプッシュして、ECSのクラスターをつくって、EC2にコンテナを起動させる為のメモです。  
+自分用のメモなのであまり参考にならないと思います。
+
+## ローカルで簡単なdockerコンテナを起動する
+
+サンプルファイルをcloneする。
+
+```
+$ git clone https://github.com/aws-samples/ecs-demo-php-simple-app
+```
+
+cloneしたフォルダに移動。
+
+```
+$ cd ecs-demo-php-simple-app
+```
+
+dockerイメージを作成。
+
+```
+$ docker build -t amazon-ecs-sample .
+```
+
+コンテナを起動。
+
+```
+$ docker run -d -p 80:80 --name amazon-ecs-sample amazon-ecs-sample:latest
+```
+
+`http://localhost/`でアクセス。
+
+<CommonImg
+  src="blog/images/20200805/01.png"
+  alt="ローカルで簡単なdockerコンテナを起動する"
+  client:only="react"
+/>
+
+## ECRにdockerイメージをpush
+
+AWSコンソールのECS > ECRから、リポジトリを作成する。
+
+<CommonImg
+  src="blog/images/20200805/02.png"
+  alt="ECRにdockerイメージをpush"
+  client:only="react"
+/>
+
+リポジトリが作成されます。  
+次に「プッシュコマンドの表示」を押します。
+
+<CommonImg
+  src="blog/images/20200805/03.png"
+  alt="ECRにdockerイメージをpush"
+  client:only="react"
+/>
+
+プッシュコマンドを順番に実行していく。
+
+<CommonImg
+  src="blog/images/20200805/04.png"
+  alt="ECRにdockerイメージをpush"
+  client:only="react"
+/>
+
+1. 認証トークンを取得し、レジストリに対して Docker クライアントを認証します。
+   AWS CLI を使用します。
+
+```
+aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
+```
+
+2. 以下のコマンドを使用して、Docker イメージを構築します。
+
+```
+docker build -t amazon-ecs-sample .
+```
+
+3. 構築が完了したら、このリポジトリにイメージをプッシュできるように、イメージにタグを付けます。
+
+```
+docker tag amazon-ecs-sample:latest XXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/amazon-ecs-sample:latest
+```
+
+4. 以下のコマンドを実行して、新しく作成した AWS リポジトリにこのイメージをプッシュします。
+
+```
+docker push XXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/amazon-ecs-sample:latest
+```
+
+リポジトリ内にイメージが作成される。
+
+<CommonImg
+  src="blog/images/20200805/05.png"
+  alt="ECRにdockerイメージをpush"
+  client:only="react"
+/>
+
+## タスクを定義する
+
+EC2でコンテナを起動させるにはタスクを定義する必要があります。  
+タスクとは複数のコンテナをグループにしたものです。  
+docker-compose.ymlに似ている。
+起動するコンテナが1つでも複数でも定義が必要になる。
+
+タスクはjsonファイルで登録することができるので、以下のサンプルを利用します。
+https://github.com/aws-samples/ecs-demo-php-simple-app/blob/master/simple-app-task-def.json
+
+◎ simple-app-task-def.json
+
+```
+{
+    "family": "console-sample-app",
+    "volumes": [
+        {
+            "name": "my-vol",
+            "host": {}
+        }
+    ],
+    "containerDefinitions": [
+        {
+            "environment": [],
+            "name": "simple-app",
+            "image": "{ECRにアップロードしたイメージ}",
+            "cpu": 10,
+            "memory": 500,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "my-vol",
+                    "containerPath": "/var/www/my-vol"
+                }
+            ],
+            "entryPoint": [
+                "/usr/sbin/apache2",
+                "-D",
+                "FOREGROUND"
+            ],
+            "essential": true
+        },
+        {
+            "name": "busybox",
+            "image": "busybox",
+            "cpu": 10,
+            "memory": 500,
+            "volumesFrom": [
+            {
+              "sourceContainer": "simple-app"
+            }
+            ],
+            "entryPoint": [
+                "sh",
+                "-c"
+            ],
+            "command": [
+                "/bin/sh -c \"while true; do /bin/date > /var/www/my-vol/date; sleep 1; done\""
+            ],
+            "essential": false
+        }
+    ]
+}
+```
+
+タスクを登録する。
+
+```
+aws ecs register-task-definition --cli-input-json file://simple-app-task-def.json
+```
+
+`"family": "console-sample-app"`に定義した`console-sample-app`というタスクが作成されます。
+
+<CommonImg
+  src="blog/images/20200805/06.png"
+  alt="タスクを定義する"
+  client:only="react"
+/>
+
+## クラスターを作成
+
+クラスターとは、タスクを配置するEC2インスタンス群のこと。タスクの実行環境になります。
+
+イメージとしてはこんな感じ（自信なし）？？
+
+<CommonImg
+  src="blog/images/20200805/07.png"
+  alt="クラスターを作成"
+  client:only="react"
+/>
+
+### クラスターの作成手順
+
+ECS > クラスターから「クラスターを作成」を押す。
+
+「EC2 Linux + ネットワーキング」を選択して「次のステップ」を押す。
+
+とりあえず以下の設定して「作成」を押す。
+
+| 項目                   | 値             |
+| ---------------------- | -------------- |
+| クラスター名           | sample-cluster |
+| EC2 インスタンスタイプ | t2.micro       |
+| インスタンス数         | 2              |
+| キーペア               | 作成したもの   |
+
+クラスターが作成される。
+
+<CommonImg
+  src="blog/images/20200805/08.png"
+  alt="クラスターを作成"
+  client:only="react"
+/>
+
+### クラスターでタスクを実行
+
+タブの「タスク」から「新しいタスクの実行」を押す。
+
+<CommonImg
+  src="blog/images/20200805/09.png"
+  alt="クラスターでタスクを実行"
+  client:only="react"
+/>
+
+以下の設定をして「タスクの実行」を押す。
+
+<CommonImg
+  src="blog/images/20200805/10.png"
+  alt="クラスターでタスクを実行"
+  client:only="react"
+/>
+
+タスクが実行されインスタンスが作成されます。
+
+<CommonImg
+  src="blog/images/20200805/11.png"
+  alt="クラスターでタスクを実行"
+  client:only="react"
+/>
+
+インスタンスのパブリックDNSでアクセスしてみると、以下の画面が表示されます。
+
+<CommonImg
+  src="blog/images/20200805/12.png"
+  alt="クラスターでタスクを実行"
+  client:only="react"
+/>

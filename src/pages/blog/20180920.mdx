@@ -1,0 +1,247 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: GLSLでモーフィングをやってみる
+description: GLSL Tech Night 2018というイベントで、モーフィングのデモをみて感動したので挑戦してみました。
+createAt: 2018-09-20
+thumbnail: "/blog/thumbnail/webgl_thumb.png"
+tags: ["WebGL"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+<a href="https://connpass.com/event/97565/?utm_campaign=recent_events&utm_medium=atom&utm_source=feed">
+  GLSL Tech Night 2018
+</a>
+というイベントで、モーフィングのデモをみて感動したので挑戦してみました。
+
+探してみると参考になる記事が結構沢山ありました。
+
+まずはモーフィングさせるシェイプを描くために必要な距離関数について調べてみました。
+
+# 距離関数とは
+
+その名の通り中心座標からの特定の座標(ピクセル)までの距離(長さ)を返す関数です。
+
+## 円を描く
+
+<CommonImg
+  src="https://qiita-image-store.s3.amazonaws.com/0/11290/68e6fd78-69cf-8c8e-75e7-2f7185272429.png"
+  width="300"
+  client:only="react"
+/>
+
+```
+//円の距離関数
+float circle(vec2 p) {
+   return length(p);
+}
+
+void main( void ) {
+   	vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+	float d = circle(p);
+	vec3 color = vec3(smoothstep(0.5,0.51,d));
+   	gl_FragColor = vec4(color, 1.0);
+}
+```
+
+<a href="http://glslsandbox.com/e#49229.0">サンプル</a>
+
+## 正方形を描く①
+
+<CommonImg
+  src="https://qiita-image-store.s3.amazonaws.com/0/11290/edf2760e-a81b-8f2a-49bb-17c69f16c820.png"
+  width="300"
+  client:only="react"
+/>
+
+```
+//正方形の距離関数
+float square(vec2 p){
+	return max(abs(p.x),abs(p.y));
+}
+
+void main( void ) {
+
+	vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+	float d = square(p);
+	vec3 color = vec3(smoothstep(0.5,0.51,d));
+   	gl_FragColor = vec4(color, 1.0);
+
+
+```
+
+<a href="http://glslsandbox.com/e#49231.0">サンプル</a>
+
+## 正方形を描く②
+
+<CommonImg
+  src="https://qiita-image-store.s3.amazonaws.com/0/11290/f7dac115-1d81-1a74-0feb-071f9a984bf4.png"
+  width="300"
+  client:only="react"
+/>
+
+```
+//正方形の距離関数
+float square(vec2 p){
+	return abs(p.x) + abs(p.y);
+}
+
+void main( void ) {
+
+	vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+	float d = square(p);
+	vec3 color = vec3(smoothstep(0.5,0.51,d));
+   	gl_FragColor = vec4(color, 1.0);
+}
+
+```
+
+<a href="http://glslsandbox.com/e#49230.0">サンプル</a>
+
+## 多角形を描く
+
+<CommonImg
+  src="https://qiita-image-store.s3.amazonaws.com/0/11290/81b232de-2644-cab4-94dd-4b77c54c19a4.png"
+  width="300"
+  client:only="react"
+/>
+
+```
+const float PI  = 3.141592653589793;
+const float PI2 = PI * 2.;
+
+float lPolygon(vec2 p,int n){
+  float a = atan(p.x,p.y)+PI;
+  float r = PI2/float(n);
+  return cos(floor(.5+a/r)*r-a)*length(p);
+}
+
+void main( void ) {
+
+	vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+	//5角形を描く
+	float d = lPolygon(p,5);
+	vec3 color = vec3(smoothstep(0.4,0.41,d));
+   	gl_FragColor = vec4(color, 1.0);
+
+}
+```
+
+<a href="http://glslsandbox.com/e#49232.0">サンプル</a>
+
+## 星型を描く
+
+<CommonImg
+  src="https://qiita-image-store.s3.amazonaws.com/0/11290/0b5207fb-a5f2-635b-8337-0bce7a059337.png"
+  width="300"
+  client:only="react"
+/>
+
+```
+const float PI  = 3.141592653589793;
+const float PI2 = PI * 2.;
+
+float lPolygon(vec2 p,int n){
+  float a = atan(p.x,p.y)+PI;
+  float r = PI2/float(n);
+  return cos(floor(.5+a/r)*r-a)*length(p);
+}
+
+mat2 mRotate(float a){
+ float c=cos(a);
+ float s=sin(a);
+ return mat2(c,-s,s,c);
+}
+
+float lStarPolygon(vec2 p,int n,float o){
+ return (lPolygon(p,n) - lPolygon(p * mRotate(PI2 / float(n) / 2.),n) * o) / (1.-o);
+}
+
+
+void main( void ) {
+	vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+	float d = lStarPolygon(p,5,.6);
+	vec3 color = vec3(smoothstep(0.4,0.41,d));
+   	gl_FragColor = vec4(color, 1.0);
+
+}
+```
+
+<a href="http://glslsandbox.com/e#49259.0">サンプル</a>
+
+# モーフィングさせる
+
+モーフィングはmix関数を利用して行います。
+mix関数は線形補間を行うので、第三引数の値を変えることでモーフィングを実現できるみたいです。
+イメージは以下の感じです。
+
+<CommonImg
+  src="https://qiita-image-store.s3.amazonaws.com/0/11290/b34a78c0-a9a3-4ce2-9de7-ddb29da82272.png"
+  width="500"
+  client:only="react"
+/>
+
+閾値は0.0 ~ 1.0のサイン波になるようにします。
+
+```
+float a = sin(time * 5.0) * 0.5 + 0.5;
+```
+
+<a href="http://glslsandbox.com/e#49262.0">サンプル</a>
+
+## 複数のシェイプをモーフィングさせる
+
+一部だけ抜粋します。
+ポイントは、
+
+1. シェイプを描画用の関数を切り替える関数を用意します。
+2. mod関数と経過時間(time)でカウントアップしていきます。
+3. fract関数を利用して、小数点以下をmix関数の閾値として利用します。
+
+```
+float getShape(vec2 p, int i) {
+    if (i == 0) {
+        return circle(p);
+    } else if (i == 1) {
+        return square(p);
+    } else if (i == 2) {
+        return lStarPolygon(p,5,.6)* 1.5;
+    } else if (i == 3) {
+        return square2(p);
+    } else {
+        return lPolygon(p,3) * 1.5;
+    }
+}
+
+void main() {
+   vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+
+    float t0 = mod(time , 5.0);
+    float t1 = mod(time + 1.0, 5.0);
+    int i0 = int(floor(t0));
+    int i1 = int(floor(t1));
+    float f = fract(t0);
+
+   float d = mix(getShape(p,i0), getShape(p,i1), f);
+   vec3 color = vec3(smoothstep(0.5,0.51,d*1.5));
+   gl_FragColor = vec4(color, 1.0);
+}
+```
+
+<a href="http://glslsandbox.com/e#49265.0">サンプル</a>
+
+# 参考
+
+- <a herf="https://docs.google.com/presentation/d/12RrqyAkFanKmfL96ZHvhDCozE-_rKFPlU1YVwej4_bc/edit#slide=id.g3ff612b37b_1_64">
+    ビルトイン関数の使い方いろいろ！シェーダアートの表現力を高める小技集
+  </a>
+- <a href="https://qiita.com/muripo_life/items/48605fc427e41e3884bb">
+    GLSLレイマーチング研究_距離関数について勉強してみた10(Hexagonalの関数をいじる)
+  </a>
+- <a href="https://qiita.com/7CIT/items/fe33b9b341b9918b6c3d">
+    2次元ディスタンスフィールドまとめ
+  </a>
+- <a href="https://thebookofshaders.com/edit.php?log=160414040957">
+    the bookof shaders
+  </a>

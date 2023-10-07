@@ -1,0 +1,76 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: EC2のApacheでBASIC認証、DIGEST認証メモ
+description: EC2のApacheでBASIC認証、DIGEST認証メモです。
+createAt: 2020-10-13
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+EC2にssh接続後の手順。
+
+Apacheをインストール。
+
+```
+$ sudo yum update
+$ sudo yum install httpd -y
+$ sudo chkconfig httpd on
+```
+
+### BASIC認証
+
+ユーザー名とパスワードを設定する。
+
+```
+sudo htpasswd -c -b /etc/httpd/conf/.htpasswd {user} {password}
+```
+
+`/etc/httpd/conf/httpd.conf`に以下を追加。
+
+```
+<Directory "/var/www/html/">
+  AuthUserFile /etc/httpd/conf/.htpasswd
+  AuthGroupFile /dev/null
+  AuthName "Basic Auth"
+  AuthType Basic
+  Require valid-user
+</Directory>
+```
+
+Apacheを起動。
+
+```
+$ sudo service httpd start
+```
+
+### DIGEST認証
+
+ユーザー名とパスワードを設定する。
+
+```
+// htdigest -c /etc/httpd/conf/.digestpass "{領域名}" {user}
+$ htdigest -c /etc/httpd/conf/.digestpass "Digest Auth" useri
+
+New password： {password}
+Re-type new password： {password}
+```
+
+`/etc/httpd/conf/httpd.conf`に以下を追加。
+
+```
+<Directory "/var/www/html">
+    AuthType Digest
+    AuthName "Digest Auth"
+    AuthUserFile "/etc/httpd/conf/.digestpass"
+    Require valid-user
+</Directory>
+```
+
+Apacheを起動。
+
+```
+$ sudo service httpd start
+```

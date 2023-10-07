@@ -1,0 +1,132 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: vesselで作ったローカルの開発環境をEC2にそのまま作る手順のメモ
+description: vesselで作ったらローカルの開発環境を、EC2にそのまま作る手順のメモです。
+createAt: 2020-09-26
+thumbnail: "/blog/thumbnail/vessel_thumb.png"
+tags: ["Docker", "Vessel"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+vesselで作ったらローカルの開発環境を、EC2にそのまま作る手順のメモです。  
+自分用のメモなので参考にならないかもしれません。
+
+## 前提
+
+ローカル環境はvesselを使って作成。  
+作成方法は[こちら](https://www.nogson.blog/entry/2020/07/11/110515)を参考に。
+
+## EC2にLaravelのプロジェクトファイルをcloneする
+
+EC2に接続。
+
+```
+$ ssh -i {keypair} ec2-user@{パブリックアドレス}
+```
+
+vesselで環境を作るので、dockerをインストール。
+
+```
+$ sudo yum update -y
+$ sudo yum install -y docker
+$ sudo systemctl start docker.service
+$ sudo systemctl enable docker.service
+$ sudo usermod -a -G docker ec2-user
+```
+
+docker-composeもインストール。  
+[Install Docker Compose | Docker Documentation](https://docs.docker.com/compose/install/#install-compose)のLinuxを参考。
+
+```
+$ sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
+```
+
+phpをインストール。
+
+```
+$ sudo amazon-linux-extras install php7.3
+$ sudo yum install php-cli php-xml php-json php-mbstring php-process php-common php-fpm php-zip php-mysqlnd -y
+```
+
+composerをインストール。
+
+```
+$ sudo curl -sS https://getcomposer.org/installer | php
+$ sudo mv composer.phar /usr/local/bin/composer
+```
+
+vesselをインストールする場合にメモリ不足になる場合があるので、以下を実行。
+
+```
+$ sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
+$ sudo chmod 600 /swapfile
+$ sudo mkswap /swapfile
+$ sudo swapon /swapfile
+```
+
+gitのインストール。
+
+```
+$ sudo yum install git
+```
+
+ファイルをgit cloneする。
+
+```
+$ sudo git clone {gitのurl}
+```
+
+cloneしたファイルの権限を変更。
+
+```
+sudo chmod -R 777 {colneしたファイル}
+```
+
+cloneしたファイルへ移動。
+
+```
+$ cd {colneしたファイル}
+```
+
+.envを作成
+
+```
+cp .env.example .env
+```
+
+mysqlのhostを変更
+
+```
+DB_CONNECTION=mysql
+DB_HOST=10.0.0.200 #インスタンスのプライベートIP
+DB_PORT=3306
+DB_DATABASE=db
+DB_USERNAME=root
+DB_PASSWORD=secret
+```
+
+./vesselのインストールとセットアップ。
+
+```
+$ composer require shipping-docker/vessel
+# dockerフォルダ配下にイメージ用のapp、mysql、nodeなどが作成済みの場合は以下は不要
+$ php artisan vendor:publish --provider="Vessel\VesselServiceProvider"
+$ bash vessel init
+$ ./vessel start
+```
+
+`docker -ps`でコンテナが立ち上がっているかを確認してマイグレーションを実行。  
+※ これはDBとマイグレーションを利用している場合のみ。
+
+```
+./vessel php artisan migrate
+```
+
+コンテナが立ち上がっていなかったら、以下を実行。
+
+```
+./vessel up -d
+```

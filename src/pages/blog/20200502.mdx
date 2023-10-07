@@ -1,0 +1,180 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: AWS超初心者のメモ プライベートサブネットにMySQLを入れる2
+description: AWS超初心者のメモ 「AWS超初心者のメモ プライベートサブネットにMySQLを入れる1」の続きです。
+createAt: 2020-05-02
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+「[AWS超初心者のメモ プライベートサブネットにMySQLを入れる1](/blog/20200501)」の続きです。
+
+## DBサーバーにMySQLをインストール
+
+プライベートサブネット内のDBサーバーにMySQLをインストールします。  
+しかし、DBサーバーはプライベートサブネット内にあるので、インターネットに接続することができません。  
+この問題を解決する為にNATを利用します。
+
+### NATとは
+
+> NAT（Network Address Translation）とは、コンピュータネットワークにおいて、主にグローバルIPアドレスをプライベートIPアドレスに、またはその逆の変換を行う技術のことである
+>
+> [NAT（Network Address Translation）とは](https://www.atmarkit.co.jp/ait/articles/0401/01/news056.html)
+
+NATを利用すると、プライベートサブネットからインターネットに接続できるようになるが、インターネットからプラベートサブネットに接続することはできないです。
+
+<CommonImg
+  src="blog/images/20200502/01.png"
+  alt="NATとは"
+  client:only="react"
+/>
+
+## NATを構築
+
+### NATゲートウェイを構築する
+
+NATゲートウェイはインターネットから接続できるパブリックサブネットに配置する。
+
+VPC > NAT ゲートウェイ > 「NATゲートウェイの作成」を押す
+
+次に、「サブネット」と「Elastic IP 割り当てID」を設定します。  
+Elastic IP 割り当てIDとは、**静的な固定のパブリックIPアドレス**のことです。
+
+<CommonImg
+  src="blog/images/20200502/02.png"
+  alt="NATを構築"
+  client:only="react"
+/>
+
+### ルートテーブルを更新する
+
+プライベートサブネットからインターネットに対して通信する場合に、パケットがNATゲートウェイに向かうようにします。
+
+VPC > ルートテーブルから「メイン」が「はい」になっているものを選択。
+
+<CommonImg
+  src="blog/images/20200502/03.png"
+  alt="ルートテーブルを更新する"
+  client:only="react"
+/>
+
+送信先を`0.0.0.0/0`に、ターゲットを先程作成したNATゲートウェイを選択します。
+
+<CommonImg
+  src="blog/images/20200502/04.png"
+  alt="ルートテーブルを更新する"
+  client:only="react"
+/>
+
+## プライベートサブネットからインターネットへの疎通を確認する
+
+DBサーバーにログインして、HTTP、HTTPSで接続できるかを確認します。
+
+```
+[ec2-user@ip-10-0-2-10 ~]$ curl www.nogson.blog
+```
+
+ステータスコードが3xxになる場合は-Lオプションを付与する。
+
+```
+[ec2-user@ip-10-0-2-10 ~]$ curl -L www.nogson.blog
+```
+
+### NATゲートウェイは利用しない場合は削除する
+
+NATゲートウェイは、利用しなくなったら削除しておいたほうがよいです。  
+NTAゲートウェイは稼働時間と転送バイトの両方で課金されてしまうので、通信してなくても料金がかかります。
+
+利用したい場合は、再度つくりなおします。  
+その際は、NTAゲートウェイのIDも変わるので、ルートテーブルも合わせて変更します。
+
+## MySQLをインストール
+
+DBサーバーでMySQLをインストールします。
+
+MariaDBがインストール済みかを確認します。  
+MariaDBが入っていると競合してMySQLがインストールできません。
+
+```
+$sudo yum list installed | grep mariadb
+```
+
+インストール済みの場合は削除します。
+
+```
+$sudo yum remove mariadb-libs
+```
+
+MySQLのリポジトリを追加。
+
+```
+$sudo yum install http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+```
+
+MySQLをインストールする。
+
+```
+$yum install mysql-community-server
+```
+
+バージョンを確認する
+
+```
+$mysqld --version
+mysql  Ver 14.14 Distrib 5.7.29, for Linux (x86_64) using  EditLine wrapper
+```
+
+起動する。
+
+```
+$sudo service mysqld start
+```
+
+停止する。
+
+```
+$sudo service mysqld stop
+```
+
+起動しているか確認する。
+
+```
+$sudo service mysqld status
+```
+
+DBサーバー起動時にMySQLが自動で起動するようにする。
+
+```
+$ sudo chkconfig mysqld on
+```
+
+## MySQLにログイン
+
+MySQL 5.7では初回起動時にrootにランダムなパスワードが割り振らるらしいので、パスワードを確認します。
+
+```
+$ sudo cat /var/log/mysqld.log | grep 'temporary password'
+2020-04-26T07:42:38.420478Z 1 [Note] A temporary password is generated for root@localhost: XXXXXXXXXXX
+```
+
+ログインする。
+
+```
+$mysql -u root -p
+```
+
+パスワードを変更しておく。
+
+```
+mysql> SET GLOBAL validate_password_length=8;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SET GLOBAL validate_password_policy=LOW;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> ALTER USER root@localhost IDENTIFIED BY 'my_password';
+Query OK, 0 rows affected (0.00 sec)
+```

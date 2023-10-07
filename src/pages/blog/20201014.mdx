@@ -1,0 +1,198 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: ECS Fargateにdockerイメージを利用してコンテナを立ててみる為のメモ
+description: ECS Fargateにdockerイメージを利用してコンテナを立ててみる為のメモです。自分用のメモなので、手順だけ書いています。
+createAt: 2020-10-14
+thumbnail: "/blog/thumbnail/aws_fargate_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+ECS Fargateにdockerイメージを利用してコンテナを立ててみる為のメモです。  
+自分用のメモなので、手順だけ書いています。
+
+## 前提
+
+VPCやサブネットは作成ずみ。
+
+## dockerイメージを作成する
+
+適当なフォルダを作成。
+
+```
+$ mkdir ecs_sample
+$ cd ecs_sample
+```
+
+Dockerfileを作成。  
+nginxのdockerコンテナを作成する為のイメージ。
+
+```
+FROM nginx:latest
+
+COPY ./src /usr/share/nginx/html
+```
+
+srcディレクトリと表示確認用にhtmlを作成。
+
+```
+$ mkdir src
+```
+
+`src/index.html`の中身は何でもよい。
+
+```
+Hello!
+```
+
+dockerイメージを作成する。
+
+```
+$ docker build . -t ecs-test$
+```
+
+イメージが作成できているか確認。
+
+```
+$ docker images
+
+REPOSITORY                                                            TAG                 IMAGE ID            CREATED             SIZE
+ecs-test                                                              latest              7fdbd8fef5df        26 seconds ago      132MB
+```
+
+ローカルでdockerイメージからコンテナを起動してみる。  
+オプションの`--rm`はコンテナを停止したら、コンテナを削除する指定。
+
+```
+$ docker run --rm -p 8080:80 ecs-test -d
+```
+
+`http://localhost:8080/`で「Hello!」と表示されていればOK。
+
+## ECRにイメージを登録
+
+作成したdockerイメージをECRに登録します。  
+ECRに登録したイメージはECSから利用することができます。
+
+まずは登録用のリポジトリを作成(githubのリポジトリみたいなもの)。
+
+<CommonImg
+  src="blog/images/20201014/01.png"
+  alt="ECRにイメージを登録"
+  client:only="react"
+/>
+
+作成したリポジトリに、イメージをpushします。  
+push方法は、「プッシュコマンドを表示」のコマンドを実行していくだけです。
+
+<CommonImg
+  src="blog/images/20201014/02.png"
+  alt="ECRにイメージを登録"
+  client:only="react"
+/>
+
+イメージがプッシュされるとリポジトリに以下のように表示されます。
+
+<CommonImg
+  src="blog/images/20201014/03.png"
+  alt="ECRにイメージを登録"
+  client:only="react"
+/>
+
+## ECSを作成
+
+### クラスターを作成
+
+`クラスター > クラスターを作成 > ネットワーキングのみ(AWS Fargateを使用)`を選択して「次のステップへ」
+
+クラスター名と、タグだけ設定して「作成」。
+
+<CommonImg
+  src="blog/images/20201014/04.png"
+  alt="クラスターを作成"
+  client:only="react"
+/>
+
+クラスターが作成される。
+
+<CommonImg
+  src="blog/images/20201014/05.png"
+  alt="クラスターを作成"
+  client:only="react"
+/>
+
+### タスクを作成
+
+タスクとはdocker-composeみたいなもの。
+
+`タスク定義 > 新しいタスク定義を作成 > FARGATE`を選択して「次のステップへ」。
+
+タスクの設定はこんな感じ。  
+タスクの実行 IAM ロールは初めての場合は、「新しいロールを作成」を選択すると自動で「ecsTaskExecutionRole」ロールが作成される。
+
+<CommonImg
+  src="blog/images/20201014/06.png"
+  alt="タスクを作成"
+  client:only="react"
+/>
+
+コンテナを追加します。  
+イメージには、ECRで登録したイメージのURI、
+もしくは`ngins:latest`のようにdocker hubにあるイメージを指定することもできる。
+
+<CommonImg
+  src="blog/images/20201014/07.png"
+  alt="タスクを作成"
+  client:only="react"
+/>
+
+タグ(Name:ecs-sample-taskとか）だけ追加して「作成」ボタンを押す。
+
+### サービスを作成する
+
+サービスはクラスターとタスク定義を結びつけるようなもの。
+
+クラスター > 作成したクラスタ > 「サービス」タブ > 「作成」を押す。
+
+<CommonImg
+  src="blog/images/20201014/08.png"
+  alt="サービスを作成する"
+  client:only="react"
+/>
+
+以下のような設定をして 「次のステップへ」を押す。
+
+<CommonImg
+  src="blog/images/20201014/09.png"
+  alt="サービスを作成する"
+  client:only="react"
+/>
+
+VPCやサブネット、セキュリティグループ(インターネットにつながる）を設定して「次のステップへ」を押す。
+
+<CommonImg
+  src="blog/images/20201014/10.png"
+  alt="サービスを作成する"
+  client:only="react"
+/>
+
+Auto Scaling はそのままの設定で「次のステップへ」を押し「サービスの作成」を押す。
+
+サービスが作成され、「タスク」が起動します。  
+コンテナが起動すると、ステータスがRUNNINGになります。
+
+<CommonImg
+  src="blog/images/20201014/11.png"
+  alt="サービスを作成する"
+  client:only="react"
+/>
+
+タスクのパブリックIPから表示を確認することができます。
+
+<CommonImg
+  src="blog/images/20201014/12.png"
+  alt="サービスを作成する"
+  client:only="react"
+/>

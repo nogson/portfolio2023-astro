@@ -1,0 +1,92 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: クロスドメインでBasic認証を自動ログインさせるメモ
+description: あまり無いと思いますが、クロスドメインでベーシック認証をする必要があったので、忘れないようにメモしておきます。
+createAt: 2020-10-15
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["Other"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+あまり無いと思いますが、クロスドメインでベーシック認証をする必要があったので、  
+忘れないようにメモしておきます。
+
+仕組みとしては以下のイメージ。
+
+1. クライアント(表示元)にiframeを埋める。
+2. iframeのsrcにベーシック認証先のサーバーに配置したcgiファイルを指定する
+3. cgiでクライアント(表示元)のjsを呼び出す。
+4. クライアント(表示元)のjsでベーシック認証を行う。
+
+※ 手順3のcgiでベーシック認証を行っても良いかも
+
+<CommonImg
+  src="blog/images/20201015/01.png"
+  alt="クロスドメインでBasic認証を自動ログイン"
+  client:only="react"
+/>
+
+## CGIを追加
+
+`/etc/httpd/conf/httpd.conf`に以下を追加。
+
+```
+ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+
+<Directory "/var/www/cgi-bin">
+   AllowOverride None
+   Options None
+   Order allow,deny
+   Allow from all
+</Directory>
+```
+
+`/var/www/cgi-bin`にcgiファイルを配置。
+
+```
+vi /var/www/cgi-bin/authentication.cgi
+```
+
+中身はこんな感じ。
+
+```
+#!/usr/bin/perl --
+print "Content-type: text/html\n\n";
+print "<html><head>\n";
+print "<script type=\"text/javascript\" src=\"http://hoge.co.jp/authentication.js\"></script>\n";
+print "</head></html>\n";
+exit;
+```
+
+該当のcgiファイルの権限を変更。
+
+```
+chmod 755 authentication.cgi
+```
+
+クライアント(http://hoge.co.jp)にjsフィアルを用意。
+ベーシック認証用のスクリプトを用意する。
+※第3引数のasyncはtrue (非同期) or false (同期)は要件によって。
+
+```
+(function () {
+  const xhr = new XMLHttpRequest()
+  xhr.open("GET", "http://fuga.com",
+    false, "user", "password")
+  xhr.send(null);
+}());
+```
+
+ただし、上記だと通信内容にログイン情報が出てしまうので、リクエストヘッダーの`Authorization`を利用することで少し隠蔽することができます。
+
+```
+(function() {
+  const xhr = new XMLHttpRequest()
+  const authorizationBasic = window.btoa('user' + ':' + 'password')
+  xhr.open('GET', 'http://fuga.com"', false)
+  xhr.setRequestHeader('Authorization', 'Basic ' + authorizationBasic)
+  xhr.send(null)
+})()
+```

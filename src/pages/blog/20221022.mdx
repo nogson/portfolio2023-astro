@@ -8,6 +8,8 @@ tags: ["Node.js"]
 draft: false
 ---
 
+import CommonImg from "@/components/CommonImg.tsx";
+
 普段はフロントエンドをやることが多い（というかフロントしかできない）ので、node.jsを利用してバックエンド環境も準備してみます。
 
 ## 前提
@@ -110,36 +112,36 @@ app.listen(PORT, () => {
 ## DBを用意する
 
 データベースには[MongoDB](https://www.mongodb.com/ja-jp)を利用します。  
-MongoDBのページから「無料で始める」のボタンを押して、signupします。
+MongoDBのページから「無料で始める」のボタンを押して、SignUpします。
 
-<img src="/blog/20221022/01.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/01.png" alt="DBを用意する" client:only="react" />
 
 signupが完了したら、「New Project」から新規プロジェクトを作成します。
 
-<img src="/blog/20221022/02.png" alt="DBを用意する" />
-<img src="/blog/20221022/03.png" alt="DBを用意する" />
-<img src="/blog/20221022/04.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/02.png" alt="DBを用意する" client:only="react" />
+<CommonImg src="/blog/20221022/03.png" alt="DBを用意する" client:only="react" />
+<CommonImg src="/blog/20221022/04.png" alt="DBを用意する" client:only="react" />
 
 プロジェクトを作成したらデータベースも作成します。
 
-<img src="/blog/20221022/05.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/05.png" alt="DBを用意する" client:only="react" />
 
 無料で使いたいので、「FREE」を選択します。
 Providerは「AWS」を選択、Regionは「Tokyo」を選択します。
 
-<img src="/blog/20221022/06.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/06.png" alt="DBを用意する" client:only="react" />
 
 プロジェクトへの認証方法を設定します。
 
 ユーザー名とパスワードで認証するようにします。
 
-<img src="/blog/20221022/07.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/07.png" alt="DBを用意する" client:only="react" />
 
 接続環境を設定します。
 とりあえずどこからでも接続できるようにするには`0.0.0.0`としておきます。  
 接続IPを絞りたいなら、「Add My Current IP Address」を押すと、現在のIPが設定されます。
 
-<img src="/blog/20221022/08.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/08.png" alt="DBを用意する" client:only="react" />
 
 ## DBにデータを登録する
 
@@ -163,15 +165,15 @@ npm i mongoose
 
 「Connect」ボタンを押します。
 
-<img src="/blog/20221022/09.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/09.png" alt="DBを用意する" client:only="react" />
 
 「Connect your application」ボタンを押します。
 
-<img src="/blog/20221022/10.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/10.png" alt="DBを用意する" client:only="react" />
 
 接続先パスが表示される。passwordはDBを作成した際のものを利用します。
 
-<img src="/blog/20221022/11.png" alt="DBを用意する" />
+<CommonImg src="/blog/20221022/11.png" alt="DBを用意する" client:only="react" />
 
 ```typescript
 import express from "express";

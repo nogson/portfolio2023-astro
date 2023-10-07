@@ -1,0 +1,156 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: ECS-CLIを利用してdockerで環境構築のメモ
+description: ローカルのdocker-composeファイルを利用して、AWS上にEC2とコンテナを立ててみる為のメモです。
+createAt: 2020-08-03
+thumbnail: "/blog/thumbnail/docker_thumb.png"
+tags: ["Docker"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+ローカルのdocker-composeファイルを利用して、AWS上にEC2とコンテナを立ててみる為のメモです。
+
+ECS-CLIをインストール。
+
+```
+$ brew install amazon-ecs-cli
+```
+
+AWS環境にアクセスする為のアクセスキーはecs-cli configureで設定する。  
+AWS Access Key IDとAWS Secret Access KeyはIAMの認証情報を利用する。
+
+```
+$aws configure
+AWS Access Key ID [None]:
+AWS Secret Access Key [None]:
+Default region name [None]:
+Default output format [None]:
+```
+
+設定を確認する。
+
+```
+$ aws configure list
+```
+
+ECSクラスタの作成。
+
+```
+$ ecs-cli configure --region ap-northeast-1 --cluster my-ecs-cluster
+```
+
+確認する。
+
+```
+$ cat ~/.ecs/config
+version: v1
+default: default
+clusters:
+  default:
+    cluster: my-ecs-cluster
+    region: ap-northeast-1
+    default_launch_type: ""
+```
+
+ECSインスタンスコンテナを起動する。
+
+```
+$ ecs-cli up --keypair {EC2でのkeypair名} --capability-iam --size 2 --instance-type t2.micro
+```
+
+--keypairオプションに間違ってローカルのkeypairのパスを指定してしまった為に、以下のエラーが発生しました。  
+EC2上のkeypair名を指定します。
+
+```
+$ ecs-cli up --keypair /.ssh/keyPair.pem --capability-iam --size 2 --instance-type t2.micro
+INFO[0002] Created cluster                               cluster=ecs-cli-test ap-northeast-1
+INFO[0003] Waiting for your CloudFormation stack resources to be deleted...
+INFO[0003] Cloudformation stack status                   stackStatus="DELETE_IN_PROGRESS"
+INFO[0038] Waiting for your cluster resources to be created...
+INFO[0038] Cloudformation stack status                   stackStatus="CREATE_IN_PROGRESS"
+INFO[0101] Cloudformation stack status                   stackStatus="CREATE_IN_PROGRESS"
+INFO[0164] Cloudformation stack status                   stackStatus="CREATE_IN_PROGRESS"
+ERRO[0197] Failure event                                 reason="The key pair 'my-key-pair' does not exist" resourceType="AWS::AutoScaling::LaunchConfiguration"
+FATA[0197] Error executing 'up': Cloudformation failure waiting for 'CREATE_COMPLETE'. State is 'ROLLBACK_IN_PROGRESS'
+```
+
+エラーになって再度実行するときは `--force`オプションをつけて上書きする。
+
+```
+$ ecs-cli up --keypair keyPair --capability-iam --size 2 --instance-type t2.micro --force
+```
+
+EC2にインスタンスが作成される。
+
+<CommonImg
+  src="blog/images/20200805/10.png"
+  alt="EC2にインスタンスが作成される"
+  client:only="react"
+/>
+
+docker-compose.ymlを作成。
+
+```
+wordpress:
+  image: wordpress
+  mem_limit: 268435456
+  ports:
+    - "80:80"
+  links:
+    - mysql
+
+mysql:
+  image: mysql
+  mem_limit: 268435456
+  environment:
+    MYSQL_ROOT_PASSWORD: password
+```
+
+起動。
+
+```
+ecs-cli compose -f docker-compose.yml up
+```
+
+起動を確認。
+
+```
+$ ecs-cli ps
+
+Name                                            State            Ports                    TaskDefinition  Health
+7eb2a903-3ee5-47ed-a539-f5b3863c04a7/wordpress  RUNNING          54.199.113.4:80->80/tcp  Desktop:6       UNKNOWN
+7eb2a903-3ee5-47ed-a539-f5b3863c04a7/mysql      RUNNING　　　　　　　　　　　　　　　　　　　　　Desktop:6       UNKNOWN
+```
+
+コンテナが起動しなかった場合や、停止してしまった場合は`service up`で再起動してみる。
+
+```
+$ ecs-cli compose -f docker-compose.yml  service up
+```
+
+## その他
+
+サービスを削除。
+作成されたEC2も削除される。
+
+```
+$ ecs-cli compose -f ./docker-compose.yml service rm
+```
+
+コンテナを表示。
+
+```
+$ ecs-cli ps
+```
+
+コンテナをすべて削除。
+
+```
+$ ecs-cli down --force
+```
+
+## 参考
+
+[ローカルで使用したdocker-compose.ymlを使ってECS上でコンテナを起動する](https://qiita.com/furu8ma/items/6a7bd4d85617ef55f2c6)

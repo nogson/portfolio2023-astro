@@ -1,0 +1,339 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: EC2上でgit cloneしてアプリケーションを起動する
+description: EC2上でgithubのプロジェクトデータをcloneしてきて、起動するとこまでやってみたいと思います。
+createAt: 2020-07-06
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+EC2上でgithubのプロジェクトデータをcloneしてきて、起動するとこまでやってみたいと思います。  
+自分ようのメモなので間違っているかもしれません。
+
+## EC2を設定する
+
+EC2にログイン。  
+セキュリティグループやインターネットゲートウェイなどの設定はしておく。
+
+```
+$ ssh -i {keypair.pemを指定} ec2-user@XX.XXX.XX.XXX
+```
+
+すべてのパッケージを最新にする。
+
+```
+$ sudo yum update -y
+```
+
+Apacheをインストールして起動する。
+
+```
+$ sudo yum install httpd
+$ sudo systemctl start httpd
+$ sudo systemctl enable httpd
+```
+
+php7.2をインストール。
+
+```
+$ sudo amazon-linux-extras install php7.2
+```
+
+必要そうなモジュールをインストール。
+
+```
+$ sudo yum install php-cli php-common php-devel php-fpm php-gd php-mysqlnd php-mbstring php-pdo php-xml
+```
+
+### php.intの設定
+
+必要に応じてphp.iniファイルの設定を変更する。  
+ファイルパスは以下のコマンドで確認できる。
+
+```
+$ php -r "echo phpinfo();" | grep "php.ini"
+Configuration File (php.ini) Path => /etc
+Loaded Configuration File => /etc/php.ini
+```
+
+```
+// バックアップをとる
+$ sudo cp /etc/php.ini /etc/php.ini.default
+
+// メモリ上限
+memory_limit = 256M
+
+// エラーログのパス
+error_log = /var/log/php/php-error.log
+
+// POSTデータに許可される最大サイズ
+post_max_size = 128M
+
+// アップロードされるファイルの最大サイズ
+upload_max_filesize = 20M
+
+// タイムゾーン
+date.timezone = Asia/Tokyo
+
+```
+
+詳しくは[こちら](https://qiita.com/ucan-lab/items/0d74378e1b9ba81699a9)
+
+php.iniが正しく設定されているかを確認して、Apacheを再起動。
+
+```
+$ sudo service httpd configtest
+Syntax OK
+$ sudo systemctl restart httpd
+```
+
+#### ファイルの許可を設定
+
+> Apache httpd は、Apache ドキュメントルートと呼ばれるディレクトリに維持されるファイルを提供します。Amazon Linux Apache ドキュメントルートは /var/www/html であり、デフォルトでは root によって所有されます。
+>
+> ec2-user アカウントがこのディレクトリで複数のファイルを操作することを許可するには、ディレクトリの所有権とアクセス許可を変更する必要があります。このタスクを行うには、複数の方法があります。このチュートリアルでは、ec2-user を apache グループに追加し、apache ディレクトリの所有権を /var/www グループに付与し、グループへの書き込み権限を割り当てます。
+> https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html#prepare-lamp-server
+
+ユーザー (この場合は ec2-user) を apache グループに追加します。
+
+```
+$ sudo usermod -a -G apache ec2-user
+```
+
+ec2-userをログアウト。
+
+```
+$ exit
+```
+
+再度ログイン。
+
+```
+$ ssh -i {keypair.pemを指定} ec2-user@XX.XXX.XX.XXX
+```
+
+グループへの追加を確認。
+
+```
+$ groups
+ec2-user adm wheel apache systemd-journal
+```
+
+`/var/www`とそのコンテンツのグループ所有権を apache グループに変更。
+
+グループの`/var/www`の書き込み許可を追加。
+
+```
+$ sudo chmod 2775 /var/www
+```
+
+`/var/www`とサブディレクトの**ディレクトリ\*許可**を変更。
+
+```
+$ find /var/www -type d -exec sudo chmod 2775 {} \;
+```
+
+`/var/www`とサブディレクトリの**ファイル許可**を変更。
+
+```
+$ find /var/www -type f -exec sudo chmod 0664 {} \;
+```
+
+#### composerのインストール
+
+composerのインストール。
+
+```
+$ curl -sS https://getcomposer.org/installer | php
+```
+
+composerコマンドのパスを通す。
+
+```
+$ sudo mv composer.phar /usr/local/bin/composer
+```
+
+確認。
+
+```
+$ which composer
+/usr/local/bin/composer
+```
+
+#### アプリをgithubからCloneする
+
+EC2上でgit cloneした際に`git: command not found`となった場合、gitをインストールする必要があります。
+
+```
+$ sudo yum install git
+$ cd /var/www
+$ git clone https://github.com/XXXX/XXX.git
+```
+
+#### Apacheの設定を変更
+
+http.confファイルを変更。
+
+```
+$ sudo vi /etc/httpd/conf/httpd.conf
+```
+
+```
+// DocumentRoot “/var/www/html” を↓に変更
+DocumentRoot "/var/www/{プロジェクト名}/public"
+
+// .htaccessを有効化する為、以下を追加
+<Directory /var/www/プロジェクト名/public>
+ AllowOverride All
+</Directory>
+```
+
+Apacheをリスタート。
+
+```
+$ sudo service httpd restart
+```
+
+#### composerのパッケージをインストール
+
+```
+$ cd /var/www/{プロジェクトのフォルダ名}
+$ composer install
+```
+
+#### Laravelの設定
+
+`/storage`と`/bootstrap/cache`を書き込み可能にする。
+
+```
+$ sudo chmod -R 777 /var/www/{プロジェクトのフォルダ名}/storage
+$ sudo chmod -R 775 /var/www/{プロジェクトのフォルダ名}/bootstrap/cache
+```
+
+.envファイルを作成して、アプリケーションKeyを作成。
+
+```
+$ cp .env.example .env
+$ php artisan key:generate
+```
+
+ここまでくるとEC2のパブリックIPでLaravelプロジェクトの画面が表示できるようになります。
+
+## MySQLを設定
+
+MariaDBがインストール済みかを確認します。  
+MariaDBが入っていると競合してMySQLがインストールできません。
+
+```
+$ sudo yum list installed | grep mariadb
+```
+
+インストール済みの場合は削除します。
+
+```
+$ sudo yum remove mariadb-libs
+```
+
+MySQLのリポジトリを追加。
+
+```
+$ sudo yum install http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+```
+
+MySQLをインストールする。
+
+```
+$ yum install mysql-community-server
+```
+
+起動したりする。
+
+```
+$ sudo service mysqld start
+
+//DBサーバー起動時にMySQLが自動で起動するようにする
+$ sudo chkconfig mysqld on
+```
+
+MySQL5.7の場合は初期のパスワードを確認。
+
+```
+$ sudo cat /var/log/mysqld.log | grep 'temporary password'
+```
+
+MySQLの初期設定でパスワードを再設定。
+
+```
+$ sudo mysql_secure_installation
+```
+
+パスワードのポリシーがきつい場合はゆるくする。
+
+```
+mysql -u root -p
+Enter password: {↑で確認したパスワードを入力}
+
+// 文字列の長さを変更
+mysql> set global validate_password_length=6;
+// ポリシーを変更
+mysql> set global validate_password_policy=LOW;　
+```
+
+ユーザー作成。
+
+```
+mysql> create user 'ユーザー名'@'localhost' identified by 'パスワード';
+// create user 'default'@'localhost' identified by '12345678'
+
+// 作成したユーザーを確認
+mysql> SELECT Host, User FROM mysql.user;
++-----------+---------------+
+| Host      | User          |
++-----------+---------------+
+| localhost | default       |
+| localhost | mysql.session |
+| localhost | mysql.sys     |
+| localhost | root          |
++-----------+---------------+
+```
+
+DBを作成。
+
+```
+mysql> create database {DB名};
+// 作成したDBを確認
+mysql> show databases;
+```
+
+DBにアクセスできるユーザーを設定。
+
+```
+mysql> grant all privileges on {作成したDB名}.* to '{作成したユーザー名}'@'localhost';
+mysql> FLUSH PRIVILEGES;
+```
+
+ユーザーのパスワード認証方式を変更。
+
+```
+ALTER USER 'default'@'localhost' IDENTIFIED WITH mysql_native_pass
+```
+
+mysqlからログアウトして`.env`を書き換える。
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE={DB名}
+DB_USERNAME={作成したユーザー}
+DB_PASSWORD={作成したユーザーのパスワード}
+```
+
+migrationを実行する。
+
+```
+$ php artisan migrate
+```

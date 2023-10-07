@@ -66,6 +66,11 @@
     margin-bottom: var(--spacing-XL);
   }
 
+  .content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
   .content p {
     margin-bottom: var(--spacing-M);
   }
@@ -119,6 +124,21 @@
 
     @media screen and (max-width: $breakpoint-S) {
       grid-template-columns: 1fr;
+    }
+  }
+
+  .content table {
+    width: 100%;
+    th {
+      border: 1px solid var(--color-gray-04);
+      padding: var(--spacing-S);
+      background: var(--color-gray-05);
+      font-weight: bold;
+      text-align: center;
+    }
+    td {
+      border: 1px solid var(--color-gray-04);
+      padding: var(--spacing-S);
     }
   }
 }

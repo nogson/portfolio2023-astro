@@ -1,0 +1,113 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: AWSのパブリックインスタンス(EC2)でdockerを起動するメモ
+description: AWSで作成したEC2にdockerでサーバーを立てて、パブリックIPでアクセスできるようにする為のメモ。
+createAt: 2020-07-29
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+AWSで作成したEC2にdockerでサーバーを立てて、パブリックIPでアクセスできるようにする為のメモ。
+
+EC2にログインする。
+
+```
+ssh -i keypairへのパス ec2-user@XX.XXX.XXX.XX
+```
+
+```
+sudo yum update -y
+sudo yum install -y docker
+sudo systemctl start docker.service
+sudo systemctl enable docker.service
+// ec2-user を docker グループに追加すると、sudo を使用せずに Docker コマンドを実行できる
+sudo usermod -a -G docker ec2-user　
+```
+
+設定や、状態を確認。
+
+```
+sudo systemctl status docker.service
+docker --version
+```
+
+docker-composeをインストール。
+
+[Install Docker Compose | Docker Documentation](https://docs.docker.com/compose/install/#install-compose)のLinuxを参考。
+
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+インストールを確認。
+
+```
+docker-compose --version
+```
+
+docker-composeファイルを作成。
+
+```
+vi docker-compose.yml
+```
+
+docker-composeは、例えばこんな感じ。
+
+```
+version: '3'
+
+services:
+  php:
+    image: php:7.2-apache
+    volumes:
+      - ./html:/var/www/html
+    ports:
+      - 80:80
+    container_name: php7.2-trial2
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+    container_name: mysql5.7-trial2
+```
+
+コンテナを作成する。
+
+```
+docker-compose up -d
+```
+
+コンテナ作成時に以下のエラーが出た場合は、exitで一旦ログアウトする。
+
+```
+ERROR: Couldn’t connect to Docker daemon at http+docker://localhost – is it running?
+```
+
+コンテナが立ち上がる。
+
+```
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                 NAMES
+d3213cdea250        php:7.2-apache      "docker-php-entrypoi…"   4 minutes ago       Up 5 seconds        0.0.0.0:80->80/tcp    php7.2-trial2
+449690dec0b7        mysql:5.7           "docker-entrypoint.s…"   21 minutes ago      Up 5 seconds        3306/tcp, 33060/tcp   mysql5.7-trial2
+```
+
+htmlディレクトリ配下に、index.htmlを作成する。  
+最終的にには、以下のような構成になる。
+
+```
+├── docker-compose.yml
+├── html
+│   └──index.html
+└── mysql
+```
+
+EC2のパブリックIPでアクセスするとindex.htmlが表示される。

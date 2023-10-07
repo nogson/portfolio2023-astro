@@ -1,0 +1,343 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: THREE.jsでオフスクリーンレンダリングを試してみる為のメモ
+description: オフスクリーンレンダリングに挑戦してみたいと思います。
+createAt: 2017-12-16
+thumbnail: "/blog/thumbnail/webgl_thumb.png"
+tags: ["WebGL"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+オフスクリーンレンダリングに挑戦してみたいと思います。
+オフスクリーンレンダリングとは、画面には表示せずにメモリ空間上に描画することです。
+
+この一時的に描画されるメモリ空間のことを「フレームバッファ」と言います。
+
+今回は以下の図のように、オフスクリーンレンダリングした情報をテクスチャ画像として、画面上に表示してみたいと思います。
+
+<CommonImg
+  src="/blog/20171216/01.png"
+  alt="オフスクリーンレンダリング"
+  client:only="react"
+/>
+
+# 手順１: ベースシーンを描画
+
+まずはベースとなるシーンを描画してみる。
+基本的には普通の描画方法と同じ。
+
+```
+window.onload = function () {
+
+    var renderer;
+    var baseCamera, baseScene;
+
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
+
+    // rendererの作成
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor('#CCC');
+
+    // canvasをbodyに追加
+    document.body.appendChild(renderer.domElement);
+
+    // canvasをリサイズ
+    renderer.setSize(windowWidth, windowHeight);
+
+    // ベースの描画処理（renderTarget への描画用）
+    baseScene = new THREE.Scene();
+
+    //ベースの描画処理用カメラ
+    baseCamera = new THREE.PerspectiveCamera(50, windowWidth / windowHeight, 0.1, 1000);
+    baseCamera.position.z = 20;
+
+    //ライトを追加
+    var light = new THREE.DirectionalLight(new THREE.Color(0xffffff), 1);
+    light.position.set(0, 10, 20);
+    baseScene.add(light);
+
+    //ベース用のマテリアルとジオメトリ
+    var texture = THREE.ImageUtils.loadTexture('images/img.jpg');
+    var baseGeometry = new THREE.BoxGeometry(10, 10, 10);
+    var baseMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        wireframe: false
+    });
+    var baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+    baseScene.add(baseMesh);
+
+    render();
+
+    function render() {
+
+        renderer.setClearColor(new THREE.Color(0xffffff), 1.0);
+
+        //レンダリング
+        renderer.render(baseScene, baseCamera);
+
+        requestAnimationFrame(render);
+    }
+};
+```
+
+こんな感じで描画される。
+
+<CommonImg
+  src="/blog/20171216/02.png"
+  alt="オフスクリーンレンダリング"
+  client:only="react"
+/>
+
+# 手順2: ベースシーンをオフスクリーンレンダリングしてみる
+
+オフスクリーンレンダリングは、`new THREE.WebGLRenderTarget`を利用することで実現できる。
+THREE.WebGLRenderTargetを使うことで、手順１で作成したsceneをテクスチャとして扱うことができる。
+
+## まずはTHREE.WebGLRenderTargetのインスタンスを作成。
+
+```
+    var renderTarget = new THREE.WebGLRenderTarget(256, 256, {
+        magFilter: THREE.NearestFilter,
+        minFilter: THREE.NearestFilter,
+        wrapS: THREE.ClampToEdgeWrapping,
+        wrapT: THREE.ClampToEdgeWrapping
+    });
+```
+
+## renderTargetにレンダリングする
+
+```
+ renderer.render(baseScene, baseCamera, renderTarget);
+```
+
+ここまでの、全体のコードは以下になります。
+これを画面見た場合、メモリ空間上には描画されていますが、画面には描画されれていない為、何も表示されません。
+
+```
+window.onload = function () {
+
+    var renderer;
+    var postCamera, postScene;
+    var baseCamera, baseScene;
+    var renderTarget;
+    var theta = 0;
+
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
+
+    // rendererの作成
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor('#CCC');
+
+    // canvasをbodyに追加
+    document.body.appendChild(renderer.domElement);
+
+    // canvasをリサイズ
+    renderer.setSize(windowWidth, windowHeight);
+
+    // ベースの描画処理（renderTarget への描画用）
+    baseScene = new THREE.Scene();
+
+    //ベースの描画処理用カメラ
+    baseCamera = new THREE.PerspectiveCamera(50, windowWidth / windowHeight, 0.1, 1000);
+    baseCamera.position.z = 20;
+
+    //ライトを追加
+    var light = new THREE.DirectionalLight(new THREE.Color(0xffffff), 1);
+    light.position.set(0, 10, 20);
+    baseScene.add(light);
+
+    //ベース用のマテリアルとジオメトリ
+    var texture = THREE.ImageUtils.loadTexture('images/img.jpg');
+    var baseGeometry = new THREE.BoxGeometry(10, 10, 10);
+    var baseMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        wireframe: false
+    });
+    var baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+    baseScene.add(baseMesh);
+
+    //オフスクリーンレンダリング用
+    renderTarget = new THREE.WebGLRenderTarget(256, 256, {
+        magFilter: THREE.NearestFilter,
+        minFilter: THREE.NearestFilter,
+        wrapS: THREE.ClampToEdgeWrapping,
+        wrapT: THREE.ClampToEdgeWrapping
+    });
+
+    render();
+
+    function render() {
+
+        //オフスクリーンレンダリング
+        renderer.setClearColor(new THREE.Color(0xffffff), 1.0);
+        renderer.render(baseScene, baseCamera, renderTarget);
+
+        requestAnimationFrame(render);
+    }
+};
+```
+
+# 画面に描画する。
+
+ポストプロセス用のシーンを用意する。
+ポイントはmap(テクスチャ)に手順2で用意したrenderTargetをテクスチャとしてわたします。
+
+```
+    //ポストプロセス用
+    postScene = new THREE.Scene();
+    postCamera = new THREE.PerspectiveCamera(60, windowWidth / windowHeight, 0.1, 1000);
+    postCamera.position.z = 20;
+
+    //ポストプロセス用ライト
+    var postLight = new THREE.DirectionalLight(new THREE.Color(0xffffff), 1);
+    postLight.position.set(0, 10, 20);
+    postScene.add(postLight);
+
+    //ポストプロセス用ジオメトリ、マテリアル
+    var postGeometry = new THREE.BoxGeometry(5, 5,5);
+    var postMaterial = new THREE.MeshPhongMaterial({
+        map: renderTarget,//renderTargetをテクスチャとして渡す
+        wireframe: false
+    });
+
+    var postMesh = new THREE.Mesh(postGeometry, postMaterial);
+    postScene.add(postMesh);
+```
+
+全体のコードはこんな感じ。
+
+```
+window.onload = function () {
+
+    var renderer;
+    var postCamera, postScene;
+    var baseCamera, baseScene;
+    var renderTarget;
+    var theta = 0;
+
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
+
+    // rendererの作成
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor('#CCC');
+
+    // canvasをbodyに追加
+    document.body.appendChild(renderer.domElement);
+
+    // canvasをリサイズ
+    renderer.setSize(windowWidth, windowHeight);
+
+    // ベースの描画処理（renderTarget への描画用）
+    baseScene = new THREE.Scene();
+
+    //ベースの描画処理用カメラ
+    baseCamera = new THREE.PerspectiveCamera(50, windowWidth / windowHeight, 0.1, 1000);
+    baseCamera.position.z = 20;
+
+    //ライトを追加
+    var baseLight = new THREE.DirectionalLight(new THREE.Color(0xffffff), 1);
+    baseLight.position.set(0, 10, 20);
+    baseScene.add(baseLight);
+
+    //ベース用のマテリアルとジオメトリ
+    var texture = THREE.ImageUtils.loadTexture('images/img.jpg');
+    var baseGeometry = new THREE.BoxGeometry(10, 10, 10);
+    var baseMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        wireframe: false
+    });
+    var baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+    baseScene.add(baseMesh);
+
+    //オフスクリーンレンダリング用
+    renderTarget = new THREE.WebGLRenderTarget(256, 256, {
+        magFilter: THREE.NearestFilter,
+        minFilter: THREE.NearestFilter,
+        wrapS: THREE.ClampToEdgeWrapping,
+        wrapT: THREE.ClampToEdgeWrapping
+    });
+
+    //ポストプロセス用
+    postScene = new THREE.Scene();
+    postCamera = new THREE.PerspectiveCamera(60, windowWidth / windowHeight, 0.1, 1000);
+    postCamera.position.z = 20;
+
+    //ポストプロセス用ライト
+    var postLight = new THREE.DirectionalLight(new THREE.Color(0xffffff), 1);
+    postLight.position.set(0, 10, 20);
+    postScene.add(postLight);
+
+    //ポストプロセス用ジオメトリ、マテリアル
+    var postGeometry = new THREE.BoxGeometry(5, 5, 5);
+    var postMaterial = new THREE.MeshPhongMaterial({
+        map: renderTarget,//renderTargetをテクスチャとして渡す
+        wireframe: false
+    });
+
+    var postMesh = new THREE.Mesh(postGeometry, postMaterial);
+    postScene.add(postMesh);
+
+    render();
+
+    function render() {
+
+        //オフスクリーンレンダリング
+        renderer.setClearColor(new THREE.Color(0xffffff), 1.0);
+        renderer.render(baseScene, baseCamera, renderTarget);
+
+        //画面にレンダリング
+        renderer.setClearColor(new THREE.Color(0x000000), 1.0);
+        renderer.render(postScene, postCamera);
+
+        requestAnimationFrame(render);
+    }
+};
+```
+
+ベースのシーンがテクスチャとして表示される。
+
+<CommonImg
+  src="/blog/20171216/03.png"
+  alt="オフスクリーンレンダリング"
+  client:only="react"
+/>
+
+# テクスチャをアニメーションさせてみる
+
+Boxのジオメトリをテクスチャに設定してみます。
+また、メッシュは回転させるようにしてみました。
+
+<p
+  data-height="265"
+  data-theme-id="0"
+  data-slug-hash="YYyyqj"
+  data-default-tab="js,result"
+  data-user="satofaction"
+  data-embed-version="2"
+  data-pen-title="YYyyqj"
+  class="codepen"
+>
+  See the Pen <a href="https://codepen.io/satofaction/pen/YYyyqj/">YYyyqj</a> by
+  nogson (<a href="https://codepen.io/satofaction">@satofaction</a>) on{" "}
+  <a href="https://codepen.io">CodePen</a>.
+</p>
+<script
+  async
+  src="https://production-assets.codepen.io/assets/embed/ei.js"
+></script>
+
+# まとめ
+
+メモリ空間上に描画するイメージがもてるようになりました。
+シェーダーと組み合わせて使ってみたいです。
+
+# 参考
+
+<a href="https://qiita.com/edo_m18/items/df3622e76709272058c7">
+  [Three.js] WebGLRenderTargetを使ってオフスクリーンレンダリング
+</a>

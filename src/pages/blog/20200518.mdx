@@ -1,0 +1,121 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: AWS ELBの基礎基礎メモ
+description: ELB(Elastic Load Balancing)について。
+createAt: 2020-05-18
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## ELBとは
+
+アクセスを複数のEC2インスタンスに負荷分散する役割を担います。  
+またヘルスチェックを行い、複数あるインスタンスの中から正常なインスタンスのみに振り分けます。
+
+<CommonImg
+  src="blog/images/20200518/01.png"
+  alt="ELBとは"
+  client:only="react"
+/>
+
+ELBには**ALB(Application Load Balancer)**と、**NLB(Network Load Balancer)**があります。
+
+## 利用目的
+
+### 負荷分散、単一障害点対応
+
+一般的な利用目的としては、大量のアクセスを複数のインスタンスで処理する負荷分散と、特定のインスタンスに障害が発生した場合にサービスを止めない可用性の担保になります。
+
+仮にEC2がダウンした場合。  
+サービスの継続ができなくなる。
+
+<CommonImg
+  src="blog/images/20200518/02.png"
+  alt="負荷分散、単一障害点対応"
+  client:only="react"
+/>
+
+ELBを利用してサイトを冗長化した場合は、仮に1台がダウンしてもサービスの継続が可能。
+
+<CommonImg
+  src="blog/images/20200518/03.png"
+  alt="負荷分散、単一障害点対応"
+  client:only="react"
+/>
+
+### SSLターミネーション
+
+ELBにHTTPS通信で使用するSSL証明書をアタッチすることで、通信の暗号化・復号も担ってくれます。  
+その為、ELB配下のインスタンスで暗号化・復号をやならくてよいのでインスタンスの負荷を軽減することができます。
+
+※ SSL証明者はACM(AWS Certificate Manager)で無料で作成することができます
+
+### ヘルスチェック
+
+登録されているインスタンスの状態を監視することができます。
+正常に動作していないインスタンスはELBの対象から切り離されます。
+
+## ELBの作成
+
+「EC2 > ロードバランサー > ロードバランサーの作成」を押します。
+
+<CommonImg
+  src="blog/images/20200518/04.png"
+  alt="ELBの作成"
+  client:only="react"
+/>
+
+### ロードバランサーの種別を選択します
+
+**Application Load**を選択します。
+
+<CommonImg
+  src="blog/images/20200518/05.png"
+  alt="ロードバランサーの種別を選択します"
+  client:only="react"
+/>
+
+### ロードバランサーの設定をします
+
+| 項目                     | 設定                                                                                                           |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| 名前                     | ELBの名前。「Test-EBL」と設定した場合はDNSは「Test-EBL-XXXXXXXX.ap-northeast-1.ebl.amazonaws.com」のようになる |
+| スキーマ                 | External-Web：インターネット向け<br />Internal=ELB：内部                                                       |
+| IPアドレス               | サポートするIPアドレスのタイプを指定する。dual stackを選択するとIPv4とIPv6の両方をサポート                     |
+| リスナー                 | ELBで受信するプロトコルやポート、ELBからインスタンスに連携するプロトコルやポートを設定する                     |
+| アベイラビリティーゾーン | ELBを作成するVPCのサブネットを指定                                                                             |
+| タグ                     | 識別用のタグ                                                                                                   |
+
+<CommonImg
+  src="blog/images/20200518/06.png"
+  alt="ロードバランサーの設定をします"
+  client:only="react"
+/>
+
+### セキュリティグループを選択
+
+セキュリティグループを選択します。
+
+### ルーティングの設定
+
+リクエストを送るターゲットグループを設定します。
+
+### ターゲットの登録
+
+ELBに登録するEC2インスタンスを選択します。
+
+<CommonImg
+  src="blog/images/20200518/07.png"
+  alt="ターゲットの登録"
+  client:only="react"
+/>
+
+## EBLのアクセス分散を確認する
+
+ELBに登録したEC2インスタンスが2つあるとします。  
+それぞれの`/var/www/html`にindex.htmlファイルをおいて、それぞれに別々の内容のテキストを記載します。
+
+正しくELBの設定が行われていれば、ロードバランサーのDNSでアクセスした際に、それぞれのindex.htmlがリロード時にランダムに表示されます。
