@@ -1,0 +1,48 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: blenderでプロシージャルマテリアル
+description: blenderでプロシージャルマテリアルを設定する方法です。
+createAt: 2022-02-19
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+テクスチャを利用せず、nodeの設定のみでマテリアルを設定する方法です。  
+Shadingのnodeの設定方法をすぐ忘れてしまうので備忘録として記事にしたいと思います。
+
+## 卵
+
+[こちらの記事](https://harkerhack.com/blender-procedural-material-egg/)を参考にしています。
+
+Shadingの設定はこんな感じです。  
+ノイズで、色のむらと微妙な凹凸を表現してるようです。
+
+<CommonImg src="blog/images/20220219/01.png" alt="たまご" client:only="react" />
+
+レンダリングするとこんな感じ。
+
+<CommonImg src="blog/images/20220219/02.png" alt="たまご" client:only="react" />
+
+## みかん
+
+[こちらのチュートリアル](https://www.youtube.com/watch?v=qtvXInEjAWY)を参考にしています。
+
+ボロノイテクスチャでみかんの模様を作り、そちらをバンプでも利用して凹凸を表現しています。  
+ディスプレイスメントで周りの輪郭を少し歪ませてよりリアルにしています。
+
+<CommonImg src="blog/images/20220219/03.png" alt="みかん" client:only="react" />
+
+レンダリングするとこんな感じ。
+
+<CommonImg src="blog/images/20220219/04.png" alt="みかん" client:only="react" />
+
+## 木目
+
+<CommonImg src="blog/images/20220219/05.png" alt="木目" client:only="react" />
+
+レンダリングするとこんな感じ。
+
+<CommonImg src="blog/images/20220219/06.png" alt="木目" client:only="react" />

@@ -1,0 +1,141 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: FlutterとFirebaseで認証を行う
+description: FlutterとRiverpodでMVVMぽい設計を試す
+createAt: 2022-05-02
+thumbnail: "/blog/thumbnail/flutter_thumb.png"
+tags: ["Flutter"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# 準備
+
+## Firebaseのセットアップ
+
+### Firebase CLIをインストール
+
+(こちら)[https://firebase.google.com/docs/cli?hl=ja#setup_update_cli]を参照
+
+### Google アカウントで Firebase にログインする
+
+```
+$ firebase login
+```
+
+### FlutterFireCLIのインストール
+
+```
+$ dart pub global activate flutterfire_cli
+```
+
+### flutterfire configureの実行
+
+```
+$ flutterfire configure
+```
+
+Firebaseに作成したプロジェクトを選択。
+
+```
+i Found 3 Firebase projects.
+? Select a Firebase project to configure your Flutter application with ›
+❯ アプリ名 (プロジェクト名)
+  <create a new project>
+```
+
+アプリで作成するプラットホームを選択。
+
+```
+? Which platforms should your configuration support (use arrow keys & space to select)? ›
+✔ android
+✔ ios
+macos
+web
+```
+
+iOSのバンドルIDを設定。
+バンドルIDはFirebaseの「作成したプロジェクト > 全般 > マイアプリ」から確認できます。
+
+```
+? Which ios bundle id do you want to use for this configuration, e.g. 'com.example.app'? › iOSのバンドルIDを入力する
+```
+
+### プラグインをインストール
+
+以下をインストールします。
+
+- (firebase_core)[https://pub.dev/packages/firebase_core/install]
+
+### main.dartにFirebaseの初期化処理を追加
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
+  runApp(MyApp());
+}
+```
+
+## Firebase Authenticationでログイン方法を追加
+
+FirebaseのAuthenticationで、ログイン方法を追加します。  
+今回は「メールアドレス / パスワード」で認証できるようにします。
+
+Authentication > Sign-in methods >「メールアドレス / パスワード」を選択。
+
+<CommonImg
+  src="blog/images/20220512/01.png"
+  alt="Authentication"
+  client:only="react"
+/>
+
+「メールアドレス / パスワード」を有効にして保存をおします。
+
+<CommonImg
+  src="blog/images/20220512/02.png"
+  alt="Authentication"
+  client:only="react"
+/>
+
+Authentication画面が以下のようになります。
+
+<CommonImg
+  src="blog/images/20220512/03.png"
+  alt="Authentication"
+  client:only="react"
+/>
+
+### プラグインをインストール
+
+以下をインストールします。
+
+- (firebase_auth)[https://pub.dev/packages/firebase_auth/install]
+
+## ユーザー登録
+
+ユーザーを登録する処理は簡単に書くと以下になります。
+
+```
+// 登録
+final user = (await FirebaseAuth.instance.createUserWithEmailAndPassword( email: email, password: password)).user;
+```
+
+認証はこちら。
+
+```
+// 認証
+final user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: email,password: password)).user;
+if(user != null) {
+ // 認証OK
+}
+```
+
+パスワードリセットはこちら。
+
+```dart
+await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+```

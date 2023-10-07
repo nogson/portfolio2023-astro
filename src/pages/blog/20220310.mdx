@@ -1,0 +1,214 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: FlutterのRiverpodでProviderを学ぶ
+description: FlutterのRiverpodを利用したProviderの利用方法です。
+createAt: 2022-03-10
+thumbnail: "/blog/thumbnail/flutter_thumb.png"
+tags: ["Flutter"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# Flutter用のRiverpodをインストール
+
+Riverpodのパッケージにはいくつか種類があり、今回はFlutter用の[flutter_riverpod](https://pub.dev/packages/flutter_riverpod)を利用したいと思います。
+
+```shell
+flutter pub add flutter_riverpod
+```
+
+# アプリケーション内でProviderを利用できるようにする
+
+main.dartのアプリルートで以下のように`MyApp()`を`ProviderScope`でラップすることで、アプリケーション内でProviderを利用できるようになります。
+
+```dart
+void main() {
+  - runApp(const MyApp());
+  + runApp(ProviderScope(child: const MyApp()));
+}
+```
+
+# Riverpodの表示用Widget
+
+- Consumer ・・・Widgetに埋め込む
+- ConsumerWidget ・・・StatelessWidgetのRiverpod版
+- ConsumerStatefulWidget ・・・StatefulWidgetのRiverpod版
+
+## StatelessWidgetとStatefulWidgetの違い
+
+### StatelessWidget
+
+親Widgetから渡された変数を利用する。  
+Widget内での変数の書き換えはできない。
+親Widgetから渡されている変数が変更になった場合再ビルドされる。
+
+例) Text、Icon
+
+### StatefulWidget
+
+変数を変更時に自分で再ビルドができる。
+
+`setState()`を利用して変数を変更時に、自身を再ビルドする。
+
+例) Checkbox、TextField
+
+# RiverpodのProvider
+
+- Provider ・・・ 定数
+- StateProvider ・・・ 変数
+- ScopedProvider・・・出力を指定することができる
+- StateNotifierProvider・・・変数 + メソッド
+- FutureProvider・・・Future版(あとでデータを取ってきてから参照するなど)
+- StreamProvider・・・Stream版(snapshotなどを利用してFirebaseなどからデータをとってくるのよく使われる)
+- ChangeNotifierProvider・・・ChangeNotifierを使う
+
+# Riverpodの表示方法
+
+- watch ・・・状態変更でWidgetを更新する場合に使用する
+- read・・・状態変更でWidgetを更新しない場合に使用する
+- select ・・・データ内の特定の値が変更したときのみWidgetを更新する場合に使用する
+
+# Providerを使ってみる
+
+最も基本的なProvideの利用方法です。
+グローバル変数として宣言でき、主に定数のように利用するProviderです。
+
+## ConsumerWidgetを継承する
+
+通常のWidgetでは、Providerを利用することができない為、`ConsumerWidget`を継承するように変更します。  
+build関数の第2引数には、providerにアクセスするための`WidgetRef ref`を追加します。  
+refを使ってProviderの値を操作します。
+
+```dart
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+  ...
+```
+
+## Providerを定義する
+
+まずは、以下のようにProviderを定義。  
+引数の`ref`を利用して他のProviderを読み込むことも可能です。  
+refを利用しない場合は、`_`として省略しても良いです。
+
+`lib/provider.dart`を作成。
+
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final titleProvider = Provider<String>((ref) {
+  return 'Titleだよ';
+});
+```
+
+Providerにアクセスするには、ref.watchを利用します。
+
+利用先のdartファイル。
+
+```dart
+import 'package:hogehoge/provider.dart';
+
+class TitleView extends ConsumerWidget {
+  const HomeView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final title = ref.watch(titleProvider);
+    return Text(title);
+  }
+}
+```
+
+#### Providerの書き方メモ
+
+refを省略する場合。
+
+```dart
+final messageProvider = Provider<String>((_) {
+  return 'メッセージだよ';
+});
+```
+
+他のProviderを参照する場合。
+
+```dart
+final hogeProvider = StateProvider<String>((ref) => 'hogeProvider');
+final anotherProvider = Provider<String>((ref) => ref.watch(hogeProvider));
+```
+
+# StateProviderを使ってみる
+
+StateProviderは値を取得する以外にも、外部から値の変更が可能です。
+
+`lib/provider.dart`を作成。
+
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final counterProvider = StateProvider<int>((ref) {
+  return 0;
+});
+```
+
+## 表示する
+
+```dart
+class CounterView extends ConsumerWidget {
+  const HomeView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final counter = ref.watch(counterProvider).toString; // int型なのでキャストしている
+    return Text(counter);
+  }
+}
+```
+
+## 変更する
+
+変更する場合は、
+
+```dart
+ref.watch(プロバイダ.state).state = 値;
+```
+
+もしくは、こちらで変更。
+
+```dart
+ref.watch(プロバイダ.notifier).state = 値;
+```
+
+もしくは、こちらで変更。
+
+```dart
+ref.watch(プロバイダ.state).update((state) => 値) ;
+```
+
+```dart
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('タイトル'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(onPressed: () {
+              // カウンターをインクリメントする
+              ref.watch(counterProvider.notifier).state ++;
+            }, child: Icon(Icons.add)),
+            Text(ref.watch(counterProvider).toString()), // Providerを取得して表示
+          ],
+        ),
+      ),
+    );
+  }
+}
+```

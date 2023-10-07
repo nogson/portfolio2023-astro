@@ -1,0 +1,246 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: curlコマンドについて
+description: curlコマンドが便利なのは知っていたが使い方がよくわからなかったので調べる。
+createAt: 2022-02-05
+thumbnail: "/blog/thumbnail/note_thumb.png"
+tags: ["Other"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+#curlコマンドとは
+サーバーからのデータ転送や、サーバーへのデータ転送を行うことができるコマンドです。  
+HTTP, HTTPS ,FTP, Telnet, SMTP, IMAP, POP3など様々なプロトコルを利用することができます。
+
+書式は以下となります。
+
+```shell script
+curl {options} {URL}
+```
+
+# curlコマンドを利用する
+
+最近のLinuxには初めからcurlがインストールされているとのことです(入ってなければインストールが必要)。
+
+試しにバージョンを確認してみます。
+
+```shell script
+$ curl --version
+
+curl 7.64.1 (x86_64-apple-darwin20.0) libcurl/7.64.1 (SecureTransport) LibreSSL/2.8.3 zlib/1.2.11 nghttp2/1.41.0
+Release-Date: 2019-03-27
+Protocols: dict file ftp ftps gopher http https imap imaps ldap ldaps pop3 pop3s rtsp smb smbs smtp smtps telnet tftp
+Features: AsynchDNS GSS-API HTTP2 HTTPS-proxy IPv6 Kerberos Largefile libz MultiSSL NTLM NTLM_WB SPNEGO SSL UnixSockets
+```
+
+ためにし私のポートフォリオサイトをcurlコマンドで取得してみます。  
+HTMLの中身が取得できると思います。
+
+```shell script
+curl https://satofaction.net
+
+...省略
+script src="/_nuxt/5cb621b.js" defer></script><script src="/_nuxt/50faef0.js" defer></script><script src="/_nuxt/136e9f5.js" defer></script><script src="/_nuxt/3848f72.js" defer></script><script src="/_nuxt/b621a03.js" defer></script>
+  </body>
+</html>
+```
+
+## GET以外のメソッドも試してみたい
+
+GET以外にもPOSTメソッドやPATCH,DELETEなども利用してみたい場合は以下のサービスが便利です。  
+[https://httpbin.org/](https://httpbin.org/)
+
+メソッドを指定する場合は以下のようにします。
+
+```shell script
+url -X {リクエストメソッド} “URL”
+```
+
+指定するURLはメソッドごとにちがいますのでご注意ください。
+
+| URL    | メソッド                   |
+| ------ | -------------------------- |
+| GET    | https://httpbin.org/get    |
+| POST   | https://httpbin.org/post   |
+| PATCH  | https://httpbin.org/patch  |
+| PUT    | https://httpbin.org/put    |
+| DELETE | https://httpbin.org/delete |
+
+### GET
+
+```shell script
+$ curl -X GET "http://httpbin.org/get"
+{
+  "args": {},
+  "headers": {
+    "Accept": "*/*",
+    "Host": "httpbin.org",
+    "User-Agent": "curl/7.64.1",
+    "X-Amzn-Trace-Id": "Root=1-61fdc6a6-6a61ab3450dba54a2e95c282"
+  },
+  "origin": "XXX.XXX.XXX.XX",
+  "url": "http://httpbin.org/get"
+}
+```
+
+### POST
+
+```shell script
+$ curl -X POST "http://httpbin.org/post"
+{
+  "args": {},
+  "data": "",
+  "files": {},
+  "form": {},
+  "headers": {
+    "Accept": "*/*",
+    "Host": "httpbin.org",
+    "User-Agent": "curl/7.64.1",
+    "X-Amzn-Trace-Id": "Root=1-61fdc9ab-13047929000d78bf34fc2649"
+  },
+  "json": null,
+  "origin": "XXX.XXX.XXX.XX",
+  "url": "http://httpbin.org/post"
+}
+```
+
+### POSTでリクエストパラメータを連携してみる
+
+`curl -X POST -d ‘{“パラメータ”}: {“値”}’`でJSON形式のデータを送ることができます。
+
+```shell script
+$ curl -H "content-type: application/json" -X POST -d'{"offset":"1", "limit":"10"}' http://httpbin.org/post
+{
+  "args": {},
+  "data": "{\"offset\":\"1\", \"limit\":\"10\"}",
+  "files": {},
+  "form": {},
+  "headers": {
+    "Accept": "*/*",
+    "Content-Length": "28",
+    "Content-Type": "application/json",
+    "Host": "httpbin.org",
+    "User-Agent": "curl/7.64.1",
+    "X-Amzn-Trace-Id": "Root=1-61fdcc34-022903f04a3d7b322a148564"
+  },
+  "json": {
+    "limit": "10",
+    "offset": "1"
+  },
+  "origin": "XXX.XXX.XXX.XX",
+  "url": "http://httpbin.org/post"
+}
+```
+
+### HTTPヘッダーを確認する
+
+`curl -I`でHTTPヘッダーのみ出力することができます。
+
+```shell script
+$ curl -I -X GET "http://httpbin.org/get"
+HTTP/1.1 200 OK
+Date: Sat, 05 Feb 2022 01:12:16 GMT
+Content-Type: application/json
+Content-Length: 255
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+```
+
+### HTTPヘッダーを変更する
+
+`curl -H “{パラメータ}”: “{値}”`でHTTPヘッダーを変更することができます。
+
+```shell script
+curl -X POST "http://httpbin.org/post" -H "accept: application/json"
+{
+  "args": {},
+  "data": "",
+  "files": {},
+  "form": {},
+  "headers": {
+    "Accept": "application/json",　// 変更される
+    "Host": "httpbin.org",
+    "User-Agent": "curl/7.64.1",
+    "X-Amzn-Trace-Id": "Root=1-61fdca6b-166b8b640713e0e729b6f224"
+  },
+  "json": null,
+  "origin": "XXX.XXX.XXX.XX",
+  "url": "http://httpbin.org/post"
+}
+```
+
+## デバック時の便利オプション
+
+`curl -v`を付与することで通信内容の詳細を見ることができます。
+
+```shell script
+curl -v -H "content-type: application/json" -X POST -d'{"offset":"1", "limit":"10"}' http://httpbin.org/post
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 52.55.211.119...
+* TCP_NODELAY set
+* Connected to httpbin.org (52.55.211.119) port 80 (#0)
+> POST /post HTTP/1.1
+> Host: httpbin.org
+> User-Agent: curl/7.64.1
+> Accept: */*
+> content-type: application/json
+> Content-Length: 28
+>
+* upload completely sent off: 28 out of 28 bytes
+< HTTP/1.1 200 OK
+< Date: Sat, 05 Feb 2022 01:03:45 GMT
+< Content-Type: application/json
+< Content-Length: 464
+< Connection: keep-alive
+< Server: gunicorn/19.9.0
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Credentials: true
+<
+{
+  "args": {},
+  "data": "{\"offset\":\"1\", \"limit\":\"10\"}",
+  "files": {},
+  "form": {},
+  "headers": {
+    "Accept": "*/*",
+    "Content-Length": "28",
+    "Content-Type": "application/json",
+    "Host": "httpbin.org",
+    "User-Agent": "curl/7.64.1",
+    "X-Amzn-Trace-Id": "Root=1-61fdccf1-5a8e5b7b095cb8ee29d2b52c"
+  },
+  "json": {
+    "limit": "10",
+    "offset": "1"
+  },
+  "origin": "XXX.XXX.XXX.XX",
+  "url": "http://httpbin.org/post"
+}
+* Connection #0 to host httpbin.org left intact
+* Closing connection 0
+```
+
+リクエストに失敗した場合に終了コード`0`以外を返却して欲しい場合は、`-f`オプションを指定します。
+
+`-f`を指定しない場合。
+
+```shell script
+$ curl -H -X POST "http://httpbin.org/status/400" -H "accept: text/plain"
+curl: (6) Could not resolve host: POST
+```
+
+`-f`を指定した場合。
+
+```shell script
+curl -f -H -X POST "http://httpbin.org/status/400" -H "accept: text/plain"
+curl: (6) Could not resolve host: POST
+curl: (22) The requested URL returned error: 400 BAD REQUEST
+```
+
+## まとめ
+
+curlコマンドを覚えてAPIの検証を手軽におこなえるようになりたいです。

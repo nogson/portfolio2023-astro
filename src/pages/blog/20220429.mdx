@@ -1,0 +1,31 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: FlutterとRiverpodでMVVMぽい設計を試す
+description: FlutterとRiverpodでMVVMぽい設計を試す
+createAt: 2022-04-29
+thumbnail: "/blog/thumbnail/flutter_thumb.png"
+tags: ["Flutter"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# MVVMとは
+
+MVVMはModel–View–ViewModelの略です。
+
+## それぞれの役割
+
+### View
+
+UI (Widget) を描画（出力）し、ユーザからの入力データを受け取ります。
+StateFullWidgetやStatelessWidgetなど。
+
+### ViewModel
+
+View から入力された状態（データ）を適切に変換して Model として持ちます。また、Model の状態（データ）を View 渡して画面の更新を促します。
+
+### Model
+
+状態（データ）を保持します。  
+状態がどう変換されて画面に描画されるかは知りません。

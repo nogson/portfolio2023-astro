@@ -1,0 +1,111 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: React Typescriptメモ
+description: ReactとTypescriptのメモ
+createAt: 2022-08-14
+thumbnail: "/blog/thumbnail/react_thumb.png"
+tags: ["Javascript"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+### 関数コンポーネントの型定義
+
+`React.FC`と利用する。
+
+```javascript
+
+import React from "react";
+
+const FunctionalComponent : React.FC = () => {
+ return <h1>Hello, world</h1>;
+};
+```
+
+### useStateに明示的に型を指定する場合
+
+ジェネリクス型で定義する。
+
+```javascript
+
+import React, {useState} from "react";
+
+const FunctionalComponent : React.FC = () => {
+  const [status, setStatus] = useState<string>('text')
+
+  return <h1>{status}</h1>;
+};
+```
+
+### onChangeのeventオブジェクトの型指定
+
+inputフィールドのonChangeで渡されるイベントオブジェクトの型は`React.ChangeEvent<HTMLInputElement>`を利用する。
+
+```javascript
+ ...中略
+  const onChangeHandler = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value)
+  }
+
+return (
+  ...中略
+    <input type="text" value={input} onChange={onChangeHandler} />
+```
+
+### useEffectの実行タイミング
+
+```javascript
+import React from "react";
+
+const FunctionalComponent : React.FC = () => {
+  const [count, setCount] = useState(0)
+  const [input, setInput] = useState('')
+  useEffect(() => {
+    document.title = `${count}回クリックされました`
+  })
+  return (
+    <>
+      <input type=text value={input} onChange={(e) => setInput(e.target.value)}/>
+      <p>{`${count}回クリックされました`}</p>
+    </>
+  )
+}
+```
+
+- useEffectの第2引数に指定されていない場合、レンダリングの度にuseEffectの関数が実行される。
+  - count、inputどちらが変更されてもuseEffectが実行される。
+- useEffectの第2引数に空の配列が指定されている場合は、マウント時に1度だけ実行される
+- useEffectの第2引数に特定の値が指定されている場合(例:[count])場合は、指定した値がレンダリングされて場合実行される。
+
+## useEffectでコンポーネントがアンマウントされた場合のcleanup関数
+
+コンポーネントがアンマウント(削除)された場合の処理はuseEffect内でreturnする関数で定義する。
+
+```javascript
+import React from "react";
+
+const FunctionalComponent : React.FC = () => {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    document.title = `${count}回クリックされました`
+
+    return () => {
+        // アンマウント時に実行されるcleanup処理
+    }
+  })
+}
+```
+
+## 非nullアサーション演算子
+
+Reactとは直接関係ないですが、  
+非nullかつ非undefinedことが保証されている場合、コンパイラに伝えることでエラーを発生させない方法です。
+
+```javascript
+    const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if(e.target.files![0]) {
+            setAvatarImage(e.target.files![0])
+        }
+    }
+```

@@ -1,0 +1,59 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Blenderで水面表現
+description: Blenderのシェーダーエディタで水面を作成する
+createAt: 2022-09-20
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## モディファイアーを設定
+
+平面のメッシュに対して、「海洋」を設定。  
+各パラメータの値はお好みで調整する。
+
+「時間」のパラメータに`#frame/100`(ドライバー）を設定することで、タイムラインのフレームの位置に合わせて値を変化させることができます。
+
+<CommonImg
+  src="blog/images/20220920/01.png"
+  alt="モディファイアーを設定"
+  client:only="react"
+/>
+
+### Blenderのドライバー
+
+ドライバーとは、オブジェクト同士のパラメータを連動させる機能です。
+
+ドライバーの追加はパラメータにフォーカス後に右クリックで表示される、コンテキストメニューから「ドライバーを追加」選択する。
+
+<CommonImg
+  src="blog/images/20220920/02.png"
+  alt="Blenderのドライバー"
+  client:only="react"
+/>
+
+## マテリアルの設定
+
+シェーダーエディタでマテリアルを設定していきます。
+
+<CommonImg
+  src="blog/images/20220920/03.png"
+  alt="マテリアルの設定"
+  client:only="react"
+/>
+
+波テクスチャと、ノイズテクスチャをミックスして利用します。  
+波テクスチャの「位置 X,Y」に`#frame/100`(ドライバー）を設定することで、タイムラインのフレームの位置に合わせて値を変化させることができます。
+
+## 仕上がり
+
+モディファイアーとマテリアルを設定するとこんな感じになります。
+
+<CommonImg
+  src="blog/images/20220920/04.png"
+  alt="マテリアルの設定"
+  client:only="react"
+/>

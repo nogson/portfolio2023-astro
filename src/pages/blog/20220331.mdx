@@ -1,0 +1,55 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Firebaseをコマンドラインから利用する
+description: Firebaseをコマンドラインから利用する方法のメモです。
+createAt: 2022-03-31
+thumbnail: "/blog/thumbnail/flutter_thumb.png"
+tags: ["Flutter"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# 前提
+
+- Firebase CLIインストール済み([こちらを参照](/blog/20220406))
+- Firebase プロジェクトが作成済
+- Firebaseサインイン済み
+
+```shell
+$ firebase login // サインイン
+$ firebase projects:list //プロジェクトが作成済かは以下で確認できます
+```
+
+# Firebase プロジェクトを初期化する
+
+新しい Firebase プロジェクトを初期化するには、アプリのディレクトリ内から次のコマンドを実行します。
+
+```shell
+$ firebase init
+```
+
+初期化の最後に、Firebaseは次の2つのファイルを自動的に作成し、ローカルアプリ ディレクトリのルートに追加します。
+
+- firebase.json ・・・ プロジェクトの構成を含むファイル
+- .firebaserc ・・・ プロジェクト エイリアスが保存されるファイル。
+
+# Cloud Firestoreを使ってみる
+
+Cloud FirestoreとRealtime Databaseの違い
+
+### Cloud FireStore
+
+- モバイルアプリ開発用の最新データベース
+- 日本のリージョンが利用できる
+- 大きいデータの読み書きに向いている
+
+### Realtime Database
+
+- 従来からある Firebase のデータベース
+- 日本リージョンが利用できない
+- 小さいデータの読み書きに向いている
+
+どちらを利用するかは公式の「[考慮すべきポイント](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=ja#key_considerations)」を参考にすると良さそうです。
+
+##

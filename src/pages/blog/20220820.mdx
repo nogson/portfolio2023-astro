@@ -1,0 +1,432 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: React + Redux + Firebaseでの認証機能実装
+description: React + Firebaseでの認証機能実装のメモ
+createAt: 2022-08-20nail/react_thumb.png"
+tags: ["Javascript"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## プロジェクトファイルを作成
+
+まずは雛形となるプロジェクトを作成します。
+
+```
+npx create-react-app my-app --template redux-typescript
+```
+
+こちらの雛形をもとに、必要、不要な部分を追加、削除していきます。  
+最終的な構成はこんな感じ。
+
+```
+.
+├── README.md
+├── node_modules
+├── package-lock.json
+├── package.json
+├── public
+├── .env
+├── src
+│   ├── App.module.css
+│   ├── App.test.tsx
+│   ├──  App.tsx
+│   ├── app
+│   │   ├── hooks.ts
+│   │   └── store.ts // storeの管理
+│   ├──components
+│   │    ├── Auth.module.css
+│   │    ├── Auth.tsx // 認証画面
+│   │    └── Top.tsx
+│   ├──features
+│   │     └── userSlice.ts // 認証情報の状態管理
+│   ├──firebase.ts // firebaseと連携する設定
+│   ├──index.css
+│   ├──index.tsx
+│   ├──logo.svg
+│   ├──react-app-env.d.ts
+│   ├──reportWebVitals.ts
+│   └── setupTests.ts
+└── tsconfig.json
+```
+
+## Firebaseと連携する(Firebase.ts)
+
+Firebaseの設定情報をもとに連携していきます(Firebaseの画面操作は割愛)。  
+連携に必要な情報は`.env`経由で設定する。
+
+認証方法は以下とする。
+
+- メール + パスワード認証
+- googleアカウントでの認証
+
+```
+import {initializeApp} from "firebase/app";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword
+} from "firebase/auth";
+import {getFirestore} from "firebase/firestore";
+import {getStorage} from "firebase/storage";
+
+const firebaseConfig = {
+    apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
+    authDomain: process.env.REACT_APP_FIREBASE_DOMAIN,
+    databaseURL: process.env.REACT_APP_FIREBASE_DATABASE,
+    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
+    appId: process.env.REACT_APP_FIREBASE_APP_ID
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+export const db = getFirestore(app);
+export const auth = getAuth();
+export const storage = getStorage(app);
+export const provider = new GoogleAuthProvider();
+
+// googleアカウントでログイン
+export const signInGoogle = async () => await signInWithPopup(auth, provider);
+// メール + パスワードでログイン
+export const signIn = async (email: string, password: string) => await signInWithEmailAndPassword(auth, email, password);
+// アカウント作成
+export const createUser = async (email: string, password: string) => await createUserWithEmailAndPassword(auth, email, password);
+```
+
+ログイン、ユーザー追加の処理もFirebase.tsに追記しておくが、  
+ファイルが大きくなりすぎるかもしれないので、別にしたほうが良いかもしれない。
+
+## 状態管理
+
+認証関連の状態管理にReduxを利用します。  
+Redux Tool Kitのslice機能を利用すると、認証関連の状態(State)のみを扱う、アイテム一覧の状態管理のみ扱うなど分けて管理することができます。
+
+<CommonImg
+  src="blog/images/20220820/01.png"
+  alt="状態管理"
+  client:only="react"
+/>
+
+stateを変更する場合はuseDispatchを利用し、stateを参照する場合はuseSelectorを利用する。
+
+## ユーザーの状態管理
+
+◎ features/userSlice.ts
+
+sliceは`createSlice`を利用して作成します。
+
+```
+import {createSlice} from '@reduxjs/toolkit';
+import {RootState} from '../app/store';
+
+export const userSlice = createSlice({
+    name: 'user',
+    initialState: {
+        user: {uid: '', photoUrl: '', displayName: ''}
+    },
+    reducers: {
+        login: (state, action) => {
+            // 引数をpayloadとして受け取ることができる
+            state.user = action.payload;
+        },
+        logout: (state) => {
+            state.user = {uid: '', photoUrl: '', displayName: ''};
+        },
+    },
+});
+
+export const {login, logout} = userSlice.actions;
+
+// useSelecterで呼び出す関数
+export const selectUser = (state: RootState) => state.user.user;
+
+export default userSlice.reducer;
+```
+
+userSliceはstore.tsに追加することで利用できるようになります。
+
+◎store.ts
+
+configureStoreで利用するreducerを定義する必要があるが、識別しるkeyはcreateSliceで定義したnameを一致している必要がある。
+
+```
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import userReducer from '../features/userSlice';　// userSliceのreducerを読み込み
+
+export const store = configureStore({
+  reducer: {
+    user: userReducer, // 識別するためのための名前を定義する
+  },
+});
+
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string>
+>;
+```
+
+## 認証情報の変更を監視
+
+rootファイルであるApp.tsxでuseEffectを利用してstoreの認証情報の変更を監視します。
+認証がされた場合、storeの認証情報を更新する為、userSliceのloginアクションを呼び出します。
+認証情報が削除された(もしくはない場合)はlogoutを実行します。
+
+◎App.tsx
+
+```
+import React, {useEffect} from 'react';
+import styles from './App.module.css';
+import {useSelector, useDispatch} from "react-redux";
+import {selectUser, login, logout} from "./features/userSlice";
+import {auth} from "./firebase";
+import Feed from "./components/Feed";
+import Auth from "./components/Auth"
+
+const App: React.FC = () => {
+    const user = useSelector(selectUser)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        const unSub = auth.onAuthStateChanged((authUser) => {
+            if (authUser) {
+                dispatch(login({
+                    uid: authUser.uid,
+                    photoUrl: authUser.photoURL,
+                    displayName: authUser.displayName
+                }))
+            } else {
+                dispatch(logout())
+            }
+        })
+
+        return () => {
+            unSub()
+        }
+    }, [dispatch])
+    return (
+        <>
+            {user.uid ? (
+                <div className={styles.app}><Feed/></div>
+            ) : (<Auth/>)
+            }
+        </>
+    );
+}
+
+export default App;
+```
+
+loginが実行されるとuserSliceのuser stateに取得したユーザー情報がセットされます。  
+logoutが実行されると、userSliceのuser stateが初期値になります。
+
+## ログイン、ログアウト、ユーザー作成
+
+最後にログイン、ログアウト、ユーザー作成部分を実装します。  
+UIは[mui](https://mui.com/)の認証画面を利用します。
+
+<CommonImg
+  src="blog/images/20220820/02.png"
+  alt="ログイン"
+  client:only="react"
+/>
+
+```
+import React, {useState} from 'react';
+import styles from './Auth.module.css'
+import {signInGoogle, signIn, createUser} from "../firebase";
+
+import {
+    Avatar,
+    Button,
+    CssBaseline,
+    TextField,
+    Paper,
+    Grid,
+    Typography,
+    makeStyles
+} from '@material-ui/core'
+
+
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import EmailIcon from '@material-ui/icons/Email';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        height: '100vh',
+    },
+    image: {
+        backgroundImage: 'url(https://source.unsplash.com/random)',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor:
+            theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    },
+    paper: {
+        margin: theme.spacing(8, 4),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
+    },
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(1),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
+}));
+
+const Auth: React.FC = () => {
+    const classes = useStyles();
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [isLogin, setIsLogin] = useState(true)
+
+    const signInGoogleAccount = async () => {
+        try {
+            await signInGoogle()
+        } catch (error) {
+            if (error instanceof Error) {
+                alert(error.message)
+            }
+        }
+    }
+
+    const signInEmail = async () => {
+        try {
+            await signIn(email, password)
+        } catch (error) {
+            if (error instanceof Error) {
+                alert(error.message)
+            }
+        }
+    }
+
+    const signUpEmail = async () => {
+        try {
+            await createUser(email, password)
+        } catch (error) {
+            if (error instanceof Error) {
+                alert(error.message)
+            }
+        }
+    }
+
+    const signInUp = async () => {
+        if (isLogin) {
+            await signInEmail()
+        } else {
+            await signUpEmail()
+        }
+    }
+
+    return (
+        <Grid container component="main" className={classes.root}>
+            <CssBaseline/>
+            <Grid item xs={false} sm={4} md={7} className={classes.image}/>
+            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                <div className={classes.paper}>
+                    <Avatar className={classes.avatar}>
+                        <LockOutlinedIcon/>
+                    </Avatar>
+                    <Typography component="h1" variant="h5">
+                        {isLogin ? 'Login' : 'Register'}
+                    </Typography>
+                    <form className={classes.form} noValidate>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={email}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                setEmail(e.target.value)
+                            }}
+                        />
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                setPassword(e.target.value)
+                            }}
+                        />
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            startIcon={<EmailIcon/>}
+                            onClick={signInUp}
+                        >
+                            {isLogin ? 'Login' : 'Register'}
+                        </Button>
+                        <Grid container>
+                            <Grid item xs>
+                                <span className={styles.login_reset}>Forget password</span>
+                            </Grid>
+                            <Grid item xs>
+                                <span
+                                    className={styles.login_toggleMode}
+                                    onClick={() => setIsLogin(!isLogin)}>{isLogin ? 'Create new account ?' : 'Back to login'}</span>
+                            </Grid>
+                        </Grid>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            onClick={signInGoogleAccount}
+                        >
+                            Sign In width Google
+                        </Button>
+                    </form>
+                </div>
+            </Grid>
+        </Grid>
+    );
+}
+
+export default Auth
+```
+
+メール+パスワードでのログイン、Googleアカウントでのログイン、新規ユーザー作成の処理は`firebase.ts`に定義した関数を利用しますので、読み込んでおきます。
+
+```
+import {signInGoogle, signIn, createUser} from "../firebase";
+```
+
+全体の処理のながれはこんな感じ。
+
+<CommonImg
+  src="blog/images/20220820/04.png"
+  alt="全体の処理"
+  client:only="react"
+/>

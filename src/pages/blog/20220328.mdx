@@ -1,0 +1,232 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Flutterの環境構築メモ
+description: Flutterでの環境構築方法のメモです。
+createAt: 2022-03-28
+thumbnail: "/blog/thumbnail/flutter_thumb.png"
+tags: ["Flutter"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# 目次
+
+- Flutter コマンドをインストール
+- Firebaseを利用する
+
+# 前提
+
+- Macを利用
+- Xcodeがインストール済
+- Android Studioがインストール済
+
+# Flutter コマンドをインストール
+
+[公式サイト](https://docs.flutter.dev/get-started/install)からSDKをダウンロード。
+
+公式のやり方に合わせて`development`ディレクトリを作成して、SDKを解凍する。  
+これは任意のディレクトリでもOK。
+
+```
+$ mkdir  ~/development
+$ cd ~/development
+$ unzip ~/Downloads/flutter_macos_2.10.1-stable.zip
+```
+
+SDKにパスを通して、`.bash_profile`にも登録する。  
+登録後、echo $PATHでパスが登録されていることを確認。登録されていないとターミナルを開き直すと使えなくなる。
+
+```
+$ echo export PATH="$PATH:`pwd`/flutter/bin" >> .bash_profile
+$ source ~/.bash_profile
+$ flutter --version
+Flutter 2.10.1 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision db747aa133 (7 days ago) • 2022-02-09 13:57:35 -0600
+Engine • revision ab46186b24
+Tools • Dart 2.16.1 • DevTools 2.9.2
+```
+
+## 必要な環境設定ができているかをチェック
+
+`flutter doctor`コマンドで環境設定をチェックします。
+
+```shell
+$ flutter doctor
+Running "flutter pub get" in flutter_tools...                       8.9s
+Doctor summary (to see all details, run flutter doctor -v):
+[✓] Flutter (Channel stable, 2.10.1, on macOS 12.2.1 21D62 darwin-x64, locale ja-JP)
+[!] Android toolchain - develop for Android devices (Android SDK version 30.0.3)
+    ✗ cmdline-tools component is missing
+      Run `path/to/sdkmanager --install "cmdline-tools;latest"`
+      See https://developer.android.com/studio/command-line for more details.
+    ✗ Android license status unknown.
+      Run `flutter doctor --android-licenses` to accept the SDK licenses.
+      See https://flutter.dev/docs/get-started/install/macos#android-setup for more details.
+[!] Xcode - develop for iOS and macOS (Xcode 13.2.1)
+    ✗ CocoaPods not installed.
+        CocoaPods is used to retrieve the iOS and macOS platform side's plugin code that responds to your plugin usage on the Dart side.
+        Without CocoaPods, plugins will not work on iOS or macOS.
+        For more info, see https://flutter.dev/platform-plugins
+      To install see https://guides.cocoapods.org/using/getting-started.html#installation for instructions.
+[✓] Chrome - develop for the web
+[✓] Android Studio (version 2021.1)
+[✓] VS Code (version 1.60.2)
+[✓] Connected device (1 available)
+[✓] HTTP Host Availability
+```
+
+上記のようなエラーがいくつか出ることがあるので、潰していきます。
+
+### ◎ cmdline-tools component is missing
+
+`Preferences > Appearance & Behavior > System Settings > Android SDK` からAndroid SDK Command-line Toolsを追加します。
+
+<CommonImg
+  src="blog/images/20220328/01.png"
+  alt="flutter doctor error"
+  client:only="react"
+/>
+
+### ◎ Android license status unknown.
+
+```shell
+$ flutter doctor --android-licenses
+```
+
+### ◎ CocoaPods not installed.
+
+```shell
+$ brew install cocoapods
+```
+
+## Android StudioでFlutterプロジェクトを作成する
+
+<CommonImg
+  src="blog/images/20220328/02.png"
+  alt="Flutterプロジェクトを作成"
+  client:only="react"
+/>
+
+プロジェクトを作成したら、`main.dart`が選択されているのを確認し、シュミレーターのデバイスを選択します。  
+その後、▶ボタンを押すと、アプリケーションがビルドされます。
+
+<CommonImg
+  src="blog/images/20220328/03.png"
+  alt="Flutterプロジェクトを作成"
+  client:only="react"
+/>
+
+しばらく待つと、シュミレーターでアプリケーションが立ち上がります。
+
+<CommonImg
+  src="blog/images/20220328/04.png"
+  alt="Flutterプロジェクトを作成"
+  client:only="react"
+/>
+
+# Firebaseを利用する
+
+[こちらの公式サイト](https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios)を参考にします。
+
+## Firebase プロジェクトを作成する
+
+Firebaseのコンソールから Firebase プロジェクトを作成します。
+
+<CommonImg
+  src="blog/images/20220328/05.png"
+  alt="Firebaseを利用する"
+  client:only="react"
+/>
+
+## iOSアプリをFirebaseに追加
+
+作成したプロジェクトを開き、iOSのアプリを追加します。
+
+<CommonImg
+  src="blog/images/20220328/06.png"
+  alt="iOSアプリをFirebaseに追加"
+  client:only="react"
+/>
+
+### アプリの登録
+
+`/ios/Runner.xcworkspace`をxcodeで開き、Runnerをを開きます。  
+Bundle IDをコピーして、アプリ登録画面で設定します。
+
+<CommonImg
+  src="blog/images/20220328/07.png"
+  alt="iOSアプリをFirebaseに追加"
+  client:only="react"
+/>
+<CommonImg
+  src="blog/images/20220328/08.png"
+  alt="iOSアプリをFirebaseに追加"
+  client:only="react"
+/>
+
+### 設定ファイルをダウンロード
+
+画面の説明に従い、GoogleService-Info.plistをダウンロードして、`/ios/Runner`配下に配置します。
+
+あとの手順は「次へ」でスキップします。
+
+## FlutterFire プラグインを追加する
+
+`/pubspec.yaml`に以下の必要に応じてプラグインを追加します。
+詳しくは[こちら](https://firebaseopensource.com/projects/firebaseextended/flutterfire/packages/cloud_firestore/cloud_firestore/readme)を確認。
+
+- [firebase_core](https://pub.dev/packages/firebase_core)
+- [firebase_analytics](https://pub.dev/packages/firebase_analytics)
+- [firebase_auth](https://pub.dev/packages/firebase_auth)
+- [cloud_firestore](https://pub.dev/packages/cloud_firestore)
+
+以下記載例。
+
+```shell
+dependencies:
+  flutter:
+    sdk: flutter
+  # Check that you have this dependency (added in the previous step)
+  firebase_core: X.X.X 各配布サイトでバージョンを確認
+
+  # Add the dependency for the FlutterFire plugin for Google Analytics
+  firebase_analytics: X.X.X 各配布サイトでバージョンを確認
+
+  # Add the dependencies for any other Firebase products you want to use in your app
+  # For example, to use Firebase Authentication and Cloud Firestore
+  firebase_auth: X.X.X 各配布サイトでバージョンを確認
+  cloud_firestore: X.X.X 各配布サイトでバージョンを確認
+```
+
+`/pubspec.yaml`に追加したライブラリを取得します。
+
+```shell
+$ flutter pub get
+```
+
+# アプリケーションをビルドしてみる
+
+準備ができたので、 Android studioでアプリをビルドしてみます。
+
+私の場合以下のエラーがでましたので解消します。
+
+```shell
+Error output from CocoaPods:
+↳
+
+    [!] Automatically assigning platform `iOS` with version `9.0` on target `Runner` because no platform was specified. Please specify a platform for this target in your Podfile. See `https://guides.cocoapods.org/syntax/podfile.html#platform`.
+
+Error running pod install
+Error launching application on iPhone 13.
+```
+
+### 解消方法
+
+`/ios/Podfile`
+
+```shell
+# Uncomment this line to define a global platform for your project
+- # platform :ios, '9.0'
++ platform :ios, '12.0' // 最小バージョンの指定らしい
+```

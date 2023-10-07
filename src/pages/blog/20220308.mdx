@@ -1,0 +1,158 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: FlutterでThemeをカスタマイズする
+description: FlutterのThemeをカスタマイズしたい場合のメモです。
+createAt: 2022-03-08
+thumbnail: "/blog/thumbnail/flutter_thumb.png"
+tags: ["Flutter"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# Themeの利用方法
+
+Themeはアプリケーション作成時に、`main.dart`の`MaterialApp`に設定されています。
+
+```shell
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
+```
+
+# primarySwatchを変更する
+
+まずMaterialデザインで用意されているカラーパレットからThemeを設定してみます。  
+`primarySwatch`を[カラーパレット](https://api.flutter.dev/flutter/material/Colors-class.html)から選んで設定します。
+
+```
+theme: ThemeData(
+  primarySwatch: Colors.red,
+),
+```
+
+| Colors.blue                                                                           | Colors.red                                                                            |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| <CommonImg src="blog/images/20220308/01.png" alt="Colors.blue" client:only="react" /> | <CommonImg src="blog/images/20220308/02.png" alt="Colors.red"  client:only="react" /> |
+
+Materialデザインのカラーパレットではなく、オリジナルのカラーパレットを利用したい場合は、別途カラーパレットを作成します。
+
+```
+class CustomTheme {
+  static const int _primaryValue = UiVariables.primaryColor;
+  static const MaterialColor primaryColor = MaterialColor(
+    _primaryValue,
+    <int, Color>{
+      50: Color(0xFFFFE5EA),
+      100: Color(0xFFFFB3C0),
+      200: Color(0xFFFF94A7),
+      300: Color(0xFFFF758E),
+      400: Color(0xFFFF5775),
+      500: Color(_primaryValue),
+      600: Color(0xFFFF1A43),
+      700: Color(0xFFFA002D),
+      800: Color(0xFFDB0028),
+      900: Color(0xFFBD0022),
+    },
+  );
+}
+```
+
+```
+theme: ThemeData(
+  primarySwatch: CustomTheme.primaryColor,
+),
+```
+
+## appBarThemeを変更する
+
+appBarと、bottomAppBarのrThemeを設定します。
+
+```
+theme: ThemeData(
+   appBarTheme: const AppBarTheme(
+     backgroundColor: Colors.white,
+     foregroundColor: Colors.red,
+   ),
+   bottomAppBarTheme: const BottomAppBarTheme(color: Colors.red),
+),
+```
+
+上記の設定をするとこんな感じになります。
+
+<CommonImg
+  src="blog/images/20220308/03.png"
+  alt="appBarTheme"
+  client:only="react"
+/>
+
+## inputDecorationThemeを変更する
+
+TextField、やTextFormFieldをのThemeを設定します。
+
+view側はTextFormFieldを利用しているとします。
+
+```dart
+TextFormField(
+ decoration: const InputDecoration(
+  labelText: 'ラベル1',
+ ),
+)
+```
+
+inputDecorationThemeの設定はこんな感じ。
+
+```
+  theme: ThemeData(
+      inputDecorationTheme: InputDecorationTheme(
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Colors.black38,
+        width: 1.0,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Colors.black38,
+        width: 1.0,
+      ),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Colors.red,
+        width: 1.0,
+      ),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Colors.red,
+        width: 1.0,
+      ),
+    ),
+    labelStyle: const TextStyle(
+      fontSize: 12,
+      color: Colors.black54,
+    ),
+```
+
+表示はこんな感じ。
+
+| InputDecoration設定前                                                                          | InputDecoration設定後                                                                          |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| <CommonImg src="blog/images/20220308/04.png" alt="inputDecorationTheme" client:only="react" /> | <CommonImg src="blog/images/20220308/05.png" alt="inputDecorationTheme" client:only="react" /> |

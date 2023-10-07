@@ -1,0 +1,93 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: FlutterのWidgetの使い方
+description: FlutterのWidgetを使う際にのメモです。
+createAt: 2022-03-05
+thumbnail: "/blog/thumbnail/flutter_thumb.png"
+tags: ["Flutter"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# GridView
+
+## Column内でGridViewを利用する方法
+
+`shrinkWrap: true`を追加することで利用可能になる。
+
+```
+      body: Center(
+        child: Column(
+          children: [
+            Text('テキストテキスト'),
+            GridView.count(shrinkWrap: true, crossAxisCount: 2, children: [
+              Container(
+                color: Colors.grey,
+                child: const Text('ABCD'),
+              ),
+              Container(
+                color: Colors.grey,
+                child: const Text('ABCD'),
+              ),
+            ])
+          ],
+        ),
+      ),
+```
+
+## GridViewの高さを調整する
+
+GridViewのchildrenは普通に利用するアスペクト比1:1で表示されます。  
+そのため高さを変更したい場合、`childAspectRatio`を追加する。
+
+```
+      body: Center(
+        child: Column(
+          children: [
+            Text('テキストテキスト'),
+            GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                crossAxisSpacing: 4.0,
+                childAspectRatio: 2 / 1,
+                children: [
+                  Container(
+                    color: Colors.grey,
+                    child: const Text('ABCD'),
+                  ),
+                  Container(
+                    color: Colors.grey,
+                    child: const Text('ABCD'),
+                  ),
+                ])
+          ],
+        ),
+      ),
+```
+
+## AppBar
+
+### 戻るボタンの非表示
+
+通常画面遷移後に表示されるAppBarには戻るボタンが表示されますが、  
+`automaticallyImplyLeading: false`を追加することで非表示にすることができます。
+
+```dart
+  Scaffold(
+   appBar: AppBar(
+     title: const Text('テキスト'),
+     automaticallyImplyLeading: false,
+   ),
+```
+
+## Scaffoldで使えるWidget
+
+Scaffold直下で利用できるWidget。
+
+- appBar
+- drawer
+- endDrawer
+- floatingActionButton
+- bottomNavigationBar
+- bottomSheet

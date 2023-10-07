@@ -1,0 +1,52 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Vue3とstorybookとsass-loader
+description: Vue CLIで作成したVue3プロジェクトでstorybookとsass-loaderを利用した場合の問題解決
+createAt: 2022-04-07
+thumbnail: "/blog/thumbnail/vue_thumb.png"
+tags: ["Vue"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# 問題
+
+Vue3プロジェクトでsass-loaderを利用した際に　、storybook起動時に以下のエラーがでました。
+
+```
+TypeError: Cannot read properties of undefined (reading 'NormalModule')
+```
+
+## 解決
+
+sass-loaderの最新を利用した場合、webpack4ではなくwebpack5を利用する必要があるようでした。
+
+storybookのwebpack5対応はexperimentalで、webpack5を使うためには、ライブラリのインストールと、main.jsの修正が必要です。
+
+### ライブラリをインストール。
+
+```
+$ yarn add --dev @storybook/builder-webpack5 @storybook/manager-webpac
+```
+
+### main.jsの修正
+
+`/.storybook/main.js`に以下を追加。
+
+```
+module.exports = {
+  "stories": [
+    "../src/**/*.stories.mdx",
+    "../src/**/*.stories.@(js|jsx|ts|tsx)"
+  ],
+  "addons": [
+    "@storybook/addon-links",
+    "@storybook/addon-essentials"
+  ],
+  "framework": "@storybook/vue3",
+  "core": {
+    "builder": "webpack5",　 // これを追加
+  },
+}
+```

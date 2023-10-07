@@ -1,0 +1,116 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Firebase CLIの導入
+description: Firebase のコマンドラインインターフェースを使ってみる。
+createAt: 2022-04-06
+thumbnail: "/blog/thumbnail/firebase_thumb.png"
+tags: ["Firebase"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# 前提
+
+- Node.jsがインストールされている
+
+# Firebase CLI インストール
+
+以下のコマンドで、Firebase CLIがインストールされます。
+
+```shell
+$ npm install -g firebase-tools
+```
+
+以下でインストールを確認。
+
+```shell
+$ firebase -V
+10.2.0
+```
+
+## Firebase CLIでログイン
+
+以下のコマンドでログインします。  
+ブラウザのログイン画面が立ち上がり、ログインを要求されます。
+
+```shell
+$ firebase login
+i  Firebase optionally collects CLI usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you.
+
+? Allow Firebase to collect CLI usage and error reporting information? Yes
+i  To change your data collection preference at any time, run `firebase logout` and log in again.
+
+Visit this URL on this device to log in:
+https://accounts.google.com/o/oauth2/auth?client_id=XXX
+
+Waiting for authentication...
+
+✔  Success! Logged in as account@sample.com
+```
+
+## Firebase プロジェクトの一覧を取得
+
+```shell
+$ firebase projects:list
+✔ Preparing the list of your Firebase projects
+┌──────────────────────┬──────────────────────┬────────────────┬──────────────────────┐
+│ Project Display Name │ Project ID           │ Project Number │ Resource Location ID │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ my-project-a         │  my-project-a-977b8  │ 1234           │ asia-northeast1      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ my-project-b         │  my-project-b-1e525  │ 5678           │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ my-project-c         │  my-project-c-b388a  │ 9012           │ asia-northeast1      │
+└──────────────────────┴──────────────────────┴────────────────┴──────────────────────┘
+
+3 project(s) total.
+
+```
+
+## Firebaseプロジェクト用ディレクトリを作成する
+
+特定のディレクトリを、Firebaseプロジェクト用ディレクトリとします。
+
+```shell
+$ cd {プロジェクトのディレクトリ}
+$ firebase init
+```
+
+利用目的に合わせて選択します。
+
+```shell
+? Which Firebase features do you want to set up for this directory? Press Space to select features, then Enter to confirm your choices. (Press <space> to select, <a> to toggle all, <i> to invert selection, and <enter> to proceed)
+❯◯ Realtime Database: Configure a security rules file for Realtime Database and (optionally) provision default instance
+ ◯ Firestore: Configure security rules and indexes files for Firestore
+ ◯ Functions: Configure a Cloud Functions directory and its files
+ ◯ Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys
+ ◯ Hosting: Set up GitHub Action deploys
+ ◯ Storage: Configure a security rules file for Cloud Storage
+ ◯ Emulators: Set up local emulators for Firebase products
+```
+
+対象のFirebaseプロジェクトを選択。
+
+```shell
+First, let's associate this project directory with a Firebase project.
+You can create multiple project aliases by running firebase use --add,
+but for now we'll just set up a default project.
+
+? Please select an option: (Use arrow keys)
+❯ Use an existing project
+  Create a new project
+  Add Firebase to an existing Google Cloud Platform project
+  Don't set up a default project
+
+```
+
+「Use an existing project」を選択した場合、既存のプロジェクトから選択します。
+
+```shell
+? Please select an option: Use an existing project
+? Select a default Firebase project for this directory:
+  sample1-977b8 (sample1)
+  sample2-1e525 (sample2)
+  sample3-b388a (sample3)
+```
