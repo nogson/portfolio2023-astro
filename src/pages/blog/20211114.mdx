@@ -1,0 +1,188 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Firebase Storageに画像をアップロードメモ
+description: Firebase Storageに画像をアップロードするのに、少し迷うところがあったのでのメモです。
+createAt: 2021-11-14
+thumbnail: "/blog/thumbnail/firebase_thumb.png"
+tags: ["Firebase"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## Firebase Storageのバケットを作成する
+
+Firebaseを表示し、サイドナビのStorageを押し、「始める」ボタンを押す。
+
+<CommonImg
+  src="blog/images/20211114/20211114_01.png"
+  alt="Firebase Storageを作成"
+  client:only="react"
+/>
+
+セキュリティルールが表示される。  
+こちらはあとから変更は可能。
+
+<CommonImg
+  src="blog/images/20211114/20211114_02.png"
+  alt="セキュリティルールを設定"
+  client:only="react"
+/>
+
+利用するリージョンが表示される。  
+東京リージョンは「asia-northeast1」。  
+あとからの変更は不可。
+
+<CommonImg
+  src="blog/images/20211114/20211114_03.png"
+  alt="リージョンを選択"
+  client:only="react"
+/>
+<CommonImg
+  src="blog/images/20211114/20211114_04.png"
+  alt="リージョンを選択"
+  client:only="react"
+/>
+
+## Storageのセキュリティルールを変更
+
+デフォルトのセキュリティルールは、認証済みユーザーのみ閲覧、編集可能です。
+
+<CommonImg
+  src="blog/images/20211114/20211114_05.png"
+  alt="Storageのセキュリティルールを変更"
+  client:only="react"
+/>
+
+とりあえず、以下のように変更してすべてのユーザーに閲覧、編集を可能にします。
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+## 画像をアップロード
+
+詳しくは[公式](https://firebase.google.com/docs/storage/web/upload-files?hl=ja)を参照。
+
+```typescript
+const upload = async (file) => {
+  // Blob または File からアップロードする
+  const storageRef = firebase.storage().ref(file.name);
+  // storageにアップロード
+  const snapshot = await storageRef.put(file);
+
+  // アップロードしたファイルのパスを取得
+  const path = await snapshot.getDownloadURL();
+
+  // データをDB(firestore)に登録
+  const docRef = firebase.firestore().collection("images");
+  await docRef.add(path);
+};
+```
+
+## CORSに対応
+
+アップロードした画像を表示した場合CORSエラーになります。  
+その為、storageのCORS設定をする必要があります。
+
+CORSの設定は、`gsutil`コマンドラインツールを利用します。  
+ダウンロードは[こちら](https://cloud.google.com/storage/docs/gsutil_install?hl=ja)から。
+
+ダウンロードしたファイルを解凍して、解凍したファイルがあるルートディレクトリで以下のコマンドを実行します。
+
+```shell
+./google-cloud-sdk/install.sh
+```
+
+いくつか質問されます。
+
+### google Cloud SDKの改善に協力しますか（Y / n）？
+
+```shell
+Do you want to help improve the Google Cloud SDK (y/N)?
+```
+
+どちらでもOK。
+
+### プロファイルを変更して$PATHを更新し、シェルコマンドを有効にして完了しますか？
+
+```shell
+Modify profile to update your $PATH and enable shell command completion?
+// 続行しますか（Y / n）？
+Do you want to continue (Y/n)?
+```
+
+YESでOK。
+
+### 更新するrcファイルへのパスを入力するか、空白のままにして使用します
+
+```shell
+Enter a path to an rc file to update, or leave blank to use [/Users/hoge/.bash_profile]:
+```
+
+空白のままEnter。
+
+以下が`/Users/hoge/.bash_profile`に追加される。
+
+```
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/hoge/google-cloud-sdk/path.bash.inc' ]; then . '/Users/hoge/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/hoge/google-cloud-sdk/completion.bash.inc' ]; then . '/Users/hoge/google-cloud-sdk/completion.bash.inc'; fi
+```
+
+### Cloud SDKは、Python 3.7と特定のモジュールが最適です
+
+```shell
+Cloud SDK works best with Python 3.7 and certain modules.
+
+Download and run Python 3.7 installer? (Y/n)?
+```
+
+### ターミナル ウィンドウを立ち上げ直す
+
+同じターミナルウィンドウだと変更が反映されないので、新しいウィンドウか、もしくはターミナルを立ち上げ直します。
+
+### SDKを初期化
+
+SDK を初期化します。
+
+```shell
+gcloud init
+```
+
+### 設定ファイルをアップロード
+
+以下の内容で、cors.jsonという名前のファイルを作成します。
+
+```
+[
+  {
+    "origin": ["*"],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
+  }
+]
+```
+
+作成したファイルをデプロイします。
+
+```shell
+gsutil cors set cors.json gs://<your-cloud-storage-bucket>
+```
+
+<CommonImg
+  src="blog/images/20211114/20211114_06.png"
+  alt="your-cloud-storage-bucket"
+  client:only="react"
+/>
+
+これでCORSエラーは回避できます。

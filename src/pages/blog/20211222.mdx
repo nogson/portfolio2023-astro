@@ -1,0 +1,29 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Jestであれこれmockを作成する方法
+description: VueでJestを利用した際に、テストしやすいように関数や、グローバルオブジェクトなどmock化する為のメモです。
+createAt: 2021-12-22
+thumbnail: "/blog/thumbnail/jest_thumb.png"
+tags: ["Vue"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# windowオブジェクトをmock化する
+
+windowサイズを使っている関数などをテストする為に、windowオブジェクトをモック化する。
+
+```
+const originalWindow = { ...window }
+const windowSpy = jest.spyOn(global, 'window', 'get')
+windowSpy.mockImplementation(() => ({
+  ...originalWindow,
+  innerWidth: 1920,
+ innerHeight: 1200
+}))
+
+... テストを書く
+
+windowSpy.mockRestore()
+```

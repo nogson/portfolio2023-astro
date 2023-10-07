@@ -1,0 +1,35 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: PHPのUnitテストのメモ
+description: PHPのUnitの個人的なメモです。
+createAt: 2021-10-05
+thumbnail: "/blog/thumbnail/php_thumb.png"
+tags: ["PHP"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## テストのリストを表示
+
+```injectablephp
+$ vendor/bin/phpunit --list-tests
+```
+
+## テストを実行する
+
+```injectablephp
+$ vendor/bin/phpunit
+```
+
+## 特定のファイルのテストを実行する
+
+```injectablephp
+$ vendor/bin/phpunit -v tests/Feature/myTest.php
+```
+
+## 特定のファイルの特定のテストを実行する
+
+```injectablephp
+$ vendor/bin/phpunit -v --filter myFuncTest tests/Feature/myTest
+```

@@ -1,0 +1,150 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Vue-cliでVue3のプロジェクトを作成する
+description: Vue-cliでVue3のプロジェクトを作成する際のメモです。
+createAt: 2021-10-12
+thumbnail: "/blog/thumbnail/vue_thumb.png"
+tags: ["Javascript"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+### Vueアプリケーションを作成する
+
+```shell script
+ $ vue create {アプリケーション名}
+```
+
+### presetの選択
+
+presetの選択画面が表示されるので、Manually select features(手動設定)を選択する。
+
+```shell script
+Vue CLI v4.5.13
+? Please pick a preset:
+  Default ([Vue 2] babel, eslint)
+  Default (Vue 3) ([Vue 3] babel, eslint)
+❯ Manually select features
+```
+
+### 機能を選択
+
+Manually select featuresを選択すると以下の画面になるので、必要な機能を選択する
+
+```shell script
+? Please pick a preset: Manually select features
+? Check the features needed for your project:
+ ◉ Choose Vue version
+ ◉ Babel
+❯◉ TypeScript
+ ◯ Progressive Web App (PWA) Support
+ ◉ Router
+ ◉ Vuex
+ ◉ CSS Pre-processors
+ ◉ Linter / Formatter
+ ◯ Unit Testing
+ ◯ E2E Testing
+```
+
+### Vueのバージョンを選択
+
+Vueのバージョンを選択する。
+3系を利用したいので、3.x(Preview)を選択。
+
+```shell script
+? Choose a version of Vue.js that you want to start the project with
+  2.x
+❯ 3.x
+```
+
+### クラススタイルでコンポーネントの利用
+
+class-style component syntaxの利用の選択。
+
+```shell script
+? Use class-style component syntax? (y/N)
+```
+
+class-style componentについては<a href="https://jp.vuejs.org/v2/guide/typescript.html#%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%B9%E3%82%BF%E3%82%A4%E3%83%AB-Vue-%E3%82%B3%E3%83%B3%E3%83%9D%E3%83%BC%E3%83%8D%E3%83%B3%E3%83%88">公式サイト</a>を参照。
+
+### Babel alongside TypeScriptの利用
+
+TypeScriptをJavaScriptにトランスパイルした後、さらにそれをPolyfillで変換するかの選択。
+IEなど、モダンブラウザ以外の対応も必要な場合はYES。
+
+```shell script
+? Use Babel alongside TypeScript (required for modern mode, auto-detected polyfills, transpiling JSX)? (Y/n)
+```
+
+### Vue Routerのヒストリーモードの利用
+
+Vue Routerのヒストリーモードの利用の選択。  
+Noの場合はVue Routerのデフォルトのhashモード(例 : http://sample.com/#/user)。  
+Yesの場合は、historyモード(例 : http://sample.com/user)。
+
+```shell script
+? Use history mode for router? (Requires proper server setup for index fallback in production) (Y/n)
+```
+
+### CSSプリプロセッサの選択
+
+「Sass/SCSS」「LESS」「Stylus」の３つから選択可能。
+
+Sassを利用する場合は、dart-sassがおすすめ。
+
+```shell script
+? Pick a CSS pre-processor (PostCSS, Autoprefixer and CSS Modules are supported by default): (Use arrow keys)
+❯ Sass/SCSS (with dart-sass)
+  Sass/SCSS (with node-sass)
+  Less
+  Stylus
+```
+
+### Linter/Formatterの設定
+
+「TSLint」「ESLint(4種類)」から選択可能。
+それぞれのLinter/Formatterの説明はしませんので、Google先生に聞いてみてください。
+
+```shell script
+❯ ESLint with error prevention only
+  ESLint + Airbnb config
+  ESLint + Standard config
+  ESLint + Prettier
+  TSLint (deprecated)
+```
+
+### 追加のLint機能の選択
+
+Lint on save・・・保存時のLint実行　　
+Lint and fix on commit・・・コミット時のLint実行
+
+両方あっても良い。
+
+```shell script
+? Pick additional lint features: (Press <space> to select, <a> to toggle all, <i> to invert selection)
+❯◉ Lint on save
+ ◉ Lint and fix on commit
+```
+
+### Unit Testのツール選択
+
+```shell script
+? Pick a unit testing solution:
+  Mocha + Chai
+❯ Jest
+```
+
+### Babel、PostCSS、ESLintの設定ファイル
+
+```shell script
+? Where do you prefer placing config for Babel, ESLint, etc.? (Use arrow keys)
+❯ In dedicated config files
+  In package.json
+```
+
+### 設定の保存
+
+```shell script
+? Save this as a preset for future projects? (y/N)
+```

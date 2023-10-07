@@ -1,0 +1,42 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: npm_moudulesの脆弱性エラーの解消
+description: npm_moudulesの脆弱性エラーの解消
+createAt: 2021-11-12
+thumbnail: "/blog/thumbnail/note_thumb.png"
+tags: ["Javascript"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+シェイプキーを利用すると、オブジェクト単体で
+
+```
+$ npm install -g npm-check-updates
+```
+
+```
+$ ncu
+```
+
+```
+$ ncu -u
+```
+
+```
+# upgrade only mocha
+$ ncu mocha
+$ ncu -f mocha
+$ ncu --filter mocha
+```
+
+Don't use ESLint 7 with Vue CLI 4.
+
+You can use ESLint 7 with Vue CLI 5, or ESLint 6 with Vue CLI 4.
+
+## パッケージの依存関係を確認する
+
+```
+npm ls パッケージ名
+```

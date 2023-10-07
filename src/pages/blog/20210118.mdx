@@ -1,0 +1,67 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: パーミッションについて
+description: ファイルのパーミッションについてのメモ。
+createAt: 2021-10-18
+thumbnail: "/blog/thumbnail/note_thumb.png"
+tags: ["Other"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# パーミッション
+
+ファイルの実行権限のこと。  
+どの種類のオーナーが、このファイルに対して何ができるのか。
+
+以下のコマンドで確認することができる。
+
+```
+ls -la
+```
+
+パーミッションは以下のように9桁で表示される。
+
+```
+-rwxrwxrwx 1 root root
+```
+
+<CommonImg
+  src="blog/images/20210118/01.png"
+  alt="パーミッションについて"
+  client:only="react"
+/>
+
+| 権限 | 説明               |
+| ---- | ------------------ |
+| r    | Read 読み込み権限  |
+| w    | Write 書き込み権限 |
+| x    | Execute 実行権限   |
+| -    | 権限なし           |
+
+## パーミッションの変更
+
+パーミッション変更時は、「読み込み」「書き込み」「実行可能」を3ビットの2進数で表し、8進数へ変換したものを利用します。
+
+| 8進数 | 権限 |
+| ----- | ---- |
+| 1     | --x  |
+| 2     | -w-  |
+| 3     | -wx  |
+| 4     | r--  |
+| 5     | r-x  |
+| 6     | rw-  |
+| 7     | rwx  |
+
+フル権限である`-rwxrwxrwx`にする場合は、以下を実行する。
+
+```
+chmod 777 ファイル名
+```
+
+所有者が読み取りのみできる`-r-------`のようにするには、以下を実行する。
+
+```
+chmod 400 ファイル名
+```

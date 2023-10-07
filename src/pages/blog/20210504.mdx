@@ -1,0 +1,39 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: ポートフォリオサイトリニューアル
+description: ポートフォリオサイトリニューアルしました。
+createAt: 2021-05-04
+thumbnail: "/blog/thumbnail/note_thumb.png"
+tags: ["Other"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+この度ポートフォリオサイトをリニューアルしました。  
+特にこのサイトを利用してなにか仕事につなげたいなど強い思いはないのですが、  
+はてなブログに書いていたブログも合わせて管理したいなと思いリニューアルしました。
+
+ブログを作るにあたり、WordPressなどのCMSではなく静的サイトジェネレーターを使うことにしました。  
+理由としては、CMSはDBを利用する必要がある為面倒な為です。
+
+静的サイトジェネレーターはNuxt.jsを利用しています。  
+また、ブログ部分はmarkdownを利用したかったので、[nuxt/contentモジュール](https://content.nuxtjs.org/ja)を利用しました。
+
+```
+  <p>Content とは</p>
+  <p>
+    nuxt/contentモジュールを使ってNuxtJSアプリケーションを強化します。content/ディレクトリに書き込むことで、MongoDBのようなAPIを使ってMarkdown、JSON、YAML、XML、CSVファイルを取得します。これはGitベースのヘッドレスCMSとして動作します。
+  </p>
+  <a href="https://content.nuxtjs.org/ja">nuxt/content</a>
+```
+
+まだまだ触りたてで、nuxt/contentの機能を充分に利用できていませんが、少しだけWebの知識があれば割と手軽にブログを作成することができます。  
+今後はこちらに、日々学んだことや思ったことを自由に書いていこうと思います。
+
+<CommonImg
+  src="blog/images/20210504/20210504_01.gif"
+  alt="コンテンツに応じた塗りつぶし"
+  client:only="react"
+/>
+こちらは以前のポートフォリオサイトです。

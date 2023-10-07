@@ -1,0 +1,89 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Blenderでシェイプキーを使ったアニメーション
+description: Blenderでメッシュの頂点の位置を変化させてアニメーションするやり方です。
+createAt: 2021-12-28
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+シェイプキーは、「メッシュオブジェクトの頂点・辺・面などの情報を記憶させておける機能」のことのようです。  
+モーフィングアニメーションできないかな〜と思い調べていたら出てきました。
+
+# オブジェクトにシェイプキーを追加する
+
+まず、基本となるシェイプキーを追加します。
+
+オブジェクトを選択して、「オブジェクトプロパティ > シェイプキー」の「+」ボタンを押します。
+
+<CommonImg
+  src="blog/images/20211228/01.png"
+  alt="シェイプキーを追加"
+  client:only="react"
+/>
+
+次に「+」ボタンを押して、形状変更用のシェイプキーを作成します。
+
+<CommonImg
+  src="blog/images/20211228/02.png"
+  alt="シェイプキーを追加"
+  client:only="react"
+/>
+
+# アニメーションさせる
+
+形状変更用に追加した、「キー1」のシェイプキーを選択した状態で、オブジェクトを編集して形状を変更してみます。
+
+<CommonImg
+  src="blog/images/20211228/03.png"
+  alt="アニメーションさせる"
+  client:only="react"
+/>
+
+タイムラインで1フレーム目を選択します。  
+対象のオブジェクト、「キー1」のシェイプキーを選択した状態で「値」のフィールドで右クリックします。
+
+<CommonImg
+  src="blog/images/20211228/04.png"
+  alt="アニメーションさせる"
+  client:only="react"
+/>
+
+表示されたコンテキストボックスの中から「キーフレームを挿入」を選択する。
+
+<CommonImg
+  src="blog/images/20211228/05.png"
+  alt="アニメーションさせる"
+  client:only="react"
+/>
+
+タイムラインで50フレーム目を選択します。  
+対象のオブジェクト、「キー1」のシェイプキーを選択した状態で「値」のフィールドで右クリックし、キーフレームを挿入します。
+
+<CommonImg
+  src="blog/images/20211228/06.png"
+  alt="アニメーションさせる"
+  client:only="react"
+/>
+
+最終的にはこんな感じのタイムラインになる。
+
+- 0フレーム ・・・値:0
+- 50フレーム ・・・値:1
+- 100フレーム ・・・値:0
+  <CommonImg
+    src="blog/images/20211228/07.png"
+    alt="アニメーションさせる"
+    client:only="react"
+  />
+
+こんな感じでアニメーションさせることができる。
+
+<CommonImg
+  src="blog/images/20211228/08.gif"
+  alt="アニメーションさせる"
+  client:only="react"
+/>

@@ -1,0 +1,89 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Blenderでよく忘れてしまう設定とショートカットメモ
+description: Blenderでよく忘れてしまう設定とショートカットを自分用にメモしています。
+createAt: 2021-12-18
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# Blenderで表示単位を変更する
+
+初期設定の単位はメートル法になっています。  
+もう少し小さい単位で作業したい場合に、表示の単位を変更する方法です。
+
+## 単位をセンチメートルにする
+
+1. 「シーン > 単位 > 長さ > centimeters」に変更
+2. ガイドがメートル単位になっているので、「拡大縮小」を0.01に変更
+   <CommonImg
+     src="blog/images/20211218/01.png"
+     alt="単位変更"
+     client:only="react"
+   />
+
+画面の表示はこんな感じ。
+
+<CommonImg
+  src="blog/images/20211218/02.png"
+  alt="単位変更"
+  client:only="react"
+/>
+
+# モデリングするのに便利な設定・操作
+
+## Auto Mirror
+
+モディファイアーのミラーを少し簡単に設定できるアドオンです。
+
+`プリファレンス > アドオン`で「Auto」で検索すると、「Auto Mirror」が表示されるのでチェックをいれます。
+
+<CommonImg
+  src="blog/images/20211218/03.png"
+  alt="Auto Mirror"
+  client:only="react"
+/>
+
+オブジェクトを選択して、サイドバー(ショートカット:N)の「編集」から「Auto Mirror」を開き設定する。
+
+<CommonImg
+  src="blog/images/20211218/04.png"
+  alt="Auto Mirror"
+  client:only="react"
+/>
+
+オブジェクトにモディファイアーのミラーが設定される。
+
+<CommonImg
+  src="blog/images/20211218/05.png"
+  alt="Auto Mirror"
+  client:only="react"
+/>
+
+## 自動マージ
+
+同じ位置の頂点を自動で統合してくれる設定です。  
+画面右上の「オプション > 自動マージ」をチェックします。
+
+<CommonImg
+  src="blog/images/20211218/06.png"
+  alt="自動マージ"
+  client:only="react"
+/>
+
+## シェイプのオペレーションパネルを再表示
+
+シェイプ追加時に表示されるオペレーションパネルを再表示するには、`F9`もしくは、ツールバーの「編集 > 最後の操作を調整」を押します。
+
+# よく忘れるショートカット
+
+| 内容                                                  | キー                                    |
+| ----------------------------------------------------- | --------------------------------------- |
+| 範囲指定して拡大表示                                  | Shift + B                               |
+| ビューに収まるように視点を移動、３Dカーソルをリセット | Shift + C                               |
+| ビューを4分割                                         | Ctr + Option(Alt) + Q                   |
+| エッジに沿ってい移動                                  | Gを２回                                 |
+| リンク複製                                            | Option(Alt) + D (通常の複製はShift + D) |

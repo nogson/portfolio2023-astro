@@ -1,0 +1,157 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Firebase StorageにHostingする
+description: Firebase StorageにHostingする為のメモです。
+createAt: 2021-12-09
+thumbnail: "/blog/thumbnail/firebase_thumb.png"
+tags: ["Firebase"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# Firebase CLI をインストール
+
+Firebase CLI をインストールする。
+
+```
+$ npm install -g firebase-tools
+```
+
+Firebase CLI にログインしてテストする。
+
+```
+$ firebase login
+
+i  Firebase optionally collects CLI usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you.
+
+? Allow Firebase to collect CLI usage and error reporting information? (Y/n) Yes
+
+```
+
+ログインを実行すると、ブラウザでログインを求められるのでログインする。
+
+<CommonImg
+  src="blog/images/20211209/20211209_01.png"
+  alt="ログイン"
+  client:only="react"
+/>
+
+その後操作を付けるとログイン成功画面が表示される。
+
+<CommonImg
+  src="blog/images/20211209/20211209_02.png"
+  alt="ログイン"
+  client:only="react"
+/>
+
+コンソールにもメッセージが表示される。
+
+```
+✔  Success! Logged in as XXXXXXXX@gmail.com
+```
+
+# プロジェクトディレクトリを設定する
+
+静的サイトのローカルディレクトリをFirebaseのプロジェクトに接続します。
+
+どの機能を利用するか聞かれるので、Hostingを選択する。
+
+```
+$ firebase init
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/username/project
+
+? Which Firebase features do you want to set up for this directory? Press Space to select features, then Enter to confirm your choices. (Press <space> to select, <a> to toggle all, <i> to invert selection)
+ ◯ Realtime Database: Configure a security rules file for Realtime Database and (optionally) provision default instance
+ ◯ Firestore: Configure security rules and indexes files for Firestore
+ ◯ Functions: Configure a Cloud Functions directory and its files
+❯◉ Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys
+ ◯ Hosting: Set up GitHub Action deploys
+ ◯ Storage: Configure a security rules file for Cloud Storage
+ ◯ Emulators: Set up local emulators for Firebase products
+(Move up and down to reveal more choices)
+
+```
+
+既存のプロジェクトを利用するので`Use an existing project `を選択。
+
+```
+? Please select an option: (Use arrow keys)
+❯ Use an existing project
+  Create a new project
+  Add Firebase to an existing Google Cloud Platform project
+  Don't set up a default project
+```
+
+対象のプロジェクトを選択する。
+
+```
+? Please select an option: Use an existing project
+? Select a default Firebase project for this directory: (Use arrow keys)
+❯ my-project977b8 (my-project)
+  test-b388a (test)
+```
+
+index.htmlファイルが存在する公開するディレクトリを指定する。  
+今回はVue CLIで作成したプロジェクトだったので、publicではなく、build後に作成されるdistフォルダを指定する。
+
+```
+Your public directory is the folder (relative to your project directory) that
+will contain Hosting assets to be uploaded with firebase deploy. If you
+have a build process for your assets, use your build's output directory.
+
+? What do you want to use as your public directory? dist
+```
+
+シングルページの場合はyを。
+
+```
+? Configure as a single-page app (rewrite all urls to /index.html)? (y/N)
+```
+
+GitHubのコードと自動同期してくれる設定。
+
+```
+Set up automatic builds and deploys with GitHub? (y/N)
+```
+
+index.htmlファイルは上書きしないのでNo。
+
+```
+? File dist/index.html already exists. Overwrite? (y/N)
+```
+
+その後、firebase.jsonと.firebasercファイルが作成されディレクトリ設定は完了。
+
+```
+i  Skipping write of dist/index.html
+
+i  Writing configuration info to firebase.json...
+i  Writing project information to .firebaserc...
+
+✔  Firebase initialization complete!
+```
+
+#デプロイする
+
+以下コマンドでデプロイすると、ホスティングされる。
+
+```
+$ firebase deploy
+
+...
+
+✔  Deploy complete!
+
+Project Console: https://console.firebase.google.com/project/my-project-977b8/overview
+Hosting URL: https://my-project.web.app
+
+```

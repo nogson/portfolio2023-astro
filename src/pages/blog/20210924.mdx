@@ -1,0 +1,155 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Typescriptでのエラー対処法
+description: Typescriptでエラーになった場合の対処法です。自分用のメモです。
+createAt: 2021-09-24
+thumbnail: "/blog/thumbnail/typescript_thumb.png"
+tags: ["Typescript", "Javascript"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## Object is possibly 'null'.
+
+```typescript
+@Component({
+  async asyncData({ $content, params }) {
+    const posts = await $content("posts/" + params.slug).fetch();
+    return { posts };
+  },
+})
+export default class Index extends Vue {
+  head() {
+    return {
+      title: this.posts.title,
+    };
+  }
+}
+```
+
+`this.posts.title`がnullになる場合があるとのことで以下のエラーが発生しました。
+
+```
+Object is possibly 'null'.
+```
+
+### 対処法1
+
+簡単な対処法として、対象のオブジェクトに`!`の修飾子を追加します。
+
+```typescript
+export default class Index extends Vue {
+  head() {
+    return {
+      title: this.posts!.title,
+    };
+  }
+}
+```
+
+### 対処法2
+
+nullでないことを保証する。
+
+```typescript
+export default class Index extends Vue {
+  head() {
+    return {
+      title: this.posts ? this.posts.title : "",
+    };
+  }
+}
+```
+
+### 対処法3
+
+`tsconfig.json`に"strictNullChecks":falseを追加する。
+
+```
+{
+  ...
+  "strictNullChecks":false,
+  ...
+}
+
+```
+
+## TS2307: Cannot find module 'XXXXX' or its corresponding type declarations.
+
+画像読み込み時にimportエラーが発生。
+読み込む画像に対しての型定義がないのが原因。
+
+```
+import sample from '@client/assets/img/sample.png'
+```
+
+対処法としては、`XXX.d.ts`ファイルを、プロジェクト配下に作成後、以下を定義する。
+
+```
+declare module '*.png'
+```
+
+## ESLint: Type boolean trivially inferred from a boolean literal, remove type annotation.(@typescript-eslint/no-inferrable-types)
+
+以下のように型推論できるような変数はあえて型定義をしなくても良いらしい。
+
+```
+const a:boolean = false
+```
+
+こっちでOK。
+
+```
+const a = false
+```
+
+## TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type ...
+
+オブジェクトにブラケットアクセスする場合に発生。
+
+```javascript
+const user = {
+  sato: {
+    age: 11,
+    sex: "male",
+  },
+  suzuki: {
+    age: 11,
+    sex: "female",
+  },
+};
+
+const name = "sato";
+console.log(user[name].age);
+```
+
+```
+TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{sato ... }'.
+```
+
+indexの型が不明でエラーになっているようです。  
+indexの型を指定することで回避できます。
+
+```javascript
+type User = {
+  [key: string]: {
+    age: number
+    sex: string
+ }
+}
+
+const user: User = {
+  sato: {
+    age: 11,
+    sex: 'male'
+  },
+  suzuki: {
+    age: 11,
+    sex: 'female'
+  }
+}
+
+const name = 'sato'
+console.log(user[name].age)
+```

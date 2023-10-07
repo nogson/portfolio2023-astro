@@ -1,0 +1,260 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Laravel Passportをやってみるメモ
+description: Laravel Passportを利用した場合のメモ。
+createAt: 2021-10-11
+thumbnail: "/blog/thumbnail/php_thumb.png"
+tags: ["PHP"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+
+Laravel Passportを利用した場合のメモ。
+
+ライブラリインストール。
+
+```
+$ composer require laravel/passport
+```
+
+マイグレーションを実行。
+
+```
+$ php artisan migrate
+Migration table created successfully.
+Migrating: 2014_10_12_000000_create_users_table
+Migrated:  2014_10_12_000000_create_users_table (83.67ms)
+Migrating: 2014_10_12_100000_create_password_resets_table
+Migrated:  2014_10_12_100000_create_password_resets_table (55.75ms)
+Migrating: 2016_06_01_000001_create_oauth_auth_codes_table
+Migrated:  2016_06_01_000001_create_oauth_auth_codes_table (68.58ms)
+Migrating: 2016_06_01_000002_create_oauth_access_tokens_table
+Migrated:  2016_06_01_000002_create_oauth_access_tokens_table (103.69ms)
+Migrating: 2016_06_01_000003_create_oauth_refresh_tokens_table
+Migrated:  2016_06_01_000003_create_oauth_refresh_tokens_table (119.95ms)
+Migrating: 2016_06_01_000004_create_oauth_clients_table
+Migrated:  2016_06_01_000004_create_oauth_clients_table (73.17ms)
+Migrating: 2016_06_01_000005_create_oauth_personal_access_clients_table
+Migrated:  2016_06_01_000005_create_oauth_personal_access_clients_table (37.69ms)
+Migrating: 2019_08_19_000000_create_failed_jobs_table
+Migrated:  2019_08_19_000000_create_failed_jobs_table (58.61ms)
+```
+
+安全なアクセストークンを生成するのに必要な暗号キーを作成します。  
+さらにアクセストークンを生成するために使用する、「パーソナルアクセス」クライアントと「パスワードグラント」クライアントも作成します。
+
+Clientはユーザではなくアクセストークンを利用するアプリケーションのこと。
+
+生成された情報は`oauth_clients`テーブルに保存されます。
+
+```
+$ php artisan passport:install
+Personal access client created successfully.
+Client ID: 1
+Client secret: Pn1hA2F8ngjZwPxcmYb3aZ9CqqRRM9zWJNwPtNqZ
+Password grant client created successfully.
+Client ID: 2
+Client secret: hDdQbSAX484FRtCQpHafotaMEfBv0ryuWCn7kvUN
+```
+
+**Personal access client**と**Password grant client**が作成されます。
+
+Laravel標準のusersテーブルをPassport認証に使用する。
+
+◎ app/Models/User.php
+
+```
+<?php
+
+namespace App\Models;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;　// 追加
+
+class User extends Authenticatable
+{
+    use HasFactory;
+    use Notifiable;
+    use HasApiTokens; // 追加
+
+    ...
+}
+```
+
+◎ app/Providers/AppServiceProvider.php
+
+```
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use Laravel\Passport\Passport;
+
+class AuthServiceProvider extends ServiceProvider
+{
+    /**
+     * アプリケーションのポリシーのマップ
+     *
+     * @var array
+     */
+    protected $policies = [
+        'App\Models\Model' => 'App\Policies\ModelPolicy',
+    ];
+
+    /**
+     * 全認証／認可サービスの登録
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->registerPolicies();
+        Passport::routes();
+    }
+}
+```
+
+`Passport::routes()`を追加したあと、``php artisan route:list`をするとルーティングが追加されている。
+[f:id:nogson2:20201130225222p:plain]
+
+## テストユーザーを作成
+
+Seederを作成。
+
+◎ database/seeders/UsersTabaleSeeder.php
+
+```
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+class UsersTabaleSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $param = [
+            'name' => 'taro',
+            'email' => 'taro@example.com',
+            'password' => Hash::make('test')
+        ];
+
+        DB::table('users') -> insert($param);
+    }
+}
+```
+
+`database/seeders/DatabaseSeeder.php`にも以下を追加。
+
+```
+public function run()
+{
+    $this->call(UsersTabaleSeeder::class);
+}
+```
+
+`php artisan db:seed`を実行。
+
+## リクエストしてみる(Personal Access Token)
+
+とりあえず、いきなりtokenが発行される`Personal Access Token`で試してみます。
+
+`routers/api`に以下を追加。
+
+```
+Route::get('/test', function(){
+    $user = App\Models\User::find(1);
+    $token = $user->createToken('')->accessToken;
+    return response()->json(['token' => $token]);
+});
+```
+
+[http://localhost/api/test](http://localhost/api/test)を実行。
+
+Bearer tokenが発行される。
+
+```
+{
+  "token": "eyJ0eXAiOiJKV1QiL..."
+}
+```
+
+リクエストヘッダーに`Authorization : Bearer eyJ0eXAiOiJKV1QiL...`をつけて、  
+[http://localhost/api/user](http://localhost/api/user)を実行。
+
+user情報が返却される。
+
+```
+{
+  "id": 1,
+  "name": "taro",
+  "email": "taro@example.com",
+  "email_verified_at": null,
+  "created_at": null,
+  "updated_at": null
+}
+```
+
+## リクエストしてみる(Password Grant Token)
+
+パスワードを送信してTokenが発行される、よくある認証方式です。
+
+`php artisan passport:install`で作成した`Password grant client`を利用します。
+
+認可サーバ`http://localhot/oauth/token`(Laravel)に　POSTリクエストを送信します。
+
+リクエストパラメータはこちら。
+
+```
+{
+	"grant_type": "password",
+	"client_id": "2",
+	"client_secret": "hDdQbSAX484FRtCQpHafotaMEfBv0ryuWCn7kvUN",
+	"username": "taro@example.com",
+	"password": "test",
+	"scope": ""
+}
+```
+
+アクセストークンが返却される。
+
+```
+{
+  "token_type": "Bearer",
+  "expires_in": 31536000,
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+}
+```
+
+リクエストヘッダーに`Authorization : Bearer eyJ0eXAiOiJKV1QiL...`をつけて、  
+[http://localhost/api/user](http://localhost/api/user)を実行。
+
+user情報が返却される。
+
+```
+{
+  "id": 1,
+  "name": "taro",
+  "email": "taro@example.com",
+  "email_verified_at": null,
+  "created_at": null,
+  "updated_at": null
+}
+```
+
+続く ...

@@ -1,0 +1,66 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Photoshopのコンテンツに応じた塗りつぶし
+description: Photoshopのコンテンツに応じた塗りつぶしの使い方。
+createAt: 2021-05-23
+thumbnail: "/blog/thumbnail/photoshop_thumb.png"
+tags: ["Design"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+Photoshopでの画像レタッチでよく使う超便利機能らしいのですが、今まで使ったことがなかった **「コンテンツに応じた塗りつぶし」** についてメモしておこうと思います。
+
+用途としては、例えば...
+
+- 画像から不要な物を消す
+- 背景の足りない部分をのばす
+
+<br />
+
+などができるようです。  
+私はスタンプなどで時間をかけてやっていましたが、 **「コンテンツに応じた塗りつぶし」** を利用すれば一瞬に、しかもキレイに仕上げることができます。
+
+## 使い方
+
+使い方の説明をしていきたいと思います。  
+以下は背景が足りない場合の伸ばし方です。
+
+まずは写真を開きます。
+
+<CommonImg
+  src="blog/images/20210523/20210523_01.png"
+  alt="コンテンツに応じた塗りつぶし"
+  client:only="react"
+/>
+
+**イメージ > カンバスサイズ** から必要な画像サイズにリサイズします。
+
+<CommonImg
+  src="blog/images/20210523/20210523_02.png"
+  alt="コンテンツに応じた塗りつぶし"
+  client:only="react"
+/>
+
+次に伸ばした部分を選択の上、**編集 > コンテンツに応じた塗りつぶし** を選択します。
+
+<CommonImg
+  src="blog/images/20210523/20210523_03.png"
+  alt="コンテンツに応じた塗りつぶし"
+  client:only="react"
+/>
+
+右側のボックスの「サンプリング領域のオプション」からカスタムを選択し、  
+画像の端を塗りつぶします。
+
+<CommonImg
+  src="blog/images/20210523/20210523_04.png"
+  alt="コンテンツに応じた塗りつぶし"
+  client:only="react"
+/>
+
+すると、自動で不足分の箇所をいい感じで描画してくれます。
+仕上がりも自然です。
+
+気になるところがあれば、すこしスタンプなどを合わせて利用すればより自然に仕上がると思います。

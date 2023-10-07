@@ -1,0 +1,117 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Linuxのcronについてのメモ
+description: Linuxの基礎知識としてcronを学んだ際のメモです。
+createAt: 2021-09-23
+thumbnail: "/blog/thumbnail/note_thumb.png"
+tags: ["Linux"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## cronとは
+
+cronとは、Linuxでジョブを定期実行する為の機能です。Linuxの標準機能です。  
+cronを利用するには **crond(cronデーモン)** が起動している必要があります。こちらLinuxインストール時に自動で稼働します。
+
+## cronのコマンド
+
+### 起動確認
+
+```shell script
+systemctl status crond.service
+```
+
+以下のように`runnung`になっていれば起動中です。
+
+```shell script
+[ec2-user@ip-10-0-0-84 ~]$ systemctl status crond.service
+● crond.service - Command Scheduler
+   Loaded: loaded (/usr/lib/systemd/system/crond.service; enabled; vendor preset: enabled)
+   Active: active (running) since Thu 2021-09-23 05:14:35 UTC; 5min ago
+ Main PID: 4136 (crond)
+    Tasks: 1
+   Memory: 952.0K
+   CGroup: /system.slice/crond.service
+           └─4136 /usr/sbin/crond -n
+```
+
+起動していなければ、以下のコマンドでcrondを起動します。
+
+```shell script
+systemctl start crond.service
+```
+
+### 登録済みのcronを確認
+
+現在登録済みのcronのジョブを確認することができます。
+
+```shell script
+crontab -l
+```
+
+### cronの追加(編集)
+
+```shell script
+crontab -e
+```
+
+### cronの削除
+
+```shell script
+crontab -r
+```
+
+### cronの例
+
+<CommonImg
+  src="blog/images/20210923/01.png"
+  alt="cronの例"
+  client:only="react"
+/>
+
+| 左端から | 頻度 | 指定可能数値    |
+| -------- | ---- | --------------- |
+| 1        | 分   | 0~59            |
+| 2        | 時   | 0~23            |
+| 3        | 日   | 1~31            |
+| 4        | 月   | 1~12            |
+| 5        | 曜日 | 0~7(0と7は日曜) |
+
+◎10分おきにdateコマンドを実行して/tmp/a.txtに保存するという例
+
+```shell script
+*/10 * * * * date >> /tmp/a.txt
+```
+
+`/tmp/a.txt`を確認してみる。
+
+```shell script
+cat /tmp/a.txt
+```
+
+以下のように10分おきにコマンドが実行される。
+
+```shell script
+[ec2-user@ip-10-0-0-84 ~]$ cat /tmp/a.txt
+Thu Sep 23 05:10:01 UTC 2021
+Thu Sep 23 05:20:01 UTC 2021
+Thu Sep 23 05:30:01 UTC 2021
+Thu Sep 23 05:40:01 UTC 2021
+```
+
+■設定ファイルを表示
+
+cronの設定を指定します。
+
+```shell script
+cat /etc/crontab
+```
+
+| key    | 意味                                                                                  | 例                            |
+| ------ | ------------------------------------------------------------------------------------- | ----------------------------- |
+| SHELL  | cronで実行されるシェルを設定する                                                      | /bin/bash                     |
+| PATH   | cronに教えるパスの設定                                                                | /sbin:/bin:/usr/sbin:/usr/bin |
+| MAILTO | cronの実行結果を送るユーザーまたはメールアドレス。送信しない場合は「MAILTO=""」とする | root                          |
+| HOME   | cronが実行されるカレントディレクトリ                                                  | /                             |

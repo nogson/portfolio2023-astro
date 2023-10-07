@@ -1,0 +1,108 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: AWSのEC2のインスタンスメタデータについて
+description: AWSのEC2のインスタンスメタデータについてのメモです。
+createAt: 2021-10-21
+thumbnail: "/blog/thumbnail/aws_thumb.png"
+tags: ["AWS"]
+draft: false
+---
+
+# インスタンスメタデータとは
+
+> インスタンスメタデータは、インスタンスに関するデータで、実行中のインスタンスを設定または管理するために使用します。
+> https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/ec2-instance-metadata.html:embed:cite
+
+# 取得方法
+
+## curlコマンドで取得
+
+```
+
+[ec2-user@ip-XX-X-X-115 XX~]$ curl http://169.254.169.254/latest/meta-data
+ami-id
+ami-launch-index
+ami-manifest-path
+block-device-mapping/
+events/
+hibernation/
+hostname
+identity-credentials/
+instance-action
+instance-id
+instance-life-cycle
+instance-type
+local-hostname
+local-ipv4
+mac
+metrics/
+network/
+placement/
+profile
+public-hostname
+public-ipv4
+public-keys/
+reservation-id
+security-groups
+```
+
+ami-idを取得したい場合は、
+
+```
+[ec2-user@ip-XX-X-X-115 XX~]$ curl http://169.254.169.254/latest/meta-data/ami-id
+ami-0ce107ae7af2e92b5
+```
+
+## ec2-metadataコマンドで取得
+
+```
+[ec2-user@ip-XX-X-X-115 XX~]$ ec2-metadata --help
+ec2-metadata v0.1.2
+Use to retrieve EC2 instance metadata from within a running EC2 instance.
+e.g. to retrieve instance id: ec2-metadata -i
+		 to retrieve ami id: ec2-metadata -a
+		 to get help: ec2-metadata --help
+For more information on Amazon EC2 instance meta-data, refer to the documentation at
+http://docs.amazonwebservices.com/AWSEC2/2008-05-05/DeveloperGuide/AESDG-chapter-instancedata.html
+
+Usage: ec2-metadata <option>
+Options:
+--all                     Show all metadata information for this host (also default).
+-a/--ami-id               The AMI ID used to launch this instance
+-l/--ami-launch-index     The index of this instance in the reservation (per AMI).
+-m/--ami-manifest-path    The manifest path of the AMI with which the instance was launched.
+-n/--ancestor-ami-ids     The AMI IDs of any instances that were rebundled to create this AMI.
+-b/--block-device-mapping Defines native device names to use when exposing virtual devices.
+-i/--instance-id          The ID of this instance
+-t/--instance-type        The type of instance to launch. For more information, see Instance Types.
+-h/--local-hostname       The local hostname of the instance.
+-o/--local-ipv4           Public IP address if launched with direct addressing; private IP address if launched with public addressing.
+-k/--kernel-id            The ID of the kernel launched with this instance, if applicable.
+-z/--availability-zone    The availability zone in which the instance launched. Same as placement
+-c/--product-codes        Product codes associated with this instance.
+-p/--public-hostname      The public hostname of the instance.
+-v/--public-ipv4          NATted public IP Address
+-u/--public-keys          Public keys. Only available if supplied at instance launch time
+-r/--ramdisk-id           The ID of the RAM disk launched with this instance, if applicable.
+-e/--reservation-id       ID of the reservation.
+-s/--security-groups      Names of the security groups the instance is launched in. Only available if supplied at instance launch time
+-d/--user-data            User-supplied data.Only available if supplied at instance launch time.
+```
+
+ami-idを取得したい場合は、
+
+```
+[ec2-user@ip-XX-X-X-115 XX~]$ ec2-metadata -a
+ami-id: ami-0ce107ae7af2e92b5
+```
+
+# curlコマンドとec2-metadataの使い分け
+
+curlコマンドは値だけ取得できるのでプログラムで利用するのに向いている。  
+ec2-metadataコマンドはデータのkeyも取得されるので、プログラムで利用する場合は不便。  
+ただ、`ec2-metadata --all`なので、値を確認するのに便利。
+
+なので、
+
+- curlコマンド　　　　 ・・・プログラムで利用
+- ec2-metadataコマンド・・・EC2の情報を確認するのに使用

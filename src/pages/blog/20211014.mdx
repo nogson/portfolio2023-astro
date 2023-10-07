@@ -1,0 +1,110 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: Vue3 + PIXI.JSメモ
+description: 初心者のVue3とPIXI.JSの導入時のメモです。
+createAt: 2021-10-14
+thumbnail: "/blog/thumbnail/vue_thumb.png"
+tags: ["Javascript"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+## Pixiアプリケーション生成
+
+ステージを用意する。
+
+```
+<template>
+  <div class="stage"></div>
+</template>
+
+<script lang="ts">
+import {Options, Vue} from 'vue-class-component';
+// PixiJSを読み込み
+import * as PIXI from 'pixi.js';
+
+export default class MyComponent extends Vue {
+  app!: PIXI.Application
+
+  mounted() {
+    // ステージを作成
+    this.app = new PIXI.Application({
+      backgroundColor: 0xffffff,
+      antialias: true, // アンチエイリアスを有効にする
+      resolution: window.devicePixelRatio || 1, // 解像度に合わせた拡大率を指定する
+      autoDensity : true, // CSSで見た目のサイズの戻してくれる,
+      resizeTo: window // windowのリサイズに合わせてstage(canvas)をリサイズする
+    });
+    // rootのdom内(<div class="stage" />)にappendする
+    this.$el.appendChild(this.app.view);
+  }
+}
+</script>
+```
+
+## オブジェクトを配置
+
+以下のような感じでステージに、オブジェクトを追加することができます。
+
+```
+    const obj = new PIXI.Graphics();
+    obj.beginFill(0xff0000);
+    obj.drawRect(0, 0, 200, 100);
+    this.app.stage.addChild(obj);
+```
+
+<CommonImg
+  src="blog/images/20211014/20211014_01.png"
+  alt="ステージにオブジェクトを追加"
+  client:only="react"
+/>
+
+## グラデーションで塗る
+
+グラデーション用のメソッドなどは無いようで、グラデーションで描画したcanvasをSpriteに入れてグラデーションを描くようです。
+
+```
+  mounted() {
+    this.app = new PIXI.Application({
+      backgroundColor: 0xffffff,
+      antialias: true,
+      resolution: window.devicePixelRatio || 1, // 解像度に合わせた拡大率を指定する
+      autoDensity: true, // CSSで見た目のサイズの戻してくれる,
+      resizeTo: window
+    });
+
+    this.$el.appendChild(this.app.view);
+    // グラデーションを描画
+    const gradient = this.createGradient(window.innerWidth, window.innerHeight, '#acb6e5', '#86fde8');
+    this.app.stage.addChild(gradient);
+
+    this.app.renderer.resize(window.innerWidth, window.innerHeight);
+  }
+
+   // グラデーションのSpriteを生成
+   createGradient(width: number, height: number, colorFrom: string, colorTo: string): PIXI.Sprite {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (ctx) {
+      const gradient = ctx.createLinearGradient(0, 0, width, 0)
+
+      canvas.setAttribute('width', String(width))
+      canvas.setAttribute('height', String(height))
+
+      gradient.addColorStop(0, colorFrom)
+      gradient.addColorStop(1, colorTo)
+
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, width, height)
+    }
+
+    return PIXI.Sprite.from(canvas)
+  }
+```
+
+<CommonImg
+  src="blog/images/20211014/20211014_02.png"
+  alt="グラデーションを描画"
+  client:only="react"
+/>
