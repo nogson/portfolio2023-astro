@@ -7,11 +7,11 @@ import image from "@astrojs/image";
 
 // https://astro.build/config
 export default defineConfig({
-  // output: "server",
-  // adapter: vercel(),
+  output: "server",
+  adapter: vercel(),
     // github pages hosting
-  site: 'https://nogson.github.io',
-  base: '/',
+  // site: 'https://nogson.github.io',
+  // base: '/',
   integrations: [react(), mdx(), image()],
   vite: {
     resolve: {
