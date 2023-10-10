@@ -11,7 +11,7 @@ export default defineConfig({
   // adapter: vercel(),
     // github pages hosting
   site: 'https://nogson.github.io',
-  base: '/portfolio2023-astro',
+  base: '/',
   integrations: [react(), mdx(), image()],
   vite: {
     resolve: {
