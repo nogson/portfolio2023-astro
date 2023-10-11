@@ -12,25 +12,17 @@ import CommonImg from "@/components/CommonImg.tsx";
 
 シェーダーで作成したテクスチャ上に、画像で作成した透過テクスチャを重ねる方法です。
 
-| シェーダー                                                                           | 透過テクスチャ                                                                           |
-| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| <CommonImg src="blog/images/20220608/01.png" alt="シェーダー" client:only="react" /> | <CommonImg src="blog/images/20220608/02.png" alt="透過テクスチャ" client:only="react" /> |
+| シェーダー                                                                     | 透過テクスチャ                                                                     |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| <CommonImg src="/blog/20220608/01.png" alt="シェーダー" client:only="react" /> | <CommonImg src="/blog/20220608/02.png" alt="透過テクスチャ" client:only="react" /> |
 
 仕上がりイメージはこんな感じ。
 
-<CommonImg
-  src="blog/images/20220608/03.png"
-  alt="シェーダー"
-  client:only="react"
-/>
+<CommonImg src="/blog/20220608/03.png" alt="シェーダー" client:only="react" />
 
 シェーダーの設定はこんな感じ。
 
-<CommonImg
-  src="blog/images/20220608/04.png"
-  alt="シェーダー"
-  client:only="react"
-/>
+<CommonImg src="/blog/20220608/04.png" alt="シェーダー" client:only="react" />
 
 ポイントは、シェーダーミックスに以下の設定を行う。
 

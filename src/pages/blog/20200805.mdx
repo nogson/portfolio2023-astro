@@ -42,7 +42,7 @@ $ docker run -d -p 80:80 --name amazon-ecs-sample amazon-ecs-sample:latest
 `http://localhost/`でアクセス。
 
 <CommonImg
-  src="blog/images/20200805/01.png"
+  src="/blog/20200805/01.png"
   alt="ローカルで簡単なdockerコンテナを起動する"
   client:only="react"
 />
@@ -52,7 +52,7 @@ $ docker run -d -p 80:80 --name amazon-ecs-sample amazon-ecs-sample:latest
 AWSコンソールのECS > ECRから、リポジトリを作成する。
 
 <CommonImg
-  src="blog/images/20200805/02.png"
+  src="/blog/20200805/02.png"
   alt="ECRにdockerイメージをpush"
   client:only="react"
 />
@@ -61,7 +61,7 @@ AWSコンソールのECS > ECRから、リポジトリを作成する。
 次に「プッシュコマンドの表示」を押します。
 
 <CommonImg
-  src="blog/images/20200805/03.png"
+  src="/blog/20200805/03.png"
   alt="ECRにdockerイメージをpush"
   client:only="react"
 />
@@ -69,7 +69,7 @@ AWSコンソールのECS > ECRから、リポジトリを作成する。
 プッシュコマンドを順番に実行していく。
 
 <CommonImg
-  src="blog/images/20200805/04.png"
+  src="/blog/20200805/04.png"
   alt="ECRにdockerイメージをpush"
   client:only="react"
 />
@@ -102,7 +102,7 @@ docker push XXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/amazon-ecs-sample:l
 リポジトリ内にイメージが作成される。
 
 <CommonImg
-  src="blog/images/20200805/05.png"
+  src="/blog/20200805/05.png"
   alt="ECRにdockerイメージをpush"
   client:only="react"
 />
@@ -186,7 +186,7 @@ aws ecs register-task-definition --cli-input-json file://simple-app-task-def.jso
 `"family": "console-sample-app"`に定義した`console-sample-app`というタスクが作成されます。
 
 <CommonImg
-  src="blog/images/20200805/06.png"
+  src="/blog/20200805/06.png"
   alt="タスクを定義する"
   client:only="react"
 />
@@ -198,7 +198,7 @@ aws ecs register-task-definition --cli-input-json file://simple-app-task-def.jso
 イメージとしてはこんな感じ（自信なし）？？
 
 <CommonImg
-  src="blog/images/20200805/07.png"
+  src="/blog/20200805/07.png"
   alt="クラスターを作成"
   client:only="react"
 />
@@ -221,7 +221,7 @@ ECS > クラスターから「クラスターを作成」を押す。
 クラスターが作成される。
 
 <CommonImg
-  src="blog/images/20200805/08.png"
+  src="/blog/20200805/08.png"
   alt="クラスターを作成"
   client:only="react"
 />
@@ -231,7 +231,7 @@ ECS > クラスターから「クラスターを作成」を押す。
 タブの「タスク」から「新しいタスクの実行」を押す。
 
 <CommonImg
-  src="blog/images/20200805/09.png"
+  src="/blog/20200805/09.png"
   alt="クラスターでタスクを実行"
   client:only="react"
 />
@@ -239,7 +239,7 @@ ECS > クラスターから「クラスターを作成」を押す。
 以下の設定をして「タスクの実行」を押す。
 
 <CommonImg
-  src="blog/images/20200805/10.png"
+  src="/blog/20200805/10.png"
   alt="クラスターでタスクを実行"
   client:only="react"
 />
@@ -247,7 +247,7 @@ ECS > クラスターから「クラスターを作成」を押す。
 タスクが実行されインスタンスが作成されます。
 
 <CommonImg
-  src="blog/images/20200805/11.png"
+  src="/blog/20200805/11.png"
   alt="クラスターでタスクを実行"
   client:only="react"
 />
@@ -255,7 +255,7 @@ ECS > クラスターから「クラスターを作成」を押す。
 インスタンスのパブリックDNSでアクセスしてみると、以下の画面が表示されます。
 
 <CommonImg
-  src="blog/images/20200805/12.png"
+  src="/blog/20200805/12.png"
   alt="クラスターでタスクを実行"
   client:only="react"
 />

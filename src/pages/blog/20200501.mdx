@@ -15,9 +15,9 @@ import CommonImg from "@/components/CommonImg.tsx";
 データベースなど、インターネットから隔離するために利用する、インターネットから接続できないサブネットのことです。
 
 <CommonImg
-  src="blog/images/20200501/01.png"
+  src="/blog/20200501/01.png"
   alt="プライベートサブネットとは"
-  client:only="react"   
+  client:only="react"
 />
 
 ## プライベートサブネットを作成する
@@ -25,7 +25,7 @@ import CommonImg from "@/components/CommonImg.tsx";
 VPC > サブネットから「サブネットの作成」を押す
 
 <CommonImg
-  src="blog/images/20200501/02.png"
+  src="/blog/20200501/02.png"
   alt="プライベートサブネットを作成する"
   client:only="react"
 />
@@ -35,13 +35,13 @@ VPC > サブネットから「サブネットの作成」を押す
 EC2 > インスタンス > インスタンスを作成
 
 <CommonImg
-  src="blog/images/20200501/03.png"
+  src="/blog/20200501/03.png"
   alt="プライベートサブネットにサーバーを構築する"
   client:only="react"
 />
 
 <CommonImg
-  src="blog/images/20200501/04.png"
+  src="/blog/20200501/04.png"
   alt="プライベートサブネットにサーバーを構築する"
   client:only="react"
 />
@@ -50,7 +50,7 @@ EC2 > インスタンス > インスタンスを作成
 IPアドレスはインターネットから接続しないので、自動割当パブリックIPは「無効化」にします。
 
 <CommonImg
-  src="blog/images/20200501/05.png"
+  src="/blog/20200501/05.png"
   alt="プライベートサブネットにサーバーを構築する"
   client:only="react"
 />
@@ -59,7 +59,7 @@ IPアドレスはインターネットから接続しないので、自動割当
 送信元は、「任意の場所」を選択する
 
 <CommonImg
-  src="blog/images/20200501/06.png"
+  src="/blog/20200501/06.png"
   alt="プライベートサブネットにサーバーを構築する"
   client:only="react"
 />
@@ -74,7 +74,7 @@ pingコマンドでは「ICMPプロコトル」を利用します。
 VPX > セキュリティグループ > インバウンドルール > ルールの編集
 
 <CommonImg
-  src="blog/images/20200501/07.png"
+  src="/blog/20200501/07.png"
   alt="ICMPがとおるようにする"
   client:only="react"
 />
@@ -84,7 +84,7 @@ VPX > セキュリティグループ > インバウンドルール > ルール�
 ソース : 任意の場所
 
 <CommonImg
-  src="blog/images/20200501/08.png"
+  src="/blog/20200501/08.png"
   alt="ICMPがとおるようにする"
   client:only="react"
 />

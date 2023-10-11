@@ -15,11 +15,7 @@ import CommonImg from "@/components/CommonImg.tsx";
 アクセスを複数のEC2インスタンスに負荷分散する役割を担います。  
 またヘルスチェックを行い、複数あるインスタンスの中から正常なインスタンスのみに振り分けます。
 
-<CommonImg
-  src="blog/images/20200518/01.png"
-  alt="ELBとは"
-  client:only="react"
-/>
+<CommonImg src="/blog/20200518/01.png" alt="ELBとは" client:only="react" />
 
 ELBには**ALB(Application Load Balancer)**と、**NLB(Network Load Balancer)**があります。
 
@@ -33,7 +29,7 @@ ELBには**ALB(Application Load Balancer)**と、**NLB(Network Load Balancer)**�
 サービスの継続ができなくなる。
 
 <CommonImg
-  src="blog/images/20200518/02.png"
+  src="/blog/20200518/02.png"
   alt="負荷分散、単一障害点対応"
   client:only="react"
 />
@@ -41,7 +37,7 @@ ELBには**ALB(Application Load Balancer)**と、**NLB(Network Load Balancer)**�
 ELBを利用してサイトを冗長化した場合は、仮に1台がダウンしてもサービスの継続が可能。
 
 <CommonImg
-  src="blog/images/20200518/03.png"
+  src="/blog/20200518/03.png"
   alt="負荷分散、単一障害点対応"
   client:only="react"
 />
@@ -62,18 +58,14 @@ ELBにHTTPS通信で使用するSSL証明書をアタッチすることで、通
 
 「EC2 > ロードバランサー > ロードバランサーの作成」を押します。
 
-<CommonImg
-  src="blog/images/20200518/04.png"
-  alt="ELBの作成"
-  client:only="react"
-/>
+<CommonImg src="/blog/20200518/04.png" alt="ELBの作成" client:only="react" />
 
 ### ロードバランサーの種別を選択します
 
 **Application Load**を選択します。
 
 <CommonImg
-  src="blog/images/20200518/05.png"
+  src="/blog/20200518/05.png"
   alt="ロードバランサーの種別を選択します"
   client:only="react"
 />
@@ -90,7 +82,7 @@ ELBにHTTPS通信で使用するSSL証明書をアタッチすることで、通
 | タグ                     | 識別用のタグ                                                                                                   |
 
 <CommonImg
-  src="blog/images/20200518/06.png"
+  src="/blog/20200518/06.png"
   alt="ロードバランサーの設定をします"
   client:only="react"
 />
@@ -108,7 +100,7 @@ ELBにHTTPS通信で使用するSSL証明書をアタッチすることで、通
 ELBに登録するEC2インスタンスを選択します。
 
 <CommonImg
-  src="blog/images/20200518/07.png"
+  src="/blog/20200518/07.png"
   alt="ターゲットの登録"
   client:only="react"
 />

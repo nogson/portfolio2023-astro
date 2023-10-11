@@ -24,17 +24,13 @@ import CommonImg from "@/components/CommonImg.tsx";
 形状を変形後にリメッシュを行うことで、ポリゴンの解像度をあげることができます。  
 解像度が上がることで、細かい形状の変更を行うことができます。
 
-| リメッシュ前                                                                           | リメッシュ後                                                                           |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| <CommonImg src="blog/images/20220115/06.png" alt="リメッシュ前" client:only="react" /> | <CommonImg src="blog/images/20220115/07.png" alt="リメッシュ後" client:only="react" /> |
+| リメッシュ前                                                                     | リメッシュ後                                                                     |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| <CommonImg src="/blog/20220115/06.png" alt="リメッシュ前" client:only="react" /> | <CommonImg src="/blog/20220115/07.png" alt="リメッシュ後" client:only="react" /> |
 
 形状を変形後、画面右上の「リメッシュ」からリメッシュを実行します。
 
-<CommonImg
-  src="blog/images/20220115/08.png"
-  alt="リメッシュ"
-  client:only="react"
-/>
+<CommonImg src="/blog/20220115/08.png" alt="リメッシュ" client:only="react" />
 
 ## ダイナミックトポロジー
 
@@ -43,7 +39,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 ※だたしリメッシュが利用できなくなります。
 
 <CommonImg
-  src="blog/images/20220115/01.png"
+  src="/blog/20220115/01.png"
   alt="ダイナミックトポロジー"
   client:only="react"
 />
@@ -53,7 +49,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 ダイナミックトポロジーの「ディティールタイプ」を「ブラシディティール」を選択すると、ブラシのサイズによって解像度を変更することができます。
 
 <CommonImg
-  src="blog/images/20220115/13.png"
+  src="/blog/20220115/13.png"
   alt="ダイナミックトポロジー"
   client:only="react"
 />
@@ -65,7 +61,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 ブラシでマスクを選択。
 
 <CommonImg
-  src="blog/images/20220115/b_mask.png"
+  src="/blog/20220115/b_mask.png"
   alt="スカルプトさせない"
   client:only="react"
 />
@@ -73,7 +69,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 マスクする領域を塗ります。
 
 <CommonImg
-  src="blog/images/20220115/02.png"
+  src="/blog/20220115/02.png"
   alt="スカルプトさせない"
   client:only="react"
 />
@@ -81,7 +77,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 マスクした領域が影響を受けなくなります。
 
 <CommonImg
-  src="blog/images/20220115/03.png"
+  src="/blog/20220115/03.png"
   alt="スカルプトさせない"
   client:only="react"
 />
@@ -89,7 +85,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 マスクをクリアするには「マスク > マスクをクリア」を選択します。
 
 <CommonImg
-  src="blog/images/20220115/04.png"
+  src="/blog/20220115/04.png"
   alt="スカルプトさせない"
   client:only="react"
 />
@@ -100,7 +96,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 ミラーモディファイを使うとリメッシュができなくなる。
 
 <CommonImg
-  src="blog/images/20220115/05.png"
+  src="/blog/20220115/05.png"
   alt="左右対称にする場合"
   client:only="react"
 />
@@ -129,7 +125,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 ただし、なかなかの地道な作業が必要です。
 
 <CommonImg
-  src="blog/images/20220115/10.png"
+  src="/blog/20220115/10.png"
   alt="シュリンクラップ"
   client:only="react"
 />
@@ -137,7 +133,7 @@ Dyntopo(ダイナミックトポロジー)は、頂点数を変更して形状�
 以下のようにターゲットとなるメッシュにあわせてメッシュを貼っていくことで、ローポリゴンのメッシュを作成していきます。
 
 <CommonImg
-  src="blog/images/20220115/11.png"
+  src="/blog/20220115/11.png"
   alt="シュリンクラップ"
   client:only="react"
 />
@@ -152,7 +148,7 @@ zipファイルを解凍後、exeファイルをクリックするとソフト�
 以下から利用するPCに合わせてダウンロードします。
 
 <CommonImg
-  src="blog/images/20220115/12.png"
+  src="/blog/20220115/12.png"
   alt="Instant Meshes"
   client:only="react"
 />
@@ -166,22 +162,22 @@ Instant Meshesの使い方は別途記載したいと思います。
 
 # よく使うブラシ
 
-| ブラシ名                                                                                   | 機能                                               |
-| ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| <CommonImg src="blog/images/20220115/b3.png" alt="ドロー" client:only="react" />           | 凹凸をつくる基本ブラシ                             |
-| <CommonImg src="blog/images/20220115/b3.png" alt="グラブ" client:only="react" />           | 形を整える                                         |
-| <CommonImg src="blog/images/20220115/b4.png" alt="クレイストリップ" client:only="react" /> | 雑に粘土を盛るように細かく粘土を増やすことができる |
-| <CommonImg src="blog/images/20220115/b5.png" alt="クリース" client:only="react" />         | 鋭い切れ込みをいれる                               |
-| <CommonImg src="blog/images/20220115/b6.png" alt="スムーズ" client:only="react" />         | なめらかにする                                     |
-| <CommonImg src="blog/images/20220115/b7.png" alt="削り取り" client:only="react" />         | デコボコをけずる                                   |
-| <CommonImg src="blog/images/20220115/b8.png" alt="スネークフック" client:only="react" />   | ひっぱったような形状をつくる                       |
+| ブラシ名                                                                             | 機能                                               |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| <CommonImg src="/blog/20220115/b3.png" alt="ドロー" client:only="react" />           | 凹凸をつくる基本ブラシ                             |
+| <CommonImg src="/blog/20220115/b3.png" alt="グラブ" client:only="react" />           | 形を整える                                         |
+| <CommonImg src="/blog/20220115/b4.png" alt="クレイストリップ" client:only="react" /> | 雑に粘土を盛るように細かく粘土を増やすことができる |
+| <CommonImg src="/blog/20220115/b5.png" alt="クリース" client:only="react" />         | 鋭い切れ込みをいれる                               |
+| <CommonImg src="/blog/20220115/b6.png" alt="スムーズ" client:only="react" />         | なめらかにする                                     |
+| <CommonImg src="/blog/20220115/b7.png" alt="削り取り" client:only="react" />         | デコボコをけずる                                   |
+| <CommonImg src="/blog/20220115/b8.png" alt="スネークフック" client:only="react" />   | ひっぱったような形状をつくる                       |
 
 ### スネークフックの補足
 
 「ツール > 減衰」から形状を変更ができる。
 
 <CommonImg
-  src="blog/images/20220115/09.png"
+  src="/blog/20220115/09.png"
   alt="スネークフック"
   client:only="react"
 />

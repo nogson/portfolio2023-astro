@@ -107,11 +107,7 @@ export const createUser = async (email: string, password: string) => await creat
 認証関連の状態管理にReduxを利用します。  
 Redux Tool Kitのslice機能を利用すると、認証関連の状態(State)のみを扱う、アイテム一覧の状態管理のみ扱うなど分けて管理することができます。
 
-<CommonImg
-  src="blog/images/20220820/01.png"
-  alt="状態管理"
-  client:only="react"
-/>
+<CommonImg src="/blog/20220820/01.png" alt="状態管理" client:only="react" />
 
 stateを変更する場合はuseDispatchを利用し、stateを参照する場合はuseSelectorを利用する。
 
@@ -234,11 +230,7 @@ logoutが実行されると、userSliceのuser stateが初期値になります�
 最後にログイン、ログアウト、ユーザー作成部分を実装します。  
 UIは[mui](https://mui.com/)の認証画面を利用します。
 
-<CommonImg
-  src="blog/images/20220820/02.png"
-  alt="ログイン"
-  client:only="react"
-/>
+<CommonImg src="/blog/20220820/02.png" alt="ログイン" client:only="react" />
 
 ```
 import React, {useState} from 'react';
@@ -425,8 +417,4 @@ import {signInGoogle, signIn, createUser} from "../firebase";
 
 全体の処理のながれはこんな感じ。
 
-<CommonImg
-  src="blog/images/20220820/04.png"
-  alt="全体の処理"
-  client:only="react"
-/>
+<CommonImg src="/blog/20220820/04.png" alt="全体の処理" client:only="react" />

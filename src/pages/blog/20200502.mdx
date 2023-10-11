@@ -26,11 +26,7 @@ import CommonImg from "@/components/CommonImg.tsx";
 
 NATを利用すると、プライベートサブネットからインターネットに接続できるようになるが、インターネットからプラベートサブネットに接続することはできないです。
 
-<CommonImg
-  src="blog/images/20200502/01.png"
-  alt="NATとは"
-  client:only="react"
-/>
+<CommonImg src="/blog/20200502/01.png" alt="NATとは" client:only="react" />
 
 ## NATを構築
 
@@ -43,11 +39,7 @@ VPC > NAT ゲートウェイ > 「NATゲートウェイの作成」を押す
 次に、「サブネット」と「Elastic IP 割り当てID」を設定します。  
 Elastic IP 割り当てIDとは、**静的な固定のパブリックIPアドレス**のことです。
 
-<CommonImg
-  src="blog/images/20200502/02.png"
-  alt="NATを構築"
-  client:only="react"
-/>
+<CommonImg src="/blog/20200502/02.png" alt="NATを構築" client:only="react" />
 
 ### ルートテーブルを更新する
 
@@ -56,7 +48,7 @@ Elastic IP 割り当てIDとは、**静的な固定のパブリックIPアドレ
 VPC > ルートテーブルから「メイン」が「はい」になっているものを選択。
 
 <CommonImg
-  src="blog/images/20200502/03.png"
+  src="/blog/20200502/03.png"
   alt="ルートテーブルを更新する"
   client:only="react"
 />
@@ -64,7 +56,7 @@ VPC > ルートテーブルから「メイン」が「はい」になってい�
 送信先を`0.0.0.0/0`に、ターゲットを先程作成したNATゲートウェイを選択します。
 
 <CommonImg
-  src="blog/images/20200502/04.png"
+  src="/blog/20200502/04.png"
   alt="ルートテーブルを更新する"
   client:only="react"
 />

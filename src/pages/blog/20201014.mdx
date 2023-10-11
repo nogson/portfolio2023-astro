@@ -79,7 +79,7 @@ ECRに登録したイメージはECSから利用することができます。
 まずは登録用のリポジトリを作成(githubのリポジトリみたいなもの)。
 
 <CommonImg
-  src="blog/images/20201014/01.png"
+  src="/blog/20201014/01.png"
   alt="ECRにイメージを登録"
   client:only="react"
 />
@@ -88,7 +88,7 @@ ECRに登録したイメージはECSから利用することができます。
 push方法は、「プッシュコマンドを表示」のコマンドを実行していくだけです。
 
 <CommonImg
-  src="blog/images/20201014/02.png"
+  src="/blog/20201014/02.png"
   alt="ECRにイメージを登録"
   client:only="react"
 />
@@ -96,7 +96,7 @@ push方法は、「プッシュコマンドを表示」のコマンドを実行�
 イメージがプッシュされるとリポジトリに以下のように表示されます。
 
 <CommonImg
-  src="blog/images/20201014/03.png"
+  src="/blog/20201014/03.png"
   alt="ECRにイメージを登録"
   client:only="react"
 />
@@ -110,7 +110,7 @@ push方法は、「プッシュコマンドを表示」のコマンドを実行�
 クラスター名と、タグだけ設定して「作成」。
 
 <CommonImg
-  src="blog/images/20201014/04.png"
+  src="/blog/20201014/04.png"
   alt="クラスターを作成"
   client:only="react"
 />
@@ -118,7 +118,7 @@ push方法は、「プッシュコマンドを表示」のコマンドを実行�
 クラスターが作成される。
 
 <CommonImg
-  src="blog/images/20201014/05.png"
+  src="/blog/20201014/05.png"
   alt="クラスターを作成"
   client:only="react"
 />
@@ -132,21 +132,13 @@ push方法は、「プッシュコマンドを表示」のコマンドを実行�
 タスクの設定はこんな感じ。  
 タスクの実行 IAM ロールは初めての場合は、「新しいロールを作成」を選択すると自動で「ecsTaskExecutionRole」ロールが作成される。
 
-<CommonImg
-  src="blog/images/20201014/06.png"
-  alt="タスクを作成"
-  client:only="react"
-/>
+<CommonImg src="/blog/20201014/06.png" alt="タスクを作成" client:only="react" />
 
 コンテナを追加します。  
 イメージには、ECRで登録したイメージのURI、
 もしくは`ngins:latest`のようにdocker hubにあるイメージを指定することもできる。
 
-<CommonImg
-  src="blog/images/20201014/07.png"
-  alt="タスクを作成"
-  client:only="react"
-/>
+<CommonImg src="/blog/20201014/07.png" alt="タスクを作成" client:only="react" />
 
 タグ(Name:ecs-sample-taskとか）だけ追加して「作成」ボタンを押す。
 
@@ -157,7 +149,7 @@ push方法は、「プッシュコマンドを表示」のコマンドを実行�
 クラスター > 作成したクラスタ > 「サービス」タブ > 「作成」を押す。
 
 <CommonImg
-  src="blog/images/20201014/08.png"
+  src="/blog/20201014/08.png"
   alt="サービスを作成する"
   client:only="react"
 />
@@ -165,7 +157,7 @@ push方法は、「プッシュコマンドを表示」のコマンドを実行�
 以下のような設定をして 「次のステップへ」を押す。
 
 <CommonImg
-  src="blog/images/20201014/09.png"
+  src="/blog/20201014/09.png"
   alt="サービスを作成する"
   client:only="react"
 />
@@ -173,7 +165,7 @@ push方法は、「プッシュコマンドを表示」のコマンドを実行�
 VPCやサブネット、セキュリティグループ(インターネットにつながる）を設定して「次のステップへ」を押す。
 
 <CommonImg
-  src="blog/images/20201014/10.png"
+  src="/blog/20201014/10.png"
   alt="サービスを作成する"
   client:only="react"
 />
@@ -184,7 +176,7 @@ Auto Scaling はそのままの設定で「次のステップへ」を押し「�
 コンテナが起動すると、ステータスがRUNNINGになります。
 
 <CommonImg
-  src="blog/images/20201014/11.png"
+  src="/blog/20201014/11.png"
   alt="サービスを作成する"
   client:only="react"
 />
@@ -192,7 +184,7 @@ Auto Scaling はそのままの設定で「次のステップへ」を押し「�
 タスクのパブリックIPから表示を確認することができます。
 
 <CommonImg
-  src="blog/images/20201014/12.png"
+  src="/blog/20201014/12.png"
   alt="サービスを作成する"
   client:only="react"
 />
