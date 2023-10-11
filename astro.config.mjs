@@ -14,6 +14,9 @@ export default defineConfig({
   // base: '/portfolio2023-astro',
   integrations: [react(), mdx(), image()],
   vite: {
+    ssr: {
+      noExternal: ["react-icons"],
+    },
     resolve: {
       alias: {
         "@": "/src"
