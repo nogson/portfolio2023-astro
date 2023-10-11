@@ -7,6 +7,7 @@ thumbnail: "/portfolio/webgl/thumbnail.png"
 tags: ["WebGL"]
 draft: false
 ---
+
 import CommonImg from "@/components/CommonImg.tsx";
 
 私のプログラムスキルだとWebGLはとにかく難しいです。
@@ -16,7 +17,7 @@ WebGLは絵がでるまでが果てしなく遠いです。
 
 <div class="multi-column-2 mb-M mt-XL">
   <div>
-    <CommonImg src="/portfolio/webgl/01.gif" alt="webgl" />
+    <CommonImg src="/portfolio/webgl/01.gif" alt="webgl" client:only="react" />
     <p>
       WebGLを学んだら必ずやりたくなるのがglitchです。
       デバイスのマイクの音を取得してglitchさせています。
@@ -54,7 +55,7 @@ WebGLは絵がでるまでが果てしなく遠いです。
     </div>
   </div>
   <div>
-    <CommonImg src="/portfolio/webgl/05.gif" alt="webgl" />
+    <CommonImg src="/portfolio/webgl/05.gif" alt="webgl" client:only="react" />
     <p>一応時計になっています。見えませんが。。。</p>
     <div class="link">
       <a href="https://nogson.github.io/webgl_clock/app/">View</a>
