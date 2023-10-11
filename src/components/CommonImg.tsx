@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
-import { AiOutlineSwapLeft, AiOutlineSwapRight } from "react-icons/ai";
+import { AiOutlineCloseCircle } from "react-icons/ai";
 
 export default function CommonImg({
   src,
@@ -34,7 +34,7 @@ export default function CommonImg({
       <Dialog $isShow={isShow} $imgWidth={imgW} onClick={openWindow}>
         <div className="dialog">
           <div className="close-button">
-            <AiOutlineSwapLeft />
+            <AiOutlineCloseCircle />
           </div>
           <img
             src={src}
