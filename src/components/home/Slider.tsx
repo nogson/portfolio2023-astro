@@ -162,6 +162,12 @@ const SliderItem = styled.div<{ $width: number }>`
     padding: 0 var(--spacing-L) var(--spacing-L);
     font-weight: 700;
     text-align: center;
+    // 2行目は...にする
+    height: 3.4em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
   }
 `;
 

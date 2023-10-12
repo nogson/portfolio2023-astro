@@ -7,46 +7,68 @@ interface Props {
 const { posts } = Astro.props;
 ---
 
-<div class="posts">
+<div class="posts-wrap">
   <h2 class="title-L">Other</h2>
-  <nav>
-    <ul>
-      {
-        posts.map((post) => (
-          <li>
-            <a href={post.url}>
+
+  <div class="posts">
+    {
+      posts.map((post) => (
+        <div class="post">
+          <a href={post.url}>
+            <div class="img">
               <img
                 src={post.frontmatter.thumbnail}
                 alt={post.frontmatter.title}
               />
+            </div>
+            <div class="detail">
               <div class="title-M">{post.frontmatter.title}</div>
               <p>{post.frontmatter.description}</p>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+            </div>
+          </a>
+        </div>
+      ))
+    }
+  </div>
 </div>
 
 <style lang="scss">
-  .posts {
+  .posts-wrap {
     margin-top: $spacing-XL;
-    ul {
+    .posts {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-gap: $spacing-XL;
       @media screen and (max-width: $breakpoint-S) {
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: $spacing-L;
+        display: block;
       }
     }
-    li {
+    .post {
       margin-bottom: $spacing-S;
       box-shadow: $shadow-01;
       padding: $spacing-M;
       border-radius: $radius-M;
       background-color: var(--color-background);
+      @media screen and (max-width: $breakpoint-S) {
+        margin-bottom: var(--spacing-L);
+      }
+      a {
+        display: flex;
+        gap: $spacing-M;
+
+        .img {
+          flex: 1;
+          @media screen and (max-width: $breakpoint-S) {
+            width: 100px;
+          }
+        }
+        .detail {
+          flex: 1;
+          @media screen and (max-width: $breakpoint-S) {
+            flex: 1;
+          }
+        }
+      }
       p {
         font-size: $font-size-S;
       }

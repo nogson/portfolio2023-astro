@@ -8,6 +8,7 @@ const CommonHeader = () => {
   const menuRef = useRef<LottieRefCurrentProps>(null!);
   const [isOpen, setIsOpen] = useState(false);
   const [isComplete, setIsComplete] = useState(true);
+  const [currentPage, setCurrentPage] = useState("/");
 
   const toggleMenu = () => {
     setIsComplete(false);
@@ -20,6 +21,11 @@ const CommonHeader = () => {
     menuRef.current.play();
   };
 
+  useEffect(() => {
+    const pathName = window.location.pathname.split("/")[1];
+    setCurrentPage(pathName);
+  }, []);
+
   return (
     <Header>
       <div className={`header-nav ${isOpen ? "open" : "close"}`}>
@@ -28,13 +34,13 @@ const CommonHeader = () => {
         </h1>
         <nav>
           <ul>
-            <li>
+            <li className={currentPage === "" ? "act" : ""}>
               <a href="/">Home</a>
             </li>
-            <li>
+            <li className={currentPage === "portfolio" ? "act" : ""}>
               <a href="/portfolio">Portfolio</a>
             </li>
-            <li>
+            <li className={currentPage === "blog" ? "act" : ""}>
               <a href="/blog">Blog</a>
             </li>
             <li>Contact</li>
@@ -107,6 +113,10 @@ const Header = styled.header`
           letter-spacing: 0.05em;
           font-weight: 400;
           font-size: var(--font-size-M);
+          &.act {
+            color: var(--color-primary);
+            font-weight: 700;
+          }
         }
       }
       ${media.lessThan("medium")`
