@@ -1,6 +1,13 @@
 ---
 const allPosts = await Astro.glob("../../pages/blog/**/*.mdx");
-const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+const { tags } = Astro.props;
+
+const posts = allPosts.filter((post) => {
+  if (tags) {
+    return tags.some((tag: string) => post.frontmatter.tags.includes(tag));
+  }
+  return !post.frontmatter.draft;
+});
 ---
 
 <div class="posts">
@@ -8,7 +15,7 @@ const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
   <nav>
     <ul>
       {
-        nonDraftPosts.map((post) => (
+        posts.map((post) => (
           <li>
             <a href={post.url}>
               <div class="title-M">{post.frontmatter.title}</div>

@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import "dayjs/locale/ja";
 import Posts from "../components/portfolio/Posts.astro";
 const { frontmatter } = Astro.props;
-console.log(frontmatter.url);
 
 const allPosts = await Astro.glob("../pages/portfolio/**/*.mdx");
 

@@ -1,0 +1,96 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: "Blenderの透明マテリアル"
+createAt: 2023-10-19
+description: "Blenderの透明マテリアルの作成方法です"
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender.js"]
+draft: true
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# 準備
+
+映り込みなどがあったほうがマテリアルがわかりやすいので、wordにHDRI画像を設定します。
+
+右側のナビゲーションからworldを選択し、colorをEnvironment Textureに変更し、  
+OpenをクリックしてHDRI画像を選択します。
+
+HDRI画像は[Poly Haven](https://polyhaven.com/)からダウンロードして利用しました。
+
+<div class="multi-column-2">
+  <CommonImg
+    src="/blog/20231019/01.png"
+    alt="HDRI画像を設定"
+    client:only="react"
+  />
+  <CommonImg
+    src="/blog/20231019/02.png"
+    alt="HDRI画像を設定"
+    client:only="react"
+  />
+</div>
+
+## ちょっとリッチなプラスチックのマテリアル
+
+Subsurfaceと、Roughnessを調整することで、プラスチックのようなマテリアルを作成します。  
+Subsurface設定することで、光が物体内部に入り込み、物体内部で散乱します。
+
+Subsurface Radiusは、散乱する光の色を設定します。  
+上から順に、赤、緑、青の散乱の強さを設定します。
+
+<div class="multi-column-3 mb-XL">
+
+<CommonImg
+  src="/blog/20231019/04.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+<CommonImg
+  src="/blog/20231019/03.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+<CommonImg
+  src="/blog/20231019/05.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+</div>
+
+また、GlassBSDFを使用することで、少し変わったプラスチックマテリアルを作成することができます。
+
+<CommonImg
+  src="/blog/20231019/06.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+
+# シンプルなガラスの透明マテリアル
+
+レンダリングにはEeveeを使用します。
+
+## マテリアルの作成
+
+Roughnessを0にして、Transmissionを1にします。  
+SettingsのScreen Space Refractionにチェックを入れます。
+
+Eeveeの場合レンダープロパティの設定も変更する必要があり、  
+Screen Space Refractionにチェックを入れ、Refractionにもチェックをいれます。
+
+<CommonImg
+  src="/blog/20231019/07.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+<br />
+
+Screen Space Refractionは、画面の反射をシミュレートする機能です。
+これにチェックを入れると、他のオブジェクトの反射がガラスに反映されます。
+
+<CommonImg
+  src="/blog/20231019/08.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>

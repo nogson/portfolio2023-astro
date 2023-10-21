@@ -47,7 +47,7 @@ const topHeading = headings.filter((heading: any) => heading.depth <= 2);
       </div>
     </div>
     <div slot="footer">
-      <Posts />
+      <Posts tags={frontmatter.tags} />
     </div>
   </TwoColLayout>
 </div>
