@@ -11,6 +11,11 @@ nonDraftPosts.sort(
 );
 const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
 const uniqueTags = [...new Set(tags.flat())];
+uniqueTags.sort((a, b) => {
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+});
 ---
 
 <TwoColLayout

@@ -99,6 +99,12 @@
     margin: var(--spacing-L) 0 var(--spacing-S) 0;
   }
 
+  .content h4 {
+    @extend .title-M;
+    color: var(--color-gray-01);
+    margin: var(--spacing-S) 0 var(--spacing-XS) 0;
+  }
+
   // .content img {
   //   border: 1px solid var(--color-gray-04);
   // }
@@ -148,5 +154,10 @@
       border: 1px solid var(--color-gray-04);
       padding: var(--spacing-S);
     }
+  }
+
+  .content blockquote {
+    padding: var(--spacing-XXS) var(--spacing-M);
+    background: var(--color-gray-05);
   }
 }

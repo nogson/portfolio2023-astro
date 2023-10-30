@@ -1,0 +1,150 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: "フロントエンドのUnitテストの書き方"
+createAt: 2022-10-22
+description: "フロントエンドのUnitテストの書き方で忘れそうなところのメモです"
+thumbnail: "/blog/thumbnail/jest_thumb.png"
+tags: ["Javascript"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# はじめに
+
+この記事は[「フロントエンド開発のためのテスト入門 今からでも知っておきたい自動テスト戦略の必須知識」](https://www.amazon.co.jp/%E3%83%95%E3%83%AD%E3%83%B3%E3%83%88%E3%82%A8%E3%83%B3%E3%83%89%E9%96%8B%E7%99%BA%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%83%86%E3%82%B9%E3%83%88%E5%85%A5%E9%96%80-%E4%BB%8A%E3%81%8B%E3%82%89%E3%81%A7%E3%82%82%E7%9F%A5%E3%81%A3%E3%81%A6%E3%81%8A%E3%81%8D%E3%81%9F%E3%81%84%E8%87%AA%E5%8B%95%E3%83%86%E3%82%B9%E3%83%88%E6%88%A6%E7%95%A5%E3%81%AE%E5%BF%85%E9%A0%88%E7%9F%A5%E8%AD%98-%E5%90%89%E4%BA%95-%E5%81%A5%E6%96%87-ebook/dp/B0BWR5GHMP/ref=sr_1_1?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&crid=2VE49O7Y9JTCH&keywords=%E3%83%95%E3%83%AD%E3%83%B3%E3%83%88%E3%82%A8%E3%83%B3%E3%83%89%E9%96%8B%E7%99%BA%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%83%86%E3%82%B9%E3%83%88%E5%85%A5%E9%96%80+%E4%BB%8A%E3%81%8B%E3%82%89%E3%81%A7%E3%82%82%E7%9F%A5%E3%81%A3%E3%81%A6%E3%81%8A%E3%81%8D%E3%81%9F%E3%81%84%E8%87%AA%E5%8B%95%E3%83%86%E3%82%B9%E3%83%88%E6%88%A6%E7%95%A5%E3%81%AE%E5%BF%85%E9%A0%88%E7%9F%A5%E8%AD%98&qid=1697956769&s=books&sprefix=%E3%83%95%E3%83%AD%E3%83%B3%E3%83%88%E3%82%A8%E3%83%B3%E3%83%89%E9%96%8B%E7%99%BA%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%83%86%E3%82%B9%E3%83%88%E5%85%A5%E9%96%80+%E4%BB%8A%E3%81%8B%E3%82%89%E3%81%A7%E3%82%82%E7%9F%A5%E3%81%A3%E3%81%A6%E3%81%8A%E3%81%8D%E3%81%9F%E3%81%84%E8%87%AA%E5%8B%95%E3%83%86%E3%82%B9%E3%83%88%E6%88%A6%E7%95%A5%E3%81%AE%E5%BF%85%E9%A0%88%E7%9F%A5%E8%AD%98%2Cstripbooks%2C184&sr=1-1)を読んで、私自身がよく忘れるところをまとめたものです。
+
+とても良い書籍なので購入してじっくり読んでみることをお勧めします。
+
+# 非同期処理のテスト
+
+非同期処理のテストを書く方法です。
+
+## resolveのテスト
+
+テストする関数はこちらです。
+
+```:js
+export function wait(duration: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(duration);
+    }, duration);
+  });
+}
+```
+
+async、awaitを利用した書き方です。
+
+```:js
+test("非同期処理のテスト", async () => {
+  expect(await wait(1000)).toBe(1000);
+});
+```
+
+resolvesマッチャーを利用した書き方です。
+
+```:js
+test("非同期処理のテスト", async () => {
+  await expect(wait(1000)).resolves.toBe(1000);
+});
+```
+
+## rejectのテスト
+
+テストする関数はこちらです。
+
+```:js
+export function wait(duration: number) {
+  return new Promise((_,reject) => {
+    setTimeout(() => {
+      reject(duration);
+    }, duration);
+  });
+}
+```
+
+Promiseをreturnする書き方です。
+
+rejectsマッチャーを利用した書き方です。
+
+```:js
+test("非同期処理のテスト", async () => {
+  await expect(wait(1000)).rejects.toBe(1000);
+});
+```
+
+try catchを利用した書き方です。
+
+```:js
+test("非同期処理のテスト", async () => {
+  expect.assertions(1);　// アサーションが1回実行されることを保証
+  try {
+    await wait(1000);　// ここで成功した場合は、アサーションが実行されないのでテストはエラーとなる
+  } catch (e) {
+    expect(e).toBe(1000);
+  }
+});
+```
+
+#### expect.assertions
+
+アサーションが必ず実行されることを保証するためのメソッドです。  
+テストの記述ミスを防ぐために利用します。
+
+## ポイント
+
+非同期処理のテストを書くときのポイントは以下です。
+
+- 非同期処理のテストは、テスト関数をasyncにする
+- resolves、rejectsマッチャーを含むアサーションはawaitを利用する
+- try、catchを利用した場合は、expect.assertionsを書く
+
+# モックのテスト
+
+## モジュールのモック化
+
+以下のモジュールのテストを書きます。
+
+```
+export function sayHello(name: string) {
+  return `Hello! ${name}.`;
+}
+
+export function sayGoodBye(name: string) {
+  throw new Error("未実装");
+}
+```
+
+モジュールをモック化してみます。
+
+```:js
+import { sayHello,sayGoodBye } from "./greet";
+
+jest.mock("./greet", () => ({
+  sayGoodBye: (name:string) => `GoodBye! ${name}.`,
+}));
+
+test("スタブのテスト", () => {
+  expect(sayHello("Taro")).toBe("Hello! Taro."); // undefinedとなり失敗する
+  expect(sayGoodBye("Taro")).toBe("GoodBye! Taro."); // モック化した関数が呼ばれるので成功する
+});
+```
+
+モックにsayHelloの関数がスタブ化されていない為、undefinedとなりテストが失敗します。  
+モジュールの一部をスタブに置き換える場合は、jest.requireActual関数を利用します。
+
+```:js
+import { sayHello,sayGoodBye } from "./greet";
+
+jest.mock("./greet", () => ({
+  ...jest.requireActual("./greet"),
+  sayGoodBye: (name:string) => `GoodBye! ${name}.`,
+}));
+```
+
+## Web APIクライアントのスタブ化
+
+まずは、APIをリクエストしているモジュールをモック化します。
+
+```:js

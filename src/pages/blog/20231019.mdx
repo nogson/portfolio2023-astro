@@ -4,7 +4,7 @@ title: "Blenderの透明マテリアル"
 createAt: 2023-10-19
 description: "Blenderの透明マテリアルの作成方法です"
 thumbnail: "/blog/thumbnail/blender_thumb.png"
-tags: ["Blender.js"]
+tags: ["Blender"]
 draft: true
 ---
 
@@ -73,7 +73,8 @@ Subsurface Radiusは、散乱する光の色を設定します。
 
 ## マテリアルの作成
 
-Roughnessを0にして、Transmissionを1にします。  
+Roughnessを0にして、Transmissionを1にします。
+屈折率はIORで調整します。  
 SettingsのScreen Space Refractionにチェックを入れます。
 
 Eeveeの場合レンダープロパティの設定も変更する必要があり、  
@@ -94,3 +95,37 @@ Screen Space Refractionは、画面の反射をシミュレートする機能で
   alt="シンプルなガラスの透明マテリアル"
   client:only="react"
 />
+
+## 問題を修正
+
+ガラスのマテリアルオブジェクトの後ろにもう一個ガラスのオブジェクトを配置します。  
+その場合、後ろのオブジェクトが透けません。これはEeveeの限界のようです。
+
+<CommonImg
+  src="/blog/20231019/09.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+
+Transparent BSDFを使用することで、後ろのオブジェクトも透けるようになります。  
+単純に繋げただけでは、透明にはならず黒くなってしまいます。  
+Blend ModeをAlpha Blendに変更することで、透明になります。
+
+<CommonImg
+  src="/blog/20231019/10.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+
+よりガラスに近づける為、もう少し調整します。
+
+<CommonImg
+  src="/blog/20231019/11.png"
+  alt="シンプルなガラスの透明マテリアル"
+  client:only="react"
+/>
+
+## メタリックなマテリアル
+
+メタリックなマテリアルの作成方法です。
+

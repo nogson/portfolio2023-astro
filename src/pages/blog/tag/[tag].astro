@@ -5,10 +5,16 @@ import Card from "../../../components/blog/Card.astro";
 const { tag } = Astro.params;
 const allPosts = await Astro.glob("../../../pages/blog/**/*.mdx");
 const nonDraftPosts = allPosts.filter((post) => !post.frontmatter.draft);
+
 const tags = nonDraftPosts.map((post) => post.frontmatter.tags);
 const uniqueTags = [...new Set(tags.flat())];
 const posts = nonDraftPosts.filter((post) =>
   post.frontmatter.tags.includes(tag)
+);
+
+posts.sort(
+  (a, b) =>
+    Date.parse(b.frontmatter.createAt) - Date.parse(a.frontmatter.createAt)
 );
 ---
 

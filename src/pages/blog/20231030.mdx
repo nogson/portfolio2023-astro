@@ -1,0 +1,107 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: "Blenderでポスターサイズの画像を作る方法"
+createAt: 2023-10-30
+description: "Blenderでポスターサイズの画像を作る方法です。Blender上で最終アウトプットまで作成します。"
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+3Dオブジェクトの背景に置く下絵の表示方法です。
+
+# 下絵を準備
+
+Planeオブジェクトを用意します。
+
+サイズはA4210×297mmで作成します。
+上記サイズで設定すると大きくなりすぎるので、10分の1のサイズをObjectプロパティでスケールに設定します。
+
+<CommonImg src="/blog/20231030/01.png" alt="下絵を準備" client:only="react" />
+
+Planeのテクスチャに用意した下絵を設定します。
+
+<div class="multi-column-2">
+  <CommonImg src="/blog/20231030/02.jpg" alt="下絵を準備" client:only="react" />
+  <CommonImg src="/blog/20231030/03.png" alt="下絵を準備" client:only="react" />
+</div>
+
+# カメラを準備
+
+出力設定から、サイズを1684x2384に設定します。
+
+<div class="multi-column-2">
+  <CommonImg
+    src="/blog/20231030/04.png"
+    alt="カメラを準備"
+    client:only="react"
+  />
+  <CommonImg
+    src="/blog/20231030/05.png"
+    alt="カメラを準備"
+    client:only="react"
+  />
+</div>
+
+カメラの位置を調整します。
+
+カメラのrotationを0になるようにします。  
+カメラのその側を見えないようにします。
+
+  <div class="multi-column-2">
+  <CommonImg
+    src="/blog/20231030/06.png"
+    alt="カメラを準備"
+    client:only="react" />
+ <CommonImg
+    src="/blog/20231030/07.png"
+    alt="カメラを準備"
+    client:only="react" />
+
+  </div>
+
+最後に3DオブジェクトをPlane上に作成しレンダリングします。
+
+<CommonImg src="/blog/20231030/08.png" alt="レンダリング" client:only="react" />
+
+## カメラのバックグランドイメージとして設定する
+
+上記手順では、Planeオブジェクトに下絵を設定していますが、カメラのバックグランドイメージとして設定することもできます。
+
+カメラのプロパティから、バックグランドイメージを設定します。
+
+    <CommonImg
+    src="/blog/20231030/09.png"
+    alt="バックグランドイメージ"
+    client:only="react" />
+
+次にCompositionタブから、Use Nodesをチェックします。
+
+    <CommonImg
+    src="/blog/20231030/10.png"
+    alt="バックグランドイメージ"
+    client:only="react" />
+
+Imageノードを追加し、バックグランドイメージを設定します。  
+ノードの設定は以下の通りです。
+
+RenderプロパティのFilm > Transparentをチェックします。  
+こちらのチェックがないと、オブジェクトの背景が透過しません。
+
+    <CommonImg
+    src="/blog/20231030/11.png"
+    alt="バックグランドイメージ"
+    client:only="react" />
+
+    ## レンダリングの比較
+
+    この画像だと少しわかりずらいですが、Planeにテクスチャとして設定した場合は、他のオブジェクト影や光の影響を受けます。　　
+    一方、バックグランドイメージとして設定した場合は、他のオブジェクトの影や光の影響を受けません。
+
+
+    |Planeに画像を貼ったもの|バックグランドイメージを設定したもの|
+    |---|---|
+    |<CommonImg src="/blog/20231030/08.png" alt="レンダリング結果" client:only="react"/>|<CommonImg src="/blog/20231030/12.png" alt="レンダリング結果" client:only="react"/>|
+
