@@ -1,0 +1,51 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: "BlenderのProject from Viewを使ってテクスチャを貼ってみる"
+createAt: 2023-11-18
+description: "Project from Viewを利用すると複雑な形状のメッシュでも割りと簡単にテクスチャを貼ることができます"
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+Project from Viewを利用して、複雑な形状のメッシュテクスチャを貼る方法です。
+
+# 普通にテクスチャを貼る
+まずは普通にテクスチャを貼ってみます。
+利用するテクスチャはこちら。
+
+<CommonImg src="/blog/20231118/01.png" alt="Project from View" client:only="react" />
+
+UV展開もなにもせずに、普通にテクスチャを貼るとこんな感じになります。
+
+<CommonImg src="/blog/20231118/02.png" alt="Project from View" client:only="react" />
+
+
+## Project from Viewを使ってみる
+次にProject from Viewを使ってみます。
+
+## Project from Viewとは
+ Project from Viewとは特定の視点からオブジェクトをプロジェクト（投影）する機能です。
+
+オブジェクトを特定の角度から見たときに、その視点からのテクスチャを使ってオブジェクトにテクスチャを貼り付けることができます。
+例えば、建物の正面から見たときの外壁のテクスチャを、実際にその視点からプロジェクトして貼り付けることができます。
+
+## やってみる
+まずは、オブジェクトを正面からの表示にして、見えている範囲だけ選択します。  
+横から見るとこんな感じです。
+
+<CommonImg src="/blog/20231118/03.png" alt="Project from View" client:only="react" />
+
+それではProject from Viewをつかってみます。  
+キーボードのショートカットはUキーです。  
+
+コンテキストメニューからProject from Viewを選択します。
+
+<CommonImg src="/blog/20231118/04.png" alt="Project from View" client:only="react" />
+
+UVを調整するとこんな感じになります。
+<CommonImg src="/blog/20231118/05.png" alt="Project from View" client:only="react" />
+
+UVマッピングまわりはよくわかってないので、もう少し勉強が必用です。

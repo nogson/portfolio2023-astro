@@ -1,0 +1,64 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: "Blenderでパックのモックアップを作成する"
+createAt: 2023-11-16
+description: "Blenderでパックぽいモックアップの作成方法です。"
+thumbnail: "/blog/thumbnail/blender_thumb.png"
+tags: ["Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+シャンプーとかがはいってそうな、パックのモックアップの作成方法です。
+
+# Planeを準備
+Planeを配置して、メッシュを分割して、Solidifyで厚みをつけます。  
+
+<div class="multi-column-2">
+<CommonImg src="/blog/20231116/01.png" alt="Planeを分割" client:only="react" />
+<CommonImg src="/blog/20231116/02.png" alt="Planeを分割" client:only="react" />
+</div>
+
+# 物理演算プロパティを設定する
+
+## Clothを追加
+袋状にふくらませるために、Clothを追加します。  
+再生すると重力で移動してしまうので、Field Weightsを追加して、Gravityを0にします。
+
+<div class="multi-column-2">
+<CommonImg src="/blog/20231116/03.png" alt="Clothを追加します" client:only="react" />
+<CommonImg src="/blog/20231116/04.png" alt="Planeを分割" client:only="react" />
+</div>
+
+## 袋をふくらませる
+
+オブジェクトに力を加えて袋を膨らませます。  
+Shape > Shrinking Factorを-0.05〜-0.1にします。
+
+<CommonImg src="/blog/20231116/05.png" alt="袋をふくらませる" client:only="react" />
+
+スペースを押して再生をすると力が加わります。  
+袋なので、上下は膨らませず、力が加わらないようにします。
+
+上下のメッシュを選択後、オブジェクトデータプロパティ > Vertex Groups > +を押して、Groupを追加します。
+
+<CommonImg src="/blog/20231116/06.png" alt="袋をふくらませる" client:only="react" />
+
+物理演算プロパティからPin Groupに↑で作成した Vertex Groupsを設定します。  
+Self Collisionを有効にすると、袋同士が重ならないようになります。
+
+<div class="multi-column-2">
+<CommonImg src="/blog/20231116/07.png" alt="袋をふくらませる" client:only="react" />
+<CommonImg src="/blog/20231116/08.png" alt="袋をふくらませる" client:only="react" />
+</div>
+
+アニメーションを再生し、いい感じの膨らみのところを見つけて停止します。  
+Shade Smoothを設定して、いい感じにします。
+
+<div class="multi-column-2">
+<CommonImg src="/blog/20231116/09.png" alt="袋をふくらませる" client:only="react" />
+<CommonImg src="/blog/20231116/10.png" alt="袋をふくらませる" client:only="react" />
+</div>
+
+あとは、マテリアルとかテクスチャとかを設定して完成です。
