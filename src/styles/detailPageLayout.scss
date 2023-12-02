@@ -80,7 +80,12 @@
     @extend .title-XXL;
     line-height: 2em;
     border-bottom: 2px solid;
-    border-image: linear-gradient(to right, var(--color-gray-02), var(--color-background)) 1;
+    border-image: linear-gradient(
+        to right,
+        var(--color-gray-02),
+        var(--color-background)
+      )
+      1;
     ::after {
       content: "";
     }
@@ -159,5 +164,12 @@
   .content blockquote {
     padding: var(--spacing-XXS) var(--spacing-M);
     background: var(--color-gray-05);
+  }
+
+  .content p code {
+    background: var(--color-gray-04);
+    display: inline-block;
+    padding: 0 var(--spacing-S);
+    border-radius: 4px;
   }
 }

@@ -1,0 +1,155 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: "@react-three/fiberを使って画像を表示させる"
+createAt: 2023-11-23
+description: "@react-three/fiberを使って画像を表示させるいくつかの方法です"
+thumbnail: "/blog/thumbnail/react_thumb.png"
+tags: ["React", "Three.js"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+Project from Viewを利用して、複雑な形状のメッシュテクスチャを貼る方法です。
+
+# 前提
+
+- @emotion/react"を利用してますが、Canvasサイズの調整だけです
+- @react-three/dreiを利用しています
+- App.tsxでコンポーネントを読み込んで表示しています
+
+◎ App.tsx
+
+```tsx
+import "./App.css";
+import { Canvas } from "@react-three/fiber";
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
+import ImgViewer from "./feature/ImgViewer";
+
+const canvas = css`
+  height: 100vh !important;
+  width: 100vw !important;
+`;
+
+function App() {
+  return (
+    <>
+      <Canvas css={canvas}>
+        <ambientLight />
+        <pointLight position={[10, 10, 10]} />
+        <ImgViewer imageUrl="./01.png" />
+      </Canvas>
+    </>
+  );
+}
+
+export default App;
+```
+
+# planeGeometryにテクスチャとして貼る
+
+planeGeometryにテクスチャとし貼るほうほうです。
+
+```tsx
+import { useLoader } from "@react-three/fiber";
+import { TextureLoader } from "three";
+
+type ImageComponentType = {
+  imageUrl: string;
+};
+
+const ImgViewer: React.FC<ImageComponentType> = ({ imageUrl }) => {
+  const texture = useLoader(TextureLoader, imageUrl);
+  const aspectRatio = texture.image.width / texture.image.height;
+  const geometryWidth = 5;
+  const geometryHeight = geometryWidth / aspectRatio;
+
+  return (
+    <mesh>
+      <planeGeometry attach="geometry" args={[geometryWidth, geometryHeight]} />
+      <meshBasicMaterial attach="material" map={texture} />
+    </mesh>
+  );
+};
+
+export default ImgViewer;
+```
+
+表示としてはこんな感じです。
+
+<CommonImg src="/blog/20231123/01.png" alt="画像を表示" client:only="react" />
+
+# @react-three/dreiのImageコンポーネントを利用して表示する
+
+次に[@react-three/drei](https://github.com/pmndrs/drei)のImageコンポーネントを利用して表示する方法です。
+
+今回は表示とは直接関係ないですが、useThreeを利用して、ビューポートのwidthとheightを取得してCanvasのサイズに合わせて表示させます。
+
+```tsx
+import { useThree } from "@react-three/fiber";
+import { Image } from "@react-three/drei";
+
+type ImageComponentType = {
+  imageUrl: string;
+};
+
+const ImgViewer: React.FC<ImageComponentType> = ({ imageUrl }) => {
+  const { width, height } = useThree((state) => state.viewport);
+
+  return <Image url={imageUrl} position={[0, 0, 0]} scale={[width, height]} />;
+};
+
+export default ImgViewer;
+```
+
+表示としてはこんな感じです。  
+Imageコンポーネントを利用すると、仮に`scale={[1, 1]}`とした場合でも、元画像が歪んだりはせずトリミングされて表示されます。
+
+<CommonImg src="/blog/20231123/02.png" alt="画像を表示" client:only="react" />
+
+その他色々な[プロパティ](https://drei.pmnd.rs/?path=/docs/abstractions-image--docs)があるようです。
+
+# パララックス効果をつけて表示する
+
+おまけですが、表示した画像をパララックス効果をつけて表示する方法です。
+
+画面をスクロールできるようにする[ScrollControlsとScroll](https://drei.pmnd.rs/?path=/docs/controls-scrollcontrols--docs)コンポーネントを利用します。
+
+`<ScrollControls>`でスクロールできる範囲を指定し、`<Scroll>`で対象を囲みます。  
+Scrollで囲っていない要素はスクロールされません。
+
+ScrollControlsの主なプロパティは以下です。
+|プロパティ||
+|---|---|
+|pages|スクロール量。1の場合スクロールされません。2の場合はCanvas2つ分スクロールされます|
+|damping|慣性|
+|horizontal| trueにすると横スクロール|
+|infinite|無限スクロール|
+|eps|スクロールの精度。デフォルトは0.00001|
+|distance|秒単位の摩擦。デフォルトは0.2|
+
+```tsx
+import { Image, ScrollControls, Scroll } from "@react-three/drei";
+
+type ImageComponentType = {
+  imageUrl: string;
+};
+
+const ImgViewer: React.FC<ImageComponentType> = ({ imageUrl }) => {
+  return (
+    <>
+      <ScrollControls pages={3} damping={1}>
+        <Scroll>
+          <Image url={imageUrl} position={[0, 0, 0]} scale={[3, 3]} />;
+        </Scroll>
+        <Image url={imageUrl} position={[4, 0, 0]} scale={[3, 3]} />;
+      </ScrollControls>
+    </>
+  );
+};
+
+export default ImgViewer;
+```
+
+<CommonImg src="/blog/20231123/03.gif" alt="画像を表示" client:only="react" />
