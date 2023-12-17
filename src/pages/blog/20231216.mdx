@@ -1,0 +1,494 @@
+---
+layout: "@/layouts/BlogDetailLayout.astro"
+title: "@react-three/fiberでマテリアルやテクスチャの設定方法"
+createAt: 2023-12-16
+description: "テクスチャやマテリアルの設定方法をまとめています。"
+thumbnail: "/blog/thumbnail/react_thumb.png"
+tags: ["React", "Three.js", "Blender"]
+draft: false
+---
+
+import CommonImg from "@/components/CommonImg.tsx";
+
+# マテリアルの設定方法
+
+メッシュにマテリアルを割り当てるソースコードは以下のようになります。
+
+```tsx
+import "./App.css";
+import { Canvas } from "@react-three/fiber";
+import {
+  Environment,
+  OrbitControls,
+  Plane,
+  Stats,
+  useMatcapTexture,
+} from "@react-three/drei";
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
+import { Suspense } from "react";
+import * as THREE from "three";
+
+const canvas = css`
+  height: 100vh !important;
+  width: 100vw !important;
+`;
+
+function App() {
+  return (
+    <>
+      <Canvas
+        css={canvas}
+        camera={{
+          position: [0, 5, 8],
+          fov: 50,
+          aspect: window.innerWidth / window.innerHeight,
+          near: 0.1,
+          far: 2000,
+        }}
+        dpr={window.devicePixelRatio}
+        shadows
+      >
+        <Stats />
+        <OrbitControls />
+        <ambientLight intensity={0.1} />
+        <directionalLight
+          position={[5, 5, 5]}
+          intensity={1}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          castShadow
+        />
+        <Suspense fallback={null}>
+          <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
+          {/* ここ */}
+          <mesh position={[1, 3, 2]} castShadow receiveShadow>
+            <sphereGeometry args={[0.6, 32, 32]} />
+            <meshBasicMaterial color="#0404E8" />
+          </mesh>
+          <Plane rotation={[-Math.PI / 2, 0, 0]} args={[10, 10]} receiveShadow>
+            <meshStandardMaterial color="#fff" side={THREE.DoubleSide} />
+          </Plane>
+        </Suspense>
+      </Canvas>
+    </>
+  );
+}
+```
+
+## MeshBasicMaterial
+
+基本的なマテリアルです。
+
+```tsx
+...省略
+<mesh position={[1, 3, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshBasicMaterial color="#0404E8" />
+</mesh>
+...省略
+```
+
+<CommonImg
+  src="/blog/20231216/01.png"
+  alt="MeshBasicMaterial"
+  client:only="react"
+/>
+
+# MeshStandardMaterial
+
+物理ベースレンダリング(PBR)を実現するマテリアルです。  
+荒さ(roughness)や金属度(metalness)などのパラメータを設定できる。
+
+```tsx
+...省略
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshStandardMaterial color="#0404E8" />
+</mesh>
+
+```
+
+<CommonImg
+  src="/blog/20231216/02.png"
+  alt="MeshStandardMaterial"
+  client:only="react"
+/>
+
+roughnessとmetalnessを設定してみる。
+
+```tsx
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshStandardMaterial color={"#0404E8"} roughness={5} metalness={5} />
+</mesh>
+```
+
+<CommonImg
+  src="/blog/20231216/10.png"
+  alt="MeshStandardMaterial"
+  client:only="react"
+/>
+
+## meshNormalMaterial
+
+法線ベクトルをRGB値に変換して、色を表現するマテリアルです。
+
+```tsx
+...省略
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshNormalMaterial />
+</mesh>
+...省略
+```
+
+<CommonImg
+  src="/blog/20231216/03.png"
+  alt="meshNormalMaterial"
+  client:only="react"
+/>
+
+## meshPhongMaterial
+
+光沢感を表現できるマテリアルです。  
+shinineess（光沢）とspecular（反射）を設定できる。
+
+MeshLambertMaterialと似ている。
+
+```tsx
+...省略
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshPhongMaterial color="#0404E8" />
+</mesh>
+...省略
+```
+
+<CommonImg
+  src="/blog/20231216/04.png"
+  alt="meshPhongMaterial"
+  client:only="react"
+/>
+
+```tsx
+...省略
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshPhongMaterial color="#0404E8" shininess={100}  specular={1000} />
+</mesh>
+...省略
+```
+
+<CommonImg
+  src="/blog/20231216/09.png"
+  alt="meshPhongMaterial"
+  client:only="react"
+/>
+
+## methToonMaterial
+
+アニメっぽい質感を表現できるマテリアルです。
+
+```tsx
+...省略
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <methToonMaterial color="#0404E8" />
+</mesh>
+...省略
+```
+
+<CommonImg
+  src="/blog/20231216/05.png"
+  alt="methToonMaterial"
+  client:only="react"
+/>
+
+## meshLambertMaterial
+
+光沢感のないマットな質感を表現できるマテリアルです。
+
+```tsx
+...省略
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshLambertMaterial color="#0404E8" />
+</mesh>
+...省略
+```
+
+<CommonImg
+  src="/blog/20231216/06.png"
+  alt="meshLambertMaterial"
+  client:only="react"
+/>
+
+## meshMatcapMaterial
+
+Matcapは、物体の光沢感や質感をリアルに見せることができます。
+
+```tsx
+...省略
+<mesh position={[1, 1, 2]} castShadow receiveShadow>
+  <sphereGeometry args={[0.6, 32, 32]} />
+  <meshMatcapMaterial color="#0404E8" />
+</mesh>
+...省略
+```
+
+<CommonImg
+  src="/blog/20231216/07.png"
+  alt="meshMatcapMaterial"
+  client:only="react"
+/>
+
+[https://github.com/emmelleppi/matcaps](https://github.com/emmelleppi/matcaps)からテクスチャを読み込んで利用することもできます。
+
+```tsx
+const Objects = () => {
+  const [matcap] = useMatcapTexture("0404E8_0404B5_0404CB_3333FC", 512);
+
+  return (
+    <>
+      <mesh position={[1, 1, 2]} castShadow receiveShadow>
+        <sphereGeometry args={[0.6, 32, 32]} />
+        <meshMatcapMaterial matcap={matcap} />
+      </mesh>
+    </>
+  );
+};
+```
+
+<CommonImg
+  src="/blog/20231216/08.png"
+  alt="meshMatcapMaterial"
+  client:only="react"
+/>
+
+# テクスチャの設定方法
+
+テクスチャの設定方法です。  
+画像は以下を用意します。
+
+- colorMap.jpg・・・色用
+- displacementMap.jpg・・・高さ用
+- normalMap.jpg・・・法線用
+- roughnessMap.jpg・・・荒さ用
+- aoMap.jpg・・・環境光用
+
+<div class="mt-L">
+  <CommonImg
+    src="/blog/20231216/12.png"
+    alt="テクスチャをはる"
+    client:only="react"
+  />
+</div>
+
+## useLoaderの使い方
+
+useLoaderを使って、textureを読み込みます。  
+useLoaderは、任意の Three.jsローダーモジュールを最初の引数として使用します。　　
+今回はテクスチャ画像を利用するので、THREE.TextureLoaderモジュールを渡します。
+
+第二引数には、読み込みたいファイルのパスを指定します。
+
+```tsx
+const texture = useLoader(THREE.TextureLoader, "./img/img01.png");
+```
+
+複数のテクスチャを読み込む場合は、配列で指定します。
+
+```tsx
+const [img01, img02, img03] = useLoader(THREE.TextureLoader, [
+  "./img/img01.png",
+  "./img/img02.png",
+  "./img/img03.png",
+]);
+```
+
+## テクスチャをはる
+
+各画像を読み込んで、マテリアルに設定します。
+
+```tsx
+function App() {
+  const name = (type: string) => `/textures/Stone_Path_007_${type}.jpg`;
+
+  const [colorMap, displacementMap, normalMap, roughnessMap, aoMap] = useLoader(
+    THREE.TextureLoader,
+    [
+      name("basecolor"),
+      name("height"),
+      name("normal"),
+      name("roughness"),
+      name("ambientOcclusion"),
+    ]
+  );
+
+  return (
+    <>
+      <Canvas
+        css={canvas}
+        camera={{
+          position: [0, 5, 8],
+          fov: 50,
+          aspect: window.innerWidth / window.innerHeight,
+          near: 0.1,
+          far: 2000,
+        }}
+        dpr={window.devicePixelRatio}
+        shadows
+      >
+        <Stats />
+        <OrbitControls />
+        <ambientLight intensity={0.1} />
+        <directionalLight
+          position={[0, 5, 5]}
+          intensity={1}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          castShadow
+        />
+        <Suspense fallback={null}>
+          <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
+          <mesh position={[0, 1, 2]} castShadow receiveShadow>
+            <sphereGeometry args={[0.6, 32, 32]} />
+            <meshStandardMaterial
+              displacementScale={0.2}
+              map={colorMap}
+              displacementMap={displacementMap}
+              normalMap={normalMap}
+              roughnessMap={roughnessMap}
+              aoMap={aoMap}
+            />
+          </mesh>
+          <Plane rotation={[-Math.PI / 2, 0, 0]} args={[10, 10]} receiveShadow>
+            <meshStandardMaterial color="#7c7c7c" side={THREE.DoubleSide} />
+          </Plane>
+        </Suspense>
+      </Canvas>
+    </>
+  );
+}
+```
+
+表示はこんな感じになります。
+
+<CommonImg
+  src="/blog/20231216/11.png"
+  alt="テクスチャをはる"
+  client:only="react"
+/>
+
+## RenderTextureを使ってみる
+
+RenderTextureを利用すると、テクスチャを動的に変更することができます。  
+オフスクリーンレンダリングのようなものかも?
+
+やり方としては、マテリアルコンポーネントの中でRenderTextureを設定します。  
+カメラも設定することで、設定したカメラ視点のテクスチャとして設定することができます。
+
+```tsx
+import "./App.css";
+import { Canvas, useFrame } from "@react-three/fiber";
+import {
+  Environment,
+  OrbitControls,
+  PerspectiveCamera,
+  Plane,
+  RenderTexture,
+  Stats,
+  Text,
+} from "@react-three/drei";
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
+import { Suspense, useRef } from "react";
+import * as THREE from "three";
+
+const canvas = css`
+  height: 100vh !important;
+  width: 100vw !important;
+`;
+
+function App() {
+  return (
+    <>
+      <Canvas
+        css={canvas}
+        camera={{
+          position: [0, 5, 8],
+          fov: 50,
+          aspect: window.innerWidth / window.innerHeight,
+          near: 0.1,
+          far: 2000,
+        }}
+        dpr={window.devicePixelRatio}
+        shadows
+      >
+        <Stats />
+        <OrbitControls />
+        <ambientLight intensity={0.1} />
+        <directionalLight
+          position={[0, 5, 5]}
+          intensity={1}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          castShadow
+        />
+        <Suspense fallback={null}>
+          <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
+          <Object />
+          <Plane rotation={[-Math.PI / 2, 0, 0]} args={[10, 10]} receiveShadow>
+            <meshStandardMaterial color="#7c7c7c" side={THREE.DoubleSide} />
+          </Plane>
+        </Suspense>
+      </Canvas>
+    </>
+  );
+}
+
+const Object = () => {
+  const textRef = useRef(null!);
+  useFrame(
+    (state) =>
+      (textRef.current.position.x = Math.sin(state.clock.elapsedTime) * 2)
+  );
+
+  return (
+    <>
+      <mesh position={[0, 1, 2]} castShadow receiveShadow>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial>
+          <RenderTexture attach="map" anisotropy={16}>
+            <PerspectiveCamera
+              makeDefault
+              manual
+              aspect={1 / 1}
+              position={[0, 0, 5]}
+            />
+            <color attach="background" args={["red"]} />
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 5]} />
+            <Text fontSize={2} color="#FFF" ref={textRef}>
+              Hello World
+            </Text>
+          </RenderTexture>
+        </meshStandardMaterial>
+      </mesh>
+    </>
+  );
+};
+
+export default App;
+```
+
+表示はこんな感じになります。
+
+<CommonImg
+  src="/blog/20231216/13.gif"
+  alt="RenderTexture"
+  client:only="react"
+/>
+
+やり方次第で色々な表現ができそうです。
